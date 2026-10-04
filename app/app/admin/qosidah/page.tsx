@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -17,12 +17,11 @@ import {
 import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { GlassButton } from '@/components/ui/GlassButton';
 import { GlassModal } from '@/components/ui/GlassModal';
 
 export default function AdminQosidahCMSPage() {
   const router = useRouter();
-  const { currentUser, qosidahs, categories, createQosidah } = useAppStore();
+  const { currentUser, qosidahs, categories, createQosidah, refreshData } = useAppStore();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [title, setTitle] = useState('');
@@ -74,6 +73,17 @@ export default function AdminQosidahCMSPage() {
       setFormError(error instanceof Error ? error.message : 'Qosidah gagal disimpan.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id: string, qTitle: string) => {
+    if (!confirm(`Hapus lirik qosidah "${qTitle}" dari database?`)) return;
+    try {
+      const res = await fetch(`/api/qosidah?id=${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Gagal menghapus qosidah');
+      await refreshData();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Gagal menghapus');
     }
   };
 
@@ -131,10 +141,20 @@ export default function AdminQosidahCMSPage() {
                 ))}
               </div>
 
-              <span className="text-[11px] font-semibold text-[#E6C687] flex items-center gap-0.5">
-                <span>Tersimpan di Sistem</span>
-                <Check className="w-3.5 h-3.5 text-[#D4A346]" />
-              </span>
+              <div className="flex items-center gap-2.5">
+                <span className="text-[11px] font-semibold text-[#E6C687] flex items-center gap-0.5">
+                  <span>Tersimpan di DB</span>
+                  <Check className="w-3.5 h-3.5 text-[#D4A346]" />
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(qos.id, qos.title)}
+                  className="p-1 rounded-lg text-red-400 hover:bg-red-950/40 hover:text-red-300 transition-colors cursor-pointer"
+                  title="Hapus Lirik"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </GlassCard>
         ))}
@@ -161,6 +181,17 @@ export default function AdminQosidahCMSPage() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Contoh: Ya Thoybah"
               required
+              className="w-full px-3 py-2 rounded-xl bg-[#0D1210] border border-[#B58228]/30 text-xs text-[#F8F6F0]"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-[#F8F6F0] mb-1">Judul Alternatif (Opsional)</label>
+            <input
+              type="text"
+              value={alternateTitle}
+              onChange={(e) => setAlternateTitle(e.target.value)}
+              placeholder="Contoh: Ya Ali Yabna Abi Tholib"
               className="w-full px-3 py-2 rounded-xl bg-[#0D1210] border border-[#B58228]/30 text-xs text-[#F8F6F0]"
             />
           </div>
@@ -220,14 +251,14 @@ export default function AdminQosidahCMSPage() {
             <button
               type="button"
               onClick={() => setIsAddModalOpen(false)}
-              className="flex-1 py-2 px-3 rounded-xl bg-[#0D1210] border border-[#B58228]/30 text-[#9E9885] hover:text-[#F8F6F0] font-semibold text-xs"
+              className="flex-1 py-2 px-3 rounded-xl bg-[#0D1210] border border-[#B58228]/30 text-[#9E9885] hover:text-[#F8F6F0] font-semibold text-xs cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-[#B58228] to-[#996A19] text-[#070908] font-bold text-xs shadow-md"
+              className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-[#B58228] to-[#996A19] text-[#070908] font-bold text-xs shadow-md cursor-pointer"
             >
               {isSubmitting ? 'Menyimpan...' : 'Simpan Qosidah'}
             </button>

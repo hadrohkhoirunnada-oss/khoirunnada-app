@@ -69,11 +69,12 @@ interface AppStoreContextType {
   unreadNotificationCount: number;
   markNotificationAsRead: (id: string) => Promise<void>;
   markAllNotificationsAsRead: () => Promise<void>;
-  sendAnnouncement: (title: string, message: string, targetType: 'all' | 'member' | 'treasurer' | 'admin') => Promise<void>;
+  sendAnnouncement: (title: string, message: string, targetType?: 'all' | 'member' | 'treasurer' | 'admin') => Promise<void>;
   approveMember: (id: string) => Promise<void>;
   rejectMember: (id: string) => Promise<void>;
   toggleMemberRole: (id: string, roleKey: 'is_member' | 'is_treasurer' | 'is_admin') => Promise<void>;
   deactivateMember: (id: string) => Promise<void>;
+  updateMemberRoleTitle: (id: string, roleTitle: string) => Promise<void>;
   auditLogs: AuditLog[];
 }
 
@@ -186,83 +187,173 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     const client = ensureClient(supabase);
     if (profile.status !== 'active') return;
 
-    const [jobsResult, attendanceResult, assignmentsResult, categoriesResult, qosidahResult, favoritesResult, recentResult, notificationsResult, summaryResult] = await Promise.all([
+    // 1. Ambil Notifikasi via Server API (Bypass RLS shadowing bug + Auto heal fanout)
+    const fetchNotifsPromise = fetch(`/api/notifications?userId=${profile.id}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null);
+
+    // 2. Ambil Bookings via Server API (Bisa diakses Pemain & Admin)
+    const fetchBookingsPromise = fetch('/api/bookings/manage')
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null);
+
+    // 3. Ambil Members via Server API (Bisa diakses Pemain & Admin untuk struktur tim & peran)
+    const fetchMembersPromise = fetch('/api/members')
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null);
+
+    // 4. Ambil Qosidah & Kategori
+    const fetchQosidahPromise = fetch('/api/qosidah')
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null);
+
+    // 5. Query Supabase untuk jobs, attendance, assignments, favorites, recent, finance
+    const [
+      jobsResult,
+      attendanceResult,
+      assignmentsResult,
+      favoritesResult,
+      recentResult,
+      summaryResult,
+      apiNotifs,
+      apiBookings,
+      apiMembers,
+      apiQosidah,
+    ] = await Promise.all([
       client.from('jobs').select('*').order('event_date', { ascending: true }),
       client.from('job_attendance').select('*').order('updated_at', { ascending: false }),
       client.from('job_assignments').select('*').order('created_at', { ascending: false }),
-      client.from('qosidah_categories').select('*').order('sort_order'),
-      client.from('qosidah').select('*').order('sort_order'),
       client.from('qosidah_favorites').select('qosidah_id').eq('user_id', profile.id),
       client.from('qosidah_recent').select('qosidah_id,last_opened_at').eq('user_id', profile.id).order('last_opened_at', { ascending: false }).limit(8),
-      client.from('user_notifications').select('is_read,notifications!inner(id,title,message,type,target_type,target_id,target_url,created_at)').eq('user_id', profile.id).order('created_at', { ascending: false }),
       client.rpc('get_finance_summary'),
+      fetchNotifsPromise,
+      fetchBookingsPromise,
+      fetchMembersPromise,
+      fetchQosidahPromise,
     ]);
 
-    const firstError = [jobsResult, attendanceResult, assignmentsResult, categoriesResult, qosidahResult, favoritesResult, recentResult, notificationsResult, summaryResult].find((result) => result.error)?.error;
-    if (firstError) throw new Error(firstError.message);
-
-    const categoryRows = (categoriesResult.data ?? []) as unknown as QosidahCategory[];
-    const categoryNames = new Map(categoryRows.map((item) => [item.id, item.name]));
-    setCategories(categoryRows);
+    // Set Jobs, Attendance, Assignments
     setJobs((jobsResult.data ?? []) as unknown as Job[]);
     setAttendances((attendanceResult.data ?? []) as unknown as JobAttendance[]);
     setAssignments((assignmentsResult.data ?? []) as unknown as JobAssignment[]);
-    setQosidahs(((qosidahResult.data ?? []) as unknown as Qosidah[]).map((item) => ({ ...item, tags: item.tags ?? [], category_name: categoryNames.get(item.category_id) })));
     setFavorites(((favoritesResult.data ?? []) as Array<{ qosidah_id: string }>).map((item) => item.qosidah_id));
     setRecentIds(((recentResult.data ?? []) as Array<{ qosidah_id: string }>).map((item) => item.qosidah_id));
 
-    type NotificationRow = { is_read: boolean; notifications: Omit<AppNotification, 'is_read'> | Array<Omit<AppNotification, 'is_read'>> };
-    const notificationRows = (notificationsResult.data ?? []) as unknown as NotificationRow[];
-    setNotifications(notificationRows.flatMap((row) => {
-      const notification = Array.isArray(row.notifications) ? row.notifications[0] : row.notifications;
-      return notification ? [{ ...notification, is_read: row.is_read }] : [];
-    }));
-
-    const summary = ((summaryResult.data ?? []) as Array<{ balance: number | string; income_this_month: number | string; expense_this_month: number | string }>)[0];
-    setFinanceSummary({ balance: Number(summary?.balance ?? 0), incomeThisMonth: Number(summary?.income_this_month ?? 0), expenseThisMonth: Number(summary?.expense_this_month ?? 0) });
-
-    if (profile.is_admin) {
-      const [profilesResult, bookingsResult, auditResult] = await Promise.all([
-        client.from('profiles').select('*').order('created_at', { ascending: false }),
-        client.from('bookings').select('*').order('created_at', { ascending: false }),
-        client.from('audit_logs').select('*,profiles(name)').order('created_at', { ascending: false }).limit(100),
-      ]);
-      const adminError = [profilesResult, bookingsResult, auditResult].find((result) => result.error)?.error;
-      if (adminError) throw new Error(adminError.message);
-      setProfiles(((profilesResult.data ?? []) as Array<Record<string, unknown>>).map(normalizeProfile));
-      setBookings((bookingsResult.data ?? []) as unknown as Booking[]);
-      type AuditRow = AuditLog & { profiles: { name: string } | null };
-      setAuditLogs(((auditResult.data ?? []) as unknown as AuditRow[]).map((row) => ({ id: row.id, user_id: row.user_id ?? '', user_name: row.profiles?.name ?? 'Sistem', action: row.action, entity_type: row.entity_type, entity_id: row.entity_id, description: row.description, created_at: row.created_at })));
+    // Set Qosidah & Kategori
+    if (apiQosidah?.qosidahs) {
+      setQosidahs(apiQosidah.qosidahs as Qosidah[]);
+      setCategories(apiQosidah.categories as QosidahCategory[]);
     } else {
-      setProfiles([]);
-      setBookings([]);
-      setAuditLogs([]);
+      // Fallback direct supabase
+      const { data: qCats } = await client.from('qosidah_categories').select('*').order('sort_order');
+      const { data: qSongs } = await client.from('qosidah').select('*').order('sort_order');
+      if (qCats && qSongs) {
+        const catRows = qCats as unknown as QosidahCategory[];
+        const catMap = new Map(catRows.map((c) => [c.id, c.name]));
+        setCategories(catRows);
+        setQosidahs((qSongs as unknown as Qosidah[]).map((s) => ({ ...s, tags: s.tags ?? [], category_name: catMap.get(s.category_id) || 'Sholawat' })));
+      }
     }
 
+    // Set Bookings (Untuk Admin maupun Pemain)
+    if (apiBookings?.bookings) {
+      setBookings(apiBookings.bookings as Booking[]);
+    } else if (profile.is_admin) {
+      const { data: bData } = await client.from('bookings').select('*').order('created_at', { ascending: false });
+      if (bData) setBookings(bData as Booking[]);
+    }
+
+    // Set Profiles / Anggota (Untuk Admin maupun Pemain)
+    if (apiMembers?.profiles) {
+      setProfiles((apiMembers.profiles as Array<Record<string, unknown>>).map(normalizeProfile));
+    } else if (profile.is_admin) {
+      const { data: pData } = await client.from('profiles').select('*').order('created_at', { ascending: false });
+      if (pData) setProfiles((pData as Array<Record<string, unknown>>).map(normalizeProfile));
+    }
+
+    // Set Notifications & Badge Counter
+    if (apiNotifs?.notifications) {
+      setNotifications(apiNotifs.notifications as AppNotification[]);
+    } else {
+      // Fallback direct supabase query
+      const { data: uNotifs } = await client
+        .from('user_notifications')
+        .select('is_read,notifications(id,title,message,type,target_type,target_id,target_url,created_at)')
+        .eq('user_id', profile.id)
+        .order('created_at', { ascending: false });
+
+      if (uNotifs) {
+        type FallbackRow = { is_read: boolean; notifications: Omit<AppNotification, 'is_read'> | Array<Omit<AppNotification, 'is_read'>> };
+        setNotifications((uNotifs as unknown as FallbackRow[]).flatMap((row) => {
+          const n = Array.isArray(row.notifications) ? row.notifications[0] : row.notifications;
+          return n ? [{ ...n, is_read: row.is_read }] : [];
+        }));
+      }
+    }
+
+    // Set Finance Summary
+    const summary = ((summaryResult.data ?? []) as Array<{ balance: number | string; income_this_month: number | string; expense_this_month: number | string }>)[0];
+    setFinanceSummary({
+      balance: Number(summary?.balance ?? 0),
+      incomeThisMonth: Number(summary?.income_this_month ?? 0),
+      expenseThisMonth: Number(summary?.expense_this_month ?? 0),
+    });
+
+    // Admin Audit Logs
+    if (profile.is_admin) {
+      const { data: auditData } = await client
+        .from('audit_logs')
+        .select('*,profiles(name)')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (auditData) {
+        type AuditRow = AuditLog & { profiles: { name: string } | null };
+        setAuditLogs(
+          (auditData as unknown as AuditRow[]).map((row) => ({
+            id: row.id,
+            user_id: row.user_id ?? '',
+            user_name: row.profiles?.name ?? 'Sistem',
+            action: row.action,
+            entity_type: row.entity_type,
+            entity_id: row.entity_id,
+            description: row.description,
+            created_at: row.created_at,
+          }))
+        );
+      }
+    }
+
+    // Admin / Treasurer Finance Transactions
     if (profile.is_admin || profile.is_treasurer) {
       const [financeCategoriesResult, transactionsResult] = await Promise.all([
         client.from('finance_categories').select('*').eq('is_active', true).order('name'),
         client.from('finance_transactions').select('*').order('transaction_date', { ascending: false }),
       ]);
-      if (financeCategoriesResult.error) throw new Error(financeCategoriesResult.error.message);
-      if (transactionsResult.error) throw new Error(transactionsResult.error.message);
-      const categoryList = (financeCategoriesResult.data ?? []) as unknown as FinanceCategory[];
-      const financeCategoryNames = new Map(categoryList.map((item) => [item.id, item.name]));
-      const jobNames = new Map(((jobsResult.data ?? []) as unknown as Job[]).map((item) => [item.id, item.title]));
-      const rawTransactions = (transactionsResult.data ?? []) as unknown as FinanceTransaction[];
-      const receiptPaths = rawTransactions.map((item) => item.attachment_url).filter((path): path is string => Boolean(path && !path.startsWith('http')));
-      const signedUrls = new Map<string, string>();
-      if (receiptPaths.length) {
-        const { data: signedData } = await client.storage.from('finance-receipts').createSignedUrls(receiptPaths, 60 * 60);
-        (signedData as Array<{ signedUrl?: string }> | null)?.forEach((item, index) => {
-          if (item.signedUrl) signedUrls.set(receiptPaths[index], item.signedUrl);
-        });
+      if (!financeCategoriesResult.error && !transactionsResult.error) {
+        const categoryList = (financeCategoriesResult.data ?? []) as unknown as FinanceCategory[];
+        const financeCategoryNames = new Map(categoryList.map((item) => [item.id, item.name]));
+        const jobNames = new Map(((jobsResult.data ?? []) as unknown as Job[]).map((item) => [item.id, item.title]));
+        const rawTransactions = (transactionsResult.data ?? []) as unknown as FinanceTransaction[];
+        const receiptPaths = rawTransactions.map((item) => item.attachment_url).filter((path): path is string => Boolean(path && !path.startsWith('http')));
+        const signedUrls = new Map<string, string>();
+        if (receiptPaths.length) {
+          const { data: signedData } = await client.storage.from('finance-receipts').createSignedUrls(receiptPaths, 60 * 60);
+          (signedData as Array<{ signedUrl?: string }> | null)?.forEach((item, index) => {
+            if (item.signedUrl) signedUrls.set(receiptPaths[index], item.signedUrl);
+          });
+        }
+        setFinanceCategories(categoryList);
+        setTransactions(
+          rawTransactions.map((item) => ({
+            ...item,
+            amount: Number(item.amount),
+            category_name: financeCategoryNames.get(item.category_id) ?? 'Tanpa Kategori',
+            job_title: item.job_id ? jobNames.get(item.job_id) : undefined,
+            attachment_url: item.attachment_url ? signedUrls.get(item.attachment_url) ?? item.attachment_url : undefined,
+          }))
+        );
       }
-      setFinanceCategories(categoryList);
-      setTransactions(rawTransactions.map((item) => ({ ...item, amount: Number(item.amount), category_name: financeCategoryNames.get(item.category_id) ?? 'Tanpa Kategori', job_title: item.job_id ? jobNames.get(item.job_id) : undefined, attachment_url: item.attachment_url ? signedUrls.get(item.attachment_url) ?? item.attachment_url : undefined })));
-    } else {
-      setFinanceCategories([]);
-      setTransactions([]);
     }
   }, [supabase]);
 
@@ -307,19 +398,44 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     };
   }, [refreshData, resetPrivateData, supabase]);
 
+  // Realtime Subscriptions & Polling Sync
   useEffect(() => {
     if (!supabase || !currentUser.id) return;
-    const channel = supabase.channel(`khoirunnada-${currentUser.id}`).on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${currentUser.id}` }, () => void refreshData());
-    if (currentUser.status === 'active') {
-      channel
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => void loadData(currentUser))
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => void loadData(currentUser))
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'user_notifications', filter: `user_id=eq.${currentUser.id}` }, () => void loadData(currentUser));
-      if (currentUser.is_admin) channel.on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => void loadData(currentUser));
-    }
+
+    // 1. Channel Realtime Supabase
+    const channel = supabase
+      .channel(`khoirunnada-realtime-${currentUser.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => void loadData(currentUser))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => void loadData(currentUser))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => void loadData(currentUser))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'qosidah' }, () => void loadData(currentUser))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => void loadData(currentUser))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_notifications' }, () => void loadData(currentUser));
+
     channel.subscribe();
-    return () => { void supabase.removeChannel(channel); };
-  }, [currentUser, loadData, refreshData, supabase]);
+
+    // 2. Background Revalidation (Setiap 7 detik & saat tab aktif) agar sinkronisasi 100% instan
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void loadData(currentUser);
+      }
+    }, 7000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void loadData(currentUser);
+      }
+    };
+    window.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+
+    return () => {
+      void supabase.removeChannel(channel);
+      clearInterval(interval);
+      window.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+    };
+  }, [currentUser, loadData, supabase]);
 
   const signInWithPassword = async (email: string, password: string, portal: PortalType) => {
     const client = ensureClient(supabase);
@@ -354,22 +470,39 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     const response = await fetch('/api/bookings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
     const result = (await response.json()) as { booking?: Booking; error?: string };
     if (!response.ok || !result.booking) throw new Error(result.error ?? 'Booking gagal disimpan.');
+    await loadData(currentUser);
     return result.booking;
   };
 
   const updateBookingStatus = async (id: string, status: BookingStatus, adminNotes?: string) => {
-    const client = ensureClient(supabase);
-    const { data, error } = await client.from('bookings').update({ status, admin_notes: adminNotes ?? null }).eq('id', id).select('*').single();
-    if (error) throw new Error(error.message);
-    setBookings((items) => items.map((item) => item.id === id ? data as Booking : item));
+    const res = await fetch('/api/bookings/manage', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status, adminNotes }),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.error || 'Status booking gagal diperbarui.');
+    setBookings((items) => items.map((item) => (item.id === id ? (result.booking as Booking) : item)));
   };
 
   const convertBookingToJob = async (bookingId: string, extraData?: Partial<Job>) => {
-    const client = ensureClient(supabase);
-    const { data, error } = await client.rpc('convert_booking_to_job', { booking_uuid: bookingId, gather_time_value: extraData?.gather_time ?? '18:30 WITA', maps_url_value: extraData?.maps_url ?? null, dress_code_value: extraData?.dress_code ?? 'Gamis Putih, Jas Hitam Khoirunnada', transport_info_value: extraData?.transport_info ?? 'Kumpul bersama di Markaz Khoirunnada', notes_value: extraData?.notes ?? null });
-    if (error || !data) throw new Error(error?.message ?? 'Booking gagal dikonversi.');
+    const res = await fetch('/api/bookings/manage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        bookingId,
+        gatherTime: extraData?.gather_time,
+        mapsUrl: extraData?.maps_url,
+        dressCode: extraData?.dress_code,
+        transportInfo: extraData?.transport_info,
+        notes: extraData?.notes,
+        createdBy: currentUser.id,
+      }),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok || !result.job) throw new Error(result.error || 'Booking gagal dikonversi.');
     await loadData(currentUser);
-    return data as unknown as Job;
+    return result.job as Job;
   };
 
   const createJob: AppStoreContextType['createJob'] = async (jobData) => {
@@ -378,6 +511,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     if (error || !data) throw new Error(error?.message ?? 'Job gagal dibuat.');
     const job = data as unknown as Job;
     setJobs((items) => [job, ...items]);
+    await loadData(currentUser);
     return job;
   };
 
@@ -387,6 +521,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     const { data, error } = await client.from('jobs').update(updates).eq('id', id).select('*').single();
     if (error) throw new Error(error.message);
     setJobs((items) => items.map((item) => item.id === id ? data as Job : item));
+    await loadData(currentUser);
   };
 
   const setAttendance = async (jobId: string, status: AttendanceStatus, note?: string) => {
@@ -425,21 +560,32 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   const createQosidah: AppStoreContextType['createQosidah'] = async (input) => {
-    const client = ensureClient(supabase);
-    const { category_name: _categoryName, ...databaseInput } = input;
-    const { data, error } = await client.from('qosidah').insert({ ...databaseInput, is_active: true, created_by: currentUser.id }).select('*').single();
-    if (error || !data) throw new Error(error?.message ?? 'Qosidah gagal disimpan.');
-    const qosidah = { ...(data as unknown as Qosidah), category_name: categories.find((item) => item.id === input.category_id)?.name };
+    const res = await fetch('/api/qosidah', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...input, created_by: currentUser.id }),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok || !result.qosidah) throw new Error(result.error || 'Qosidah gagal disimpan.');
+    const qosidah = {
+      ...(result.qosidah as Qosidah),
+      category_name: categories.find((item) => item.id === input.category_id)?.name || 'Sholawat',
+    };
     setQosidahs((items) => [qosidah, ...items]);
+    await loadData(currentUser);
     return qosidah;
   };
 
   const updateQosidah = async (qosidah: Qosidah) => {
-    const client = ensureClient(supabase);
-    const { id, category_name: _categoryName, created_at: _createdAt, ...updates } = qosidah;
-    const { data, error } = await client.from('qosidah').update(updates).eq('id', id).select('*').single();
-    if (error) throw new Error(error.message);
-    setQosidahs((items) => items.map((item) => item.id === id ? { ...(data as Qosidah), category_name: qosidah.category_name } : item));
+    const res = await fetch('/api/qosidah', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(qosidah),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.error || 'Qosidah gagal diperbarui.');
+    setQosidahs((items) => items.map((item) => (item.id === qosidah.id ? qosidah : item)));
+    await loadData(currentUser);
   };
 
   const addTransaction: AppStoreContextType['addTransaction'] = async (transaction) => {
@@ -467,10 +613,13 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
 
   const markNotificationAsRead = async (id: string) => {
     // 1. Optimistic update langsung agar badge di icon lonceng langsung hilang seketika
-    setNotifications((items) => items.map((item) => item.id === id ? { ...item, is_read: true } : item));
+    setNotifications((items) => items.map((item) => (item.id === id ? { ...item, is_read: true } : item)));
     try {
-      const client = ensureClient(supabase);
-      await client.from('user_notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('notification_id', id).eq('user_id', currentUser.id);
+      await fetch('/api/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notificationId: id, userId: currentUser.id }),
+      });
     } catch (err) {
       console.error('Failed to sync notification read status to server:', err);
     }
@@ -480,40 +629,126 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     // 1. Optimistic update: langsung bersihkan seluruh unread count
     setNotifications((items) => items.map((item) => ({ ...item, is_read: true })));
     try {
-      const client = ensureClient(supabase);
-      await client.from('user_notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('user_id', currentUser.id).eq('is_read', false);
+      await fetch('/api/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markAll: true, userId: currentUser.id }),
+      });
     } catch (err) {
       console.error('Failed to sync all notifications read status:', err);
     }
   };
 
-  const sendAnnouncement = async (title: string, message: string, targetType: 'all' | 'member' | 'treasurer' | 'admin') => {
-    const client = ensureClient(supabase);
-    const { error } = await client.from('notifications').insert({ title, message, type: 'announcement', target_type: targetType, target_url: '/app', created_by: currentUser.id });
-    if (error) throw new Error(error.message);
+  const sendAnnouncement = async (
+    title: string,
+    message: string,
+    _targetType: 'all' | 'member' | 'treasurer' | 'admin' = 'all'
+  ) => {
+    // Selalu siarkan khusus untuk SEMUA ANGGOTA sesuai instruksi user
+    const res = await fetch('/api/notifications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        message,
+        targetType: 'all',
+        createdBy: currentUser.id,
+      }),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(result.error || 'Pengumuman gagal disiarkan.');
     await loadData(currentUser);
   };
 
   const updateMember = async (id: string, updates: Record<string, unknown>) => {
-    const client = ensureClient(supabase);
-    const { data, error } = await client.from('profiles').update(updates).eq('id', id).select('*').single();
-    if (error || !data) throw new Error(error?.message ?? 'Profil anggota gagal diperbarui.');
-    const profile = normalizeProfile(data as Record<string, unknown>);
-    setProfiles((items) => items.map((item) => item.id === id ? profile : item));
+    const res = await fetch('/api/members', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, updates }),
+    });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok || !result.profile) throw new Error(result.error || 'Profil anggota gagal diperbarui.');
+    const profile = normalizeProfile(result.profile);
+    setProfiles((items) => items.map((item) => (item.id === id ? profile : item)));
+    if (id === currentUser.id) {
+      setCurrentUser(profile);
+    }
   };
 
-  const approveMember = async (id: string) => updateMember(id, { status: 'active', is_member: true, approved_at: new Date().toISOString(), approved_by: currentUser.id });
+  const approveMember = async (id: string) =>
+    updateMember(id, {
+      status: 'active',
+      is_member: true,
+      approved_at: new Date().toISOString(),
+      approved_by: currentUser.id,
+    });
+
   const rejectMember = async (id: string) => updateMember(id, { status: 'rejected' });
+
   const toggleMemberRole = async (id: string, roleKey: 'is_member' | 'is_treasurer' | 'is_admin') => {
     const member = profiles.find((profile) => profile.id === id);
     if (!member) throw new Error('Anggota tidak ditemukan.');
     await updateMember(id, { [roleKey]: !member[roleKey] });
   };
+
   const deactivateMember = async (id: string) => updateMember(id, { status: 'inactive' });
+
+  const updateMemberRoleTitle = async (id: string, roleTitle: string) =>
+    updateMember(id, { role_title: roleTitle.trim() });
+
   const unreadNotificationCount = notifications.filter((item) => !item.is_read).length;
 
   return (
-    <AppStoreContext.Provider value={{ isLoading, isConfigured: configured, dataError, currentUser, profiles, signInWithPassword, signInWithGoogle, logout, refreshData, bookings, createBooking, updateBookingStatus, convertBookingToJob, jobs, attendances, assignments, createJob, updateJob, setAttendance, assignMember, qosidahs, categories, favorites, recentIds, toggleFavorite, markAsRecent, createQosidah, updateQosidah, transactions, financeCategories, addTransaction, uploadReceipt, balance: financeSummary.balance, incomeThisMonth: financeSummary.incomeThisMonth, expenseThisMonth: financeSummary.expenseThisMonth, notifications, unreadNotificationCount, markNotificationAsRead, markAllNotificationsAsRead, sendAnnouncement, approveMember, rejectMember, toggleMemberRole, deactivateMember, auditLogs }}>
+    <AppStoreContext.Provider
+      value={{
+        isLoading,
+        isConfigured: configured,
+        dataError,
+        currentUser,
+        profiles,
+        signInWithPassword,
+        signInWithGoogle,
+        logout,
+        refreshData,
+        bookings,
+        createBooking,
+        updateBookingStatus,
+        convertBookingToJob,
+        jobs,
+        attendances,
+        assignments,
+        createJob,
+        updateJob,
+        setAttendance,
+        assignMember,
+        qosidahs,
+        categories,
+        favorites,
+        recentIds,
+        toggleFavorite,
+        markAsRecent,
+        createQosidah,
+        updateQosidah,
+        transactions,
+        financeCategories,
+        addTransaction,
+        uploadReceipt,
+        balance: financeSummary.balance,
+        incomeThisMonth: financeSummary.incomeThisMonth,
+        expenseThisMonth: financeSummary.expenseThisMonth,
+        notifications,
+        unreadNotificationCount,
+        markNotificationAsRead,
+        markAllNotificationsAsRead,
+        sendAnnouncement,
+        approveMember,
+        rejectMember,
+        toggleMemberRole,
+        deactivateMember,
+        updateMemberRoleTitle,
+        auditLogs,
+      }}
+    >
       {children}
     </AppStoreContext.Provider>
   );
