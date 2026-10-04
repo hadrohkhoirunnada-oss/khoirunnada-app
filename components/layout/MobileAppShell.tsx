@@ -107,37 +107,39 @@ export function MobileAppShell({
 
   return (
     <div
-      className={`min-h-screen flex flex-col items-center justify-start antialiased selection:bg-[#996A19]/30 selection:text-[#F3E6C8] transition-colors ${
+      className={`h-screen h-[100dvh] w-full flex flex-col items-center justify-start overflow-hidden antialiased selection:bg-[#996A19]/30 selection:text-[#F3E6C8] transition-colors ${
         isAdmin ? 'bg-[#070908] text-[#F8F6F0]' : 'bg-[#F8F6F0] text-[#151917]'
       }`}
     >
-      {/* Ambient Radial Lighting on Canvas */}
+      {/* Ambient Radial Lighting on Canvas (Statis fixed di background) */}
       {isAdmin ? (
         <div className="admin-ambient-lighting" />
       ) : (
         <div className="ambient-lighting" />
       )}
 
-      {/* Container simulating smartphone app frame on desktop */}
+      {/* Container simulating smartphone app frame: Fixed viewport, header fixed di atas, konten scroll mulus */}
       <div
         data-admin-mode={isAdmin ? "true" : undefined}
-        className={`w-full max-w-[440px] min-h-screen flex flex-col relative overflow-x-hidden overscroll-none transition-colors ${
+        className={`w-full max-w-[440px] h-full flex flex-col relative overflow-hidden transition-colors ${
           isAdmin
             ? 'bg-[#0D1210] text-[#F8F6F0] sm:border-x sm:border-[#B58228]/25 shadow-[0_0_60px_rgba(0,0,0,0.8)]'
             : 'bg-[#F8F6F0] text-[#151917] sm:border-x sm:border-black/5 shadow-[0_0_50px_rgba(0,0,0,0.08)]'
         }`}
       >
         {!hideHeader && (
-          <GlassAppHeader
-            title={title}
-            subtitle={subtitle}
-            showBack={showBack}
-            backHref={backHref}
-            rightAction={rightAction}
-          />
+          <div className="shrink-0 z-30">
+            <GlassAppHeader
+              title={title}
+              subtitle={subtitle}
+              showBack={showBack}
+              backHref={backHref}
+              rightAction={rightAction}
+            />
+          </div>
         )}
 
-        <main className={`flex-1 flex flex-col px-4 py-4 ${hideNav ? 'pb-6' : 'pb-20'}`}>
+        <main className={`flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-4 ${hideNav ? 'pb-6' : 'pb-24'}`}>
           {children}
         </main>
 

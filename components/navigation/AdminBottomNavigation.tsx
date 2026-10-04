@@ -19,8 +19,8 @@ export function AdminBottomNavigation() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 max-w-[440px] mx-auto px-4 pb-3 pt-2">
-        <div className="rounded-2xl px-2 py-1.5 flex items-center justify-around bg-[#0E1311]/92 backdrop-blur-2xl border border-[#B58228]/35 shadow-[0_-8px_32px_rgba(0,0,0,0.7)]">
+      <nav className="absolute bottom-0 left-0 right-0 z-40 px-4 pb-3 pt-2 pointer-events-none">
+        <div className="pointer-events-auto rounded-2xl px-2 py-1.5 flex items-center justify-around bg-[#0E1311]/92 backdrop-blur-2xl border border-[#B58228]/35 shadow-[0_-8px_32px_rgba(0,0,0,0.7)]">
           {/* 1. Beranda Admin */}
           <Link
             href="/app/admin"

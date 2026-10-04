@@ -36,8 +36,8 @@ export function GlassBottomNavigation() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 max-w-[440px] mx-auto px-4 pb-3 pt-2">
-      <div className="glass-dock rounded-2xl px-3 py-1.5 flex items-center justify-around border border-white/70 shadow-lg">
+    <nav className="absolute bottom-0 left-0 right-0 z-40 px-4 pb-3 pt-2 pointer-events-none">
+      <div className="pointer-events-auto glass-dock rounded-2xl px-3 py-1.5 flex items-center justify-around border border-white/70 shadow-lg">
         {navItems.map((item) => {
           const isActive = item.exact
             ? pathname === item.href
