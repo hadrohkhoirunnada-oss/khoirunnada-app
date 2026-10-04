@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
 function loginError(request: Request, code: string) {
-  const url = new URL('/login', request.url);
+  const url = new URL('/', request.url);
   url.searchParams.set('error', code);
   return NextResponse.redirect(url);
 }
@@ -32,15 +32,18 @@ export async function GET(request: Request) {
 
   if (!profile) return loginError(request, 'profile_failed');
 
+  // 1. Jika akun masih berstatus pending, arahkan ke halaman persetujuan
   if (profile.status === 'pending') {
     return NextResponse.redirect(new URL('/pending', request.url));
   }
 
+  // 2. Jika akun tidak aktif
   if (profile.status !== 'active') {
     await supabase.auth.signOut();
     return loginError(request, 'account_inactive');
   }
 
+  // 3. Jika login pada tab Admin & Kas:
   if (portal === 'admin') {
     if (!profile.is_admin && !profile.is_treasurer) {
       await supabase.auth.signOut();
@@ -51,15 +54,7 @@ export async function GET(request: Request) {
     );
   }
 
-  if ((profile.is_admin || profile.is_treasurer) && !profile.is_member) {
-    await supabase.auth.signOut();
-    return loginError(request, 'admin_portal_required');
-  }
-
-  if (!profile.is_member) {
-    await supabase.auth.signOut();
-    return loginError(request, 'not_member');
-  }
-
+  // 4. Jika login pada tab Pemain:
+  // Baik pemain resmi maupun admin dapat langsung masuk ke portal pemain (/app)!
   return NextResponse.redirect(new URL('/app', request.url));
 }

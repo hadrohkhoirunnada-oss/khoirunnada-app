@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -48,10 +48,9 @@ export default function LoginPage() {
       oauth_failed: 'Login Google gagal atau dibatalkan. Silakan coba kembali.',
       session_failed: 'Sesi login tidak dapat diverifikasi.',
       profile_failed: 'Profil akun belum tersedia di database.',
-      account_inactive: 'Akun ini sedang tidak aktif. Hubungi Admin Khoirunnada.',
-      not_admin: 'Akun Google ini bukan akun resmi Admin atau Bendahara.',
+      account_inactive: 'Akun ini sedang tidak aktif. Hubungi Pengurus Hadroh Khoirunnada.',
+      not_admin: 'Akun ini tidak memiliki hak akses Admin atau Bendahara.',
       not_member: 'Akun ini belum memiliki izin portal pemain.',
-      admin_portal_required: 'Akun khusus pengurus harus masuk melalui tab Admin & Kas.',
     };
     const timer = window.setTimeout(() => {
       if (code && messages[code]) setError(messages[code]);
@@ -159,7 +158,7 @@ export default function LoginPage() {
           <p className="text-[11px] text-[#585145] text-center mb-5 font-medium leading-tight">
             {roleType === 'pemain'
               ? 'Login khusus pemain, vokalis, dan anggota majelis'
-              : 'Login khusus 1 akun Google Admin dan Bendahara kas'}
+              : 'Login khusus pengurus Admin dan Bendahara kas'}
           </p>
 
           {/* Form Email & Password */}

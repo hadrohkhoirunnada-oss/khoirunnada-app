@@ -123,17 +123,15 @@ function normalizeProfile(row: Record<string, unknown>): Profile {
 
 function destinationFor(profile: Profile, portal: PortalType) {
   if (profile.status === 'pending') return '/pending';
-  if (profile.status !== 'active') throw new Error('Akun ini sedang tidak aktif.');
+  if (profile.status !== 'active') throw new Error('Akun ini sedang tidak aktif. Hubungi Pengurus Hadroh Khoirunnada.');
   if (portal === 'admin') {
     if (!profile.is_admin && !profile.is_treasurer) {
-      throw new Error('Akun ini tidak memiliki izin Admin atau Bendahara.');
+      throw new Error('Akun ini tidak memiliki hak akses Admin atau Bendahara.');
     }
     return profile.is_admin ? '/app/admin' : '/app/admin/finance';
   }
-  if ((profile.is_admin || profile.is_treasurer) && !profile.is_member) {
-    throw new Error('Akun khusus pengurus hanya dapat masuk melalui tab Admin & Kas.');
-  }
-  if (!profile.is_member) throw new Error('Akun ini belum memiliki izin sebagai pemain.');
+  // Jika portal === 'pemain':
+  // Baik pemain resmi maupun pengurus (Admin) dapat langsung masuk ke portal pemain (/app)!
   return '/app';
 }
 
@@ -439,18 +437,49 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithPassword = async (email: string, password: string, portal: PortalType) => {
     const client = ensureClient(supabase);
-    const { data, error } = await client.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
-    if (error || !data.user) throw new Error('Email atau password tidak sesuai.');
-    try {
-      const profile = await getProfileForUser(data.user);
-      const destination = destinationFor(profile, portal);
-      setCurrentUser(profile);
-      if (profile.status === 'active') await loadData(profile);
-      return destination;
-    } catch (error) {
-      await client.auth.signOut();
-      throw error;
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // 1. Panggil API backend untuk verifikasi, sinkronisasi password Google, atau auto-register akun baru
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: normalizedEmail, password, portal }),
+    });
+
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(result.error || 'Email atau password tidak sesuai.');
     }
+
+    // 2. Hubungkan session ke client Supabase agar cookie / localStorage tersimpan di browser
+    try {
+      await client.auth.signInWithPassword({
+        email: normalizedEmail,
+        password,
+      });
+    } catch (e) {
+      console.warn('Client signIn warning:', e);
+    }
+
+    // 3. Jika status masih pending (misal akun baru), arahkan ke /pending
+    if (result.destination === '/pending' || result.status === 'pending') {
+      return '/pending';
+    }
+
+    // 4. Muat data profil terbaru dan tentukan tujuan portal
+    try {
+      const { data: { user } } = await client.auth.getUser();
+      if (user) {
+        const profile = await getProfileForUser(user);
+        setCurrentUser(profile);
+        if (profile.status === 'active') await loadData(profile);
+        return destinationFor(profile, portal);
+      }
+    } catch {
+      // Fallback
+    }
+
+    return result.destination || (portal === 'admin' ? '/app/admin' : '/app');
   };
 
   const signInWithGoogle = async (portal: PortalType) => {

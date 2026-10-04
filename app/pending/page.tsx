@@ -14,17 +14,13 @@ export default function PendingApprovalPage() {
 
   React.useEffect(() => {
     if (currentUser.status !== 'active') return;
-    router.replace(
-      (currentUser.is_admin || currentUser.is_treasurer) && !currentUser.is_member
-        ? '/app/admin'
-        : '/app'
-    );
+    router.replace(currentUser.is_admin ? '/app/admin' : '/app');
     router.refresh();
   }, [currentUser, router]);
 
   const handleLogout = async () => {
     await logout();
-    router.push('/login');
+    router.push('/');
     router.refresh();
   };
 
@@ -33,11 +29,7 @@ export default function PendingApprovalPage() {
     const profile = await refreshData();
     setIsChecking(false);
     if (profile?.status === 'active') {
-      router.push(
-        (profile.is_admin || profile.is_treasurer) && !profile.is_member
-          ? '/app/admin'
-          : '/app'
-      );
+      router.push(profile.is_admin ? '/app/admin' : '/app');
       router.refresh();
     }
   };
@@ -59,22 +51,22 @@ export default function PendingApprovalPage() {
         </div>
 
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B58A3A]/10 text-[#8C6821] text-xs font-semibold mb-2">
-          <span>Status: Menunggu Persetujuan</span>
+          <span>Status: Menunggu Persetujuan Pengurus</span>
         </span>
 
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#151917] mb-2 font-serif">
-          Akun Belum Dikonfirmasi
+          Pendaftaran Berhasil!
         </h1>
 
         <p className="text-xs sm:text-sm text-[#525D58] mb-6 leading-relaxed">
-          Assalamu&apos;alaikum, <strong>{currentUser.name}</strong>. Akun Google Anda telah terdaftar namun memerlukan persetujuan Admin Khoirunnada untuk dapat membuka fitur internal.
+          Assalamu&apos;alaikum, <strong>{currentUser.name}</strong>. Akun Anda telah terdaftar namun memerlukan konfirmasi persetujuan dari Pengurus Hadroh Khoirunnada sebelum dapat membuka fitur tim.
         </p>
 
         {/* User Info Card */}
         <GlassCard className="text-left mb-6" variant="elevated">
           <div className="flex items-center gap-3 pb-3 mb-3 border-b border-black/5">
             <img
-              src={currentUser.avatar_url}
+              src={currentUser.avatar_url || '/logo-khoirunnada-192.png'}
               alt={currentUser.name}
               className="w-10 h-10 rounded-full object-cover border border-white shadow-xs"
             />
@@ -87,43 +79,41 @@ export default function PendingApprovalPage() {
           <div className="space-y-2 text-xs text-[#525D58]">
             <p className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#B58A3A]" />
-              <span>Admin sedang memeriksa pengajuan akun Anda.</span>
+              <span>Admin sedang memeriksa permohonan keanggotaan Anda.</span>
             </p>
             <p className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#996A19]" />
-              <span>Setelah disetujui, Anda akan langsung mendapatkan akses ke teks Qosidah dan jadwal Job.</span>
+              <span>Setelah disetujui Admin, Anda akan otomatis dapat mengakses seluruh jadwal Job, bank lirik Qosidah, dan pengumuman.</span>
             </p>
           </div>
         </GlassCard>
 
         {/* Actions */}
         <div className="space-y-3">
-          <div className="p-3 rounded-xl bg-white/60 border border-[#996A19]/20 text-xs">
-            <p className="font-semibold text-[#996A19] mb-1">Sudah dikonfirmasi Admin?</p>
-            <p className="text-[11px] text-[#525D58] mb-2">
-              Periksa ulang status akun untuk masuk setelah pengurus menyetujui pendaftaran Anda.
-            </p>
-            <GlassButton
-              variant="secondary"
-              size="sm"
-              fullWidth
-              onClick={handleCheckStatus}
-              isLoading={isChecking}
-              icon={<RefreshCw className="w-3.5 h-3.5" />}
-            >
-              Periksa Status Akun
-            </GlassButton>
-          </div>
-
           <GlassButton
-            variant="ghost"
+            variant="primary"
             fullWidth
-            onClick={handleLogout}
-            icon={<LogOut className="w-4 h-4" />}
+            onClick={handleCheckStatus}
+            isLoading={isChecking}
+            icon={<RefreshCw className="w-4 h-4" />}
           >
-            Keluar Akun
+            Cek Status Persetujuan
           </GlassButton>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-[#525D58] hover:text-[#151917] hover:bg-black/5 transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Keluar & Ganti Akun</span>
+          </button>
         </div>
+
+        {/* Footer info */}
+        <footer className="mt-8 text-xs text-[#525D58] opacity-75">
+          Khidmah Lil Ummah • Hadroh Khoirunnada
+        </footer>
       </div>
     </div>
   );
