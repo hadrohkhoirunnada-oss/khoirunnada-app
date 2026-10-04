@@ -163,7 +163,7 @@ export default function LoginPage() {
           </p>
 
           {/* Form Email & Password */}
-          <form onSubmit={handleEmailPasswordLogin} className="space-y-4 text-left">
+          <form onSubmit={handleEmailPasswordLogin} autoComplete="off" className="space-y-4 text-left">
             {/* Input Email */}
             <div>
               <label htmlFor="email" className="block text-xs font-bold text-[#151917] mb-1.5">
@@ -183,7 +183,7 @@ export default function LoginPage() {
                     if (error) setError('');
                   }}
                   placeholder="Isi Email anda..."
-                  autoComplete="email"
+                  autoComplete="off"
                   className="glass-input has-left-icon !pl-11 !pr-4 text-sm font-medium placeholder:text-[#585145]/45"
                 />
               </div>
@@ -208,7 +208,7 @@ export default function LoginPage() {
                     if (error) setError('');
                   }}
                   placeholder="Isi Password Anda..."
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   className="glass-input has-left-icon has-right-icon !pl-11 !pr-11 text-sm font-medium placeholder:text-[#585145]/45"
                 />
                 <button
