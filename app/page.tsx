@@ -63,8 +63,14 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
-    if (!email.trim()) {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
       setError('Silakan masukkan email.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError('Format email tidak valid. Masukkan format email yang benar (contoh: nama@domain.com).');
       return;
     }
     if (!password) {
@@ -170,16 +176,13 @@ export default function LoginPage() {
                 <input
                   id="email"
                   type="email"
+                  required
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
                     if (error) setError('');
                   }}
-                  placeholder={
-                    roleType === 'pemain'
-                      ? 'dzarin.hadroh@gmail.com'
-                      : 'admin.khoirunnada@gmail.com'
-                  }
+                  placeholder="Isi Email anda..."
                   autoComplete="email"
                   className="glass-input has-left-icon !pl-11 !pr-4 text-sm font-medium placeholder:text-[#585145]/45"
                 />
@@ -198,12 +201,13 @@ export default function LoginPage() {
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
+                  required
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
                     if (error) setError('');
                   }}
-                  placeholder="Masukkan password"
+                  placeholder="Isi Password Anda..."
                   autoComplete="current-password"
                   className="glass-input has-left-icon has-right-icon !pl-11 !pr-11 text-sm font-medium placeholder:text-[#585145]/45"
                 />
