@@ -33,6 +33,21 @@ export function MobileAppShell({
   const { currentUser, isLoading, dataError } = useAppStore();
   const isAdmin = pathname.startsWith('/app/admin');
 
+  // Terapkan tema gelap ke html & body agar tidak ada sela putih/krem saat overscroll
+  useEffect(() => {
+    if (isAdmin) {
+      document.documentElement.classList.add('admin-theme');
+      document.body.classList.add('admin-theme');
+    } else {
+      document.documentElement.classList.remove('admin-theme');
+      document.body.classList.remove('admin-theme');
+    }
+    return () => {
+      document.documentElement.classList.remove('admin-theme');
+      document.body.classList.remove('admin-theme');
+    };
+  }, [isAdmin]);
+
   // Bilateral route guard:
   // 1. Akun khusus Admin & Bendahara (admin.khoirunnada@gmail.com)
   //    TIDAK BISA akses portal pemain (/app, /app/jobs, /app/profile, /app/qosidah, /app/finance) -> direct redirect ke /app/admin
@@ -106,7 +121,7 @@ export function MobileAppShell({
       {/* Container simulating smartphone app frame on desktop */}
       <div
         data-admin-mode={isAdmin ? "true" : undefined}
-        className={`w-full max-w-[440px] min-h-screen flex flex-col relative overflow-x-hidden transition-colors ${
+        className={`w-full max-w-[440px] min-h-screen flex flex-col relative overflow-x-hidden overscroll-none transition-colors ${
           isAdmin
             ? 'bg-[#0D1210] text-[#F8F6F0] sm:border-x sm:border-[#B58228]/25 shadow-[0_0_60px_rgba(0,0,0,0.8)]'
             : 'bg-[#F8F6F0] text-[#151917] sm:border-x sm:border-black/5 shadow-[0_0_50px_rgba(0,0,0,0.08)]'
@@ -122,7 +137,7 @@ export function MobileAppShell({
           />
         )}
 
-        <main className={`flex-1 flex flex-col px-4 py-4 ${hideNav ? 'pb-8' : 'pb-28'}`}>
+        <main className={`flex-1 flex flex-col px-4 py-4 ${hideNav ? 'pb-6' : 'pb-20'}`}>
           {children}
         </main>
 

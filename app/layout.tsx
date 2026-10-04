@@ -48,8 +48,7 @@ export default function RootLayout({
     <html lang="id" suppressHydrationWarning>
       <body className={`${jakarta.variable} ${notoArabic.variable} min-h-screen flex flex-col bg-[#F8F6F0] text-[#151917] antialiased`} suppressHydrationWarning>
         <AppStoreProvider>
-          <div className="ambient-lighting" />
-          {children}
+                    {children}
         </AppStoreProvider>
       </body>
     </html>

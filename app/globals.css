@@ -421,3 +421,31 @@ body {
   background-color: rgba(255, 255, 255, 0.06) !important;
   color: #F8F6F0 !important;
 }
+
+/* Anti-Overscroll & Hilangkan Scrollbar Bawaan (Bebas Garis Vertikal) */
+html,
+body {
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+html.admin-theme,
+body.admin-theme {
+  background-color: #070908 !important;
+  color: #F8F6F0 !important;
+  overscroll-behavior: none !important;
+}
