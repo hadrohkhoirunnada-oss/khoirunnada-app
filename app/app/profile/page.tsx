@@ -7,10 +7,6 @@ import {
   Bell,
   LogOut,
   ChevronRight,
-  ShieldCheck,
-  CheckCircle2,
-  Users,
-  Award,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
@@ -19,12 +15,10 @@ import { GlassButton } from '@/components/ui/GlassButton';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { currentUser, profiles, logout } = useAppStore();
+  const { currentUser, logout } = useAppStore();
 
   const [notificationEnabled, setNotificationEnabled] = useState(true);
   const [installPromptShown, setInstallPromptShown] = useState(false);
-
-  const activeMembers = profiles.filter((p) => p.status === 'active');
 
   const handleLogout = async () => {
     await logout();
@@ -33,7 +27,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <MobileAppShell title="Profil & Tim" subtitle="Hadroh Khoirunnada">
+    <MobileAppShell title="Profil" subtitle="Hadroh Khoirunnada">
       {/* 1. Profile Header Card */}
       <GlassCard className="p-6 text-center mb-4" variant="elevated">
         <div className="relative w-20 h-20 mx-auto mb-3">
@@ -63,64 +57,7 @@ export default function ProfilePage() {
         </div>
       </GlassCard>
 
-      {/* 2. Struktur Tim & Daftar Anggota (Sinkronisasi Admin -> Pemain) */}
-      <GlassCard className="p-4 mb-4" variant="elevated">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#525D58] flex items-center gap-1.5">
-            <Users className="w-4 h-4 text-[#996A19]" />
-            <span>Struktur Tim & Anggota ({activeMembers.length})</span>
-          </h3>
-          <span className="text-[10px] font-semibold text-[#996A19] bg-[#996A19]/10 px-2 py-0.5 rounded-full">
-            Dikelola Admin
-          </span>
-        </div>
-
-        <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-          {activeMembers.length > 0 ? (
-            activeMembers.map((m) => (
-              <div
-                key={m.id}
-                className={`p-2.5 rounded-xl border flex items-center justify-between transition-all ${
-                  m.id === currentUser.id
-                    ? 'bg-[#996A19]/10 border-[#996A19]/30'
-                    : 'bg-white/60 border-black/5'
-                }`}
-              >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <img
-                    src={m.avatar_url || '/logo-khoirunnada-192.png'}
-                    alt={m.name}
-                    className="w-8 h-8 rounded-full object-cover shrink-0 border border-black/10"
-                  />
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1">
-                      <p className="font-bold text-xs text-[#151917] truncate">{m.name}</p>
-                      {m.id === currentUser.id && (
-                        <span className="text-[9px] px-1 bg-[#996A19] text-white font-bold rounded">
-                          Anda
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[10px] text-[#525D58] truncate">{m.email}</p>
-                  </div>
-                </div>
-
-                <div className="text-right shrink-0">
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#996A19]/10 text-[#996A19]">
-                    {m.role_title || (m.is_admin ? 'Admin' : m.is_treasurer ? 'Bendahara' : 'Pemain')}
-                  </span>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-xs text-[#525D58] italic py-2 text-center">
-              Belum ada anggota lain yang terdaftar.
-            </p>
-          )}
-        </div>
-      </GlassCard>
-
-      {/* 3. Pengaturan Akun & Aplikasi */}
+      {/* 2. Pengaturan Akun & Aplikasi */}
       <GlassCard className="p-2 mb-4 space-y-1">
         {/* Notifications Setting Toggle */}
         <div className="flex items-center justify-between p-3 rounded-xl">
