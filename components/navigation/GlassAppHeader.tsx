@@ -97,23 +97,21 @@ export function GlassAppHeader({
       <div className="flex items-center gap-2 shrink-0">
         {rightAction}
 
-        {/* Bell Icon (Tanpa card background, selalu ada di semua halaman) */}
-        <Link
-          href={isAdmin ? "/app/admin/notifications" : "/app/notifications"}
-          className="relative p-1.5 active:scale-95 transition-all flex items-center justify-center cursor-pointer"
-          aria-label="Notifikasi"
-        >
-          <Bell
-            className={`w-5 h-5 stroke-[2.2px] ${
-              isAdmin ? 'text-[#D4A346] hover:text-white' : 'text-[#996A19] hover:text-[#70490E]'
-            }`}
-          />
-          {unreadNotificationCount > 0 && (
-            <span className="absolute top-0.5 right-0.5 min-w-[17px] h-[17px] px-1 bg-[#C84A45] text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-[#121715] shadow-xs">
-              {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
-            </span>
-          )}
-        </Link>
+        {/* Bell Icon: HANYA untuk portal Pemain. Di bagian Admin TIDAK ADA icon lonceng */}
+        {!isAdmin && (
+          <Link
+            href="/app/notifications"
+            className="relative p-1.5 active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+            aria-label="Notifikasi"
+          >
+            <Bell className="w-5 h-5 stroke-[2.2px] text-[#996A19] hover:text-[#70490E]" />
+            {unreadNotificationCount > 0 && (
+              <span className="absolute top-0.5 right-0.5 min-w-[17px] h-[17px] px-1 bg-[#C84A45] text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white shadow-xs animate-pulse">
+                {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
+              </span>
+            )}
+          </Link>
+        )}
       </div>
     </header>
   );

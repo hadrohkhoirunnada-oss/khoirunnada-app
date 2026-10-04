@@ -313,6 +313,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     if (currentUser.status === 'active') {
       channel
         .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => void loadData(currentUser))
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, () => void loadData(currentUser))
         .on('postgres_changes', { event: '*', schema: 'public', table: 'user_notifications', filter: `user_id=eq.${currentUser.id}` }, () => void loadData(currentUser));
       if (currentUser.is_admin) channel.on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => void loadData(currentUser));
     }
@@ -465,17 +466,25 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   const markNotificationAsRead = async (id: string) => {
-    const client = ensureClient(supabase);
-    const { error } = await client.from('user_notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('notification_id', id).eq('user_id', currentUser.id);
-    if (error) throw new Error(error.message);
+    // 1. Optimistic update langsung agar badge di icon lonceng langsung hilang seketika
     setNotifications((items) => items.map((item) => item.id === id ? { ...item, is_read: true } : item));
+    try {
+      const client = ensureClient(supabase);
+      await client.from('user_notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('notification_id', id).eq('user_id', currentUser.id);
+    } catch (err) {
+      console.error('Failed to sync notification read status to server:', err);
+    }
   };
 
   const markAllNotificationsAsRead = async () => {
-    const client = ensureClient(supabase);
-    const { error } = await client.from('user_notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('user_id', currentUser.id).eq('is_read', false);
-    if (error) throw new Error(error.message);
+    // 1. Optimistic update: langsung bersihkan seluruh unread count
     setNotifications((items) => items.map((item) => ({ ...item, is_read: true })));
+    try {
+      const client = ensureClient(supabase);
+      await client.from('user_notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('user_id', currentUser.id).eq('is_read', false);
+    } catch (err) {
+      console.error('Failed to sync all notifications read status:', err);
+    }
   };
 
   const sendAnnouncement = async (title: string, message: string, targetType: 'all' | 'member' | 'treasurer' | 'admin') => {
