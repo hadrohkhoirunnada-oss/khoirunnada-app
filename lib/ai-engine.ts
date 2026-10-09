@@ -1,10 +1,13 @@
 import type { Qosidah, Job, Profile } from '@/lib/types';
 
+import type { AIConversationMemory } from "./ai/memory-types.ts";
+
 export interface AIContext {
   currentUser?: Profile;
   qosidahs?: Qosidah[];
   jobs?: Job[];
   favorites?: string[];
+  memory?: AIConversationMemory;
 }
 
 export interface AIAction {

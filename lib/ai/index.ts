@@ -1,5 +1,5 @@
 /**
- * KHOIRUNNADA BRAIN ENGINE v2.0 - NLP & KNOWLEDGE ENGINE CORE
+ * KHOIRUNNADA BRAIN ENGINE v2.0 - NLP, KNOWLEDGE & MEMORY ENGINE CORE
  * Pure TypeScript Intelligence — Zero AI API Cost
  */
 
@@ -16,3 +16,9 @@ export * from './qosidah-retriever.ts';
 export * from './job-retriever.ts';
 export * from './favorites-retriever.ts';
 export * from './knowledge-engine.ts';
+
+// FASE 3: Contextual Memory Engine
+export * from './memory-types.ts';
+export * from './memory-lifecycle.ts';
+export * from './context-resolver.ts';
+export * from './contextual-memory.ts';
