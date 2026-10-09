@@ -297,12 +297,7 @@ export function KhoirunnadaAIWidget() {
                   <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#151917]" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-sm font-bold tracking-tight text-white">Khoirunnada AI</h3>
-                    <span className="px-1.5 py-0.2 rounded bg-[#D4A346]/20 text-[#E6C687] text-[9px] font-extrabold uppercase">
-                      Sistem Mandiri
-                    </span>
-                  </div>
+                  <h3 className="text-sm font-bold tracking-tight text-white">Khoirunnada AI</h3>
                   <p className="text-[10px] text-[#A6AEA9]">Asisten Cerdas Hadroh Khoirunnada</p>
                 </div>
               </div>
