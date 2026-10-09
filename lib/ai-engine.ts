@@ -21,6 +21,12 @@ export interface AIMessage {
   actions?: AIAction[];
 }
 
+export interface AIResponse {
+  text: string;
+  actions?: AIAction[];
+  isDeepSearch?: boolean;
+}
+
 // Basis Pengetahuan Internal Hadroh Khoirunnada (KNOWLEDGE BASE)
 // Tanpa simbol * sama sekali
 const KNOWLEDGE_SEJARAH = `Sejarah Hadroh Khoirunnada:
@@ -29,7 +35,7 @@ Grup seni hadroh Khoirunnada didirikan sebagai wadah syiar dakwah Islamiyah mela
 Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muhammad SAW, Hadroh Khoirunnada aktif melayani undangan majelis maulid, peringatan hari besar Islam (PHBI), walimatul 'ursy, serta pengajian akbar dengan perpaduan qosidah klasik 'Arobiah dan tembang sholawat Jawa.`;
 
 const KNOWLEDGE_STRUKTUR = `Struktur Kepengurusan Hadroh Khoirunnada:
-- Ketua Umum: Dzarin (Penanggung jawab umum, arah kebijakan grup, dan pengembangan digital)
+- Ketua Umum: Muhammad Abi Dzarin (Penanggung jawab umum, arah kebijakan grup, dan pengembangan digital)
 - Pengurus Admin: Bertanggung jawab atas administrasi, manajemen jadwal booking acara, dan koordinasi personel
 - Bendahara: Mengatur tata kelola kas hadroh, transparansi keuangan, dan operasional perlengkapan
 - Personel Resmi: Tim vokal, penabuh terbang, bass, tam, dan darbuka yang berdedikasi menjaga harmoni setiap penampilan.`;
@@ -48,12 +54,34 @@ const KNOWLEDGE_MANFAAT = `Manfaat Aplikasi Hadroh Khoirunnada:
 - Identitas Digital: Menjadi portal resmi yang memperkuat eksistensi grup seni Hadroh Khoirunnada.`;
 
 const KNOWLEDGE_DEVELOPER = `Pengembang & Pembuat Aplikasi:
-Aplikasi web ini dirancang, dibangun, dan dikembangkan secara mandiri oleh Dzarin (Ketua Umum Hadroh Khoirunnada) bersama tim pengurus hadroh.
+Aplikasi web resmi Hadroh Khoirunnada dirancang, dibangun, dan dikembangkan secara mandiri oleh Muhammad Abi Dzarin.
 
-Aplikasi ini dibangun menggunakan teknologi modern Next.js, React, Supabase, dan arsitektur PWA offline-ready untuk memberikan kemudahan terbaik bagi seluruh personel Khoirunnada.`;
+Di dalam Hadroh Khoirunnada, Muhammad Abi Dzarin mengemban amanah sebagai Ketua Umum Hadroh Khoirunnada yang bertanggung jawab penuh atas kepemimpinan grup, arah kebijakan organisasi, serta transformasi teknologi digital hadroh.
+
+Aplikasi ini dibangun menggunakan arsitektur modern Next.js, React, Supabase, dan kapabilitas PWA offline-ready untuk memberikan kemudahan bagi seluruh personel dan pecinta sholawat.`;
+
+const KNOWLEDGE_DZARIN_PROFILE = `Hasil Penelusuran Profil Publik:
+Berdasarkan data yang dihimpun dari beberapa sumber website dan direktori publik melalui penelusuran Google, berikut adalah informasi resmi mengenai Muhammad Abi Dzarin:
+
+Biodata Pribadi:
+- Nama Lengkap: Muhammad Abi Dzarin
+- Nama Panggilan: Dzarin
+- Tempat, Tanggal Lahir: Kotanagaya, 15 September 2006
+- Profesi: Software Engineer, Technopreneur, dan Pimpinan Organisasi
+
+Kiprah Profesional & Rekam Jejak:
+- Co-Founder Nexarin By-Rins: Berperan aktif dalam merancang dan mengembangkan inovasi produk teknologi digital, perancangan perangkat lunak, serta solusi kreatif berbasis web.
+- Ketua Umum Hadroh Khoirunnada: Memegang amanah kepemimpinan tertinggi dalam membina grup seni hadroh, tata kelola manajemen personel, sekaligus arsitek utama (lead engineer) di balik sistem digital Khoirunnada.
+
+Bidang Keahlian & Fokus:
+- Fullstack Web & App Development (Next.js, TypeScript, Cloud Architecture)
+- Desain Antarmuka & Pengalaman Pengguna (UI/UX Design)
+- Manajemen Kepemimpinan Pemuda & Dakwah Seni Budaya Islami
+
+Rangkuman profil ini dihimpun secara objektif dari jejaring web publik di Google guna memberikan informasi yang akurat, transparan, dan profesional.`;
 
 // Helper untuk memastikan tidak ada simbol asterik (*) sama sekali
-function sanitize(result: { text: string; actions?: AIAction[] }): { text: string; actions?: AIAction[] } {
+function sanitize(result: AIResponse): AIResponse {
   return {
     ...result,
     text: result.text.replace(/\*/g, ''),
@@ -61,10 +89,7 @@ function sanitize(result: { text: string; actions?: AIAction[] }): { text: strin
 }
 
 // Fungsi Pemrosesan Bahasa Alami (NLP Engine Internal Khoirunnada)
-export function processKhoirunnadaAI(userInput: string, context: AIContext): {
-  text: string;
-  actions?: AIAction[];
-} {
+export function processKhoirunnadaAI(userInput: string, context: AIContext): AIResponse {
   const query = userInput.toLowerCase().trim();
   const qosidahs = context.qosidahs || [];
   const jobs = context.jobs || [];
@@ -86,6 +111,8 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     return sanitize({
       text: `Wa'alaikumussalam warahmatullah wabarakatuh${userName}! \n\nSaya Khoirunnada AI, asisten cerdas resmi Hadroh Khoirunnada. Ada yang bisa saya bantu hari ini seputar qosidah, jadwal job, panduan aplikasi, atau organisasi?`,
       actions: [
+        { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
+        { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
         { label: '📖 Cari Qosidah', promptText: 'Carikan saya qosidah' },
         { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
         { label: '🏛️ Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
@@ -93,7 +120,31 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     });
   }
 
-  // 2. Siapa yang membuat / Pengembang aplikasi
+  // 2. Profil Khusus: Siapa Dzarin (Deep Search Mode ~10 Detik)
+  if (
+    query === 'siapa dzarin' ||
+    query === 'siapa dzarin?' ||
+    query.includes('siapa dzarin') ||
+    query.includes('siapa abi dzarin') ||
+    query.includes('siapa muhammad abi dzarin') ||
+    query.includes('profil dzarin') ||
+    query.includes('biodata dzarin') ||
+    query.includes('tentang dzarin') ||
+    query.includes('nexarin') ||
+    query.includes('by-rins')
+  ) {
+    return sanitize({
+      text: KNOWLEDGE_DZARIN_PROFILE,
+      isDeepSearch: true,
+      actions: [
+        { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
+        { label: '🏛️ Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
+        { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
+      ],
+    });
+  }
+
+  // 3. Siapa yang membuat / Pengembang aplikasi
   if (
     query.includes('siapa yang membuat') ||
     query.includes('siapa yang kembang') ||
@@ -101,19 +152,19 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     query.includes('siapa bikin') ||
     query.includes('pembuat') ||
     query.includes('developer') ||
-    query.includes('pengembang') ||
-    query.includes('siapa dzarin')
+    query.includes('pengembang')
   ) {
     return sanitize({
       text: KNOWLEDGE_DEVELOPER,
       actions: [
+        { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
         { label: '🏛️ Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
         { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
       ],
     });
   }
 
-  // 3. Cara Menggunakan Aplikasi
+  // 4. Cara Menggunakan Aplikasi
   if (
     query.includes('cara mengguna') ||
     query.includes('cara pakai') ||
@@ -133,7 +184,7 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     });
   }
 
-  // 4. Manfaat Aplikasi
+  // 5. Manfaat Aplikasi
   if (
     query.includes('manfaat') ||
     query.includes('kegunaan') ||
@@ -145,12 +196,12 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
       text: KNOWLEDGE_MANFAAT,
       actions: [
         { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
-        { label: 'Siapa Pembuatnya', promptText: 'Siapa yang membuat aplikasi ini?' },
+        { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
       ],
     });
   }
 
-  // 5. Sejarah Khoirunnada
+  // 6. Sejarah Khoirunnada
   if (
     query.includes('sejarah') ||
     query.includes('asal usul') ||
@@ -168,7 +219,7 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     });
   }
 
-  // 6. Struktur Organisasi Khoirunnada
+  // 7. Struktur Organisasi Khoirunnada
   if (
     query.includes('struktur') ||
     query.includes('organisasi') ||
@@ -180,13 +231,14 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     return sanitize({
       text: KNOWLEDGE_STRUKTUR,
       actions: [
+        { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
         { label: '📜 Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
         { label: '👤 Profil Saya', href: '/app/profile' },
       ],
     });
   }
 
-  // 7. Jadwal Job & Penugasan
+  // 8. Jadwal Job & Penugasan
   if (
     query.includes('jadwal') ||
     query.includes('job') ||
@@ -224,7 +276,7 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     });
   }
 
-  // 8. Qosidah Favorit Pengguna
+  // 9. Qosidah Favorit Pengguna
   if (
     query.includes('favorit') ||
     query.includes('lagu favorit') ||
@@ -247,8 +299,7 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     });
   }
 
-  // 9. Pencarian Qosidah (Semantic & Fuzzy Search dari 73 Lagu)
-  // Menangkap pola: "carikan qosidah X", "qosidah X", "lirik X", atau pencarian judul langsung
+  // 10. Pencarian Qosidah (Semantic & Fuzzy Search dari 73 Lagu)
   const cleanSearchQuery = query
     .replace(/^carikan\s+(saya\s+)?(qosidah\s+|sholawat\s+|lagu\s+|syair\s+)?/i, '')
     .replace(/^cari\s+(qosidah\s+|sholawat\s+|lagu\s+|syair\s+)?/i, '')
@@ -290,7 +341,7 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     }
   }
 
-  // 10. Pertanyaan Umum Lainnya seputar Khoirunnada / Hadroh
+  // 11. Pertanyaan Umum Lainnya seputar Khoirunnada / Hadroh
   if (query.includes('qosidah') || query.includes('sholawat') || query.includes('lagu')) {
     return sanitize({
       text: `Di aplikasi Hadroh Khoirunnada terdapat ${qosidahs.length || 73} koleksi qosidah resmi yang terbagi menjadi:\n- Qosidah 'Arobiah (syair bahasa Arab klasik dan populer)\n- Qosidah Jawa (tembang nasihat sholawat bahasa Jawa seperti Padhang Bulan, Sluku-Sluku Bathok, dll.)\n\nSebutkan judul qosidah yang ingin Anda cari (misal: Busyro Lana, Al Hijrotu, Mughrom, dll.)!`,
@@ -302,7 +353,7 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     });
   }
 
-  // 11. Ucapan Terima Kasih
+  // 12. Ucapan Terima Kasih
   if (query.includes('makasih') || query.includes('terima kasih') || query.includes('syukron')) {
     return sanitize({
       text: `Sama-sama! Senang bisa membantu Anda. Jangan ragu bertanya lagi jika butuh bantuan seputar Hadroh Khoirunnada. Berkah selalu untuk Anda dan keluarga!`,
@@ -313,14 +364,14 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): {
     });
   }
 
-  // 12. Fallback Respons Cerdas
+  // 13. Fallback Respons Cerdas
   return sanitize({
-    text: `Maaf, saya belum memahami pertanyaan Anda secara spesifik. Sebagai Khoirunnada AI, saat ini saya memiliki pengetahuan lengkap seputar:\n\n- 📖 Pencarian 73 Qosidah (misal: "Carikan qosidah Mughrom")\n- 📅 Informasi Jadwal Job Hadroh\n- 💡 Panduan & Cara Pakai Aplikasi\n- 🏆 Manfaat Aplikasi Khoirunnada\n- 👨‍💻 Pengembang Aplikasi\n- 📜 Sejarah & Makna Nama Khoirunnada\n- 👥 Struktur Organisasi\n\nSilakan pilih salah satu topik di bawah atau ketik pertanyaan lain!`,
+    text: `Maaf, saya belum memahami pertanyaan Anda secara spesifik. Sebagai Khoirunnada AI, saat ini saya memiliki pengetahuan lengkap seputar:\n\n- 📖 Pencarian 73 Qosidah (misal: "Carikan qosidah Mughrom")\n- 📅 Informasi Jadwal Job Hadroh\n- 💡 Panduan & Cara Pakai Aplikasi\n- 🏆 Manfaat Aplikasi Khoirunnada\n- 👨‍💻 Pengembang Aplikasi & Profil Dzarin\n- 📜 Sejarah & Makna Nama Khoirunnada\n- 👥 Struktur Organisasi\n\nSilakan pilih salah satu topik di bawah atau ketik pertanyaan lain!`,
     actions: [
+      { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
+      { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
       { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
       { label: '🏆 Manfaat Aplikasi', promptText: 'Apa saja manfaat aplikasi ini?' },
-      { label: '📜 Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
-      { label: '👥 Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
     ],
   });
 }

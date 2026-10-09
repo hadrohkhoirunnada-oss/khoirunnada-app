@@ -9,6 +9,9 @@ import {
   X,
   RotateCcw,
   ChevronRight,
+  Compass,
+  Globe,
+  Search,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { processKhoirunnadaAI, AIMessage, AIAction } from '@/lib/ai-engine';
@@ -20,19 +23,24 @@ export function KhoirunnadaAIWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isDeepSearching, setIsDeepSearching] = useState(false);
+  const [deepSearchStep, setDeepSearchStep] = useState(0);
+
+  const searchTimersRef = useRef<NodeJS.Timeout[]>([]);
 
   const initialGreeting: AIMessage = {
     id: 'welcome',
     sender: 'ai',
-    text: `Assalamu'alaikum${currentUser?.name ? ` ${currentUser.name}` : ''}! 🙏\n\nSaya Khoirunnada AI, asisten cerdas resmi Hadroh Khoirunnada.\n\nSaya siap membantu Anda seputar syair qosidah, jadwal job, panduan aplikasi, sejarah, hingga struktur organisasi. Silakan tanyakan apa saja!`,
+    text: `Assalamu'alaikum${currentUser?.name ? ` ${currentUser.name}` : ''}! 🙏\n\nSaya Khoirunnada AI, asisten cerdas resmi Hadroh Khoirunnada.\n\nSaya siap membantu Anda seputar profil Dzarin, syair qosidah, jadwal job, panduan aplikasi, sejarah, hingga struktur organisasi. Silakan tanyakan apa saja!`,
     timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
     actions: [
+      { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
+      { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
       { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
       { label: '📖 Cari Qosidah Busyro Lana', promptText: 'Carikan saya qosidah Busyro Lana' },
       { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
       { label: '📜 Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
       { label: '👥 Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
-      { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
     ],
   };
 
@@ -40,12 +48,19 @@ export function KhoirunnadaAIWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Bersihkan semua timer pencarian saat unmount
+  useEffect(() => {
+    return () => {
+      searchTimersRef.current.forEach((t) => clearTimeout(t));
+    };
+  }, []);
+
   // Auto-scroll ke pesan terbaru
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages, isTyping, isOpen]);
+  }, [messages, isTyping, isDeepSearching, deepSearchStep, isOpen]);
 
   // Fokuskan input saat popup dibuka
   useEffect(() => {
@@ -70,15 +85,51 @@ export function KhoirunnadaAIWidget() {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulasi respons AI natural (350ms - 550ms)
-    setTimeout(() => {
-      const response = processKhoirunnadaAI(text, {
-        currentUser,
-        qosidahs,
-        jobs,
-        favorites,
-      });
+    const response = processKhoirunnadaAI(text, {
+      currentUser,
+      qosidahs,
+      jobs,
+      favorites,
+    });
 
+    // Fitur Khusus: Simulasi Pencarian Mendalam ke Google & Web Publik (~10 Detik)
+    if (response.isDeepSearch) {
+      setIsDeepSearching(true);
+      setDeepSearchStep(0);
+
+      // Bersihkan timer sebelumnya jika ada
+      searchTimersRef.current.forEach((t) => clearTimeout(t));
+      searchTimersRef.current = [];
+
+      // Tahap 1: 0 - 2.5s (Koneksi ke Google)
+      // Tahap 2: 2.5s - 5.5s (Telusuri Direktori & Nexarin By-Rins)
+      // Tahap 3: 5.5s - 8s (Ekstraksi data profil publik & kelahiran)
+      // Tahap 4: 8s - 9.8s (Penyusunan data profesional)
+      const t1 = setTimeout(() => setDeepSearchStep(1), 2500);
+      const t2 = setTimeout(() => setDeepSearchStep(2), 5400);
+      const t3 = setTimeout(() => setDeepSearchStep(3), 7800);
+
+      const finalTimer = setTimeout(() => {
+        const aiMessage: AIMessage = {
+          id: `ai-${Date.now()}`,
+          sender: 'ai',
+          text: response.text,
+          timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+          actions: response.actions,
+        };
+
+        setMessages((prev) => [...prev, aiMessage]);
+        setIsTyping(false);
+        setIsDeepSearching(false);
+        setDeepSearchStep(0);
+      }, 9800);
+
+      searchTimersRef.current = [t1, t2, t3, finalTimer];
+      return;
+    }
+
+    // Simulasi respons AI standar cepat (450ms)
+    setTimeout(() => {
       const aiMessage: AIMessage = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
@@ -105,6 +156,11 @@ export function KhoirunnadaAIWidget() {
   };
 
   const handleResetChat = () => {
+    searchTimersRef.current.forEach((t) => clearTimeout(t));
+    searchTimersRef.current = [];
+    setIsTyping(false);
+    setIsDeepSearching(false);
+    setDeepSearchStep(0);
     setMessages([initialGreeting]);
     setInputValue('');
   };
@@ -120,10 +176,10 @@ export function KhoirunnadaAIWidget() {
         return <div key={idx} className="h-1.5" />;
       }
 
-      // Heading dengan titik dua di akhir (misal: "Sejarah Hadroh Khoirunnada:")
+      // Heading dengan titik dua di akhir (misal: "Biodata Pribadi:", "Kiprah Profesional:")
       if (trimmed.endsWith(':') && !trimmed.startsWith('-') && !trimmed.match(/^\d+\./)) {
         return (
-          <p key={idx} className="text-xs font-bold text-[#70490E] tracking-tight mt-1 mb-0.5">
+          <p key={idx} className="text-xs font-bold text-[#70490E] tracking-tight mt-1.5 mb-0.5">
             {trimmed}
           </p>
         );
@@ -158,7 +214,7 @@ export function KhoirunnadaAIWidget() {
         );
       }
 
-      // Baris poin tanda hubung atau bullet (- Ketua Umum: ...)
+      // Baris poin tanda hubung atau bullet (- Co-Founder Nexarin By-Rins: ...)
       if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
         const rest = trimmed.replace(/^[-•]\s*/, '');
         const colonIdx = rest.indexOf(':');
@@ -337,8 +393,69 @@ export function KhoirunnadaAIWidget() {
                 </div>
               ))}
 
-              {/* Animated Typing Indicator */}
-              {isTyping && (
+              {/* Animated Deep Search Status Indicator (~10 Detik) */}
+              {isDeepSearching ? (
+                <div className="bg-white border border-[#996A19]/30 rounded-2xl p-3.5 max-w-[90%] shadow-sm space-y-2.5 animate-in fade-in duration-300">
+                  {/* Header Pencarian */}
+                  <div className="flex items-center justify-between border-b border-neutral-100 pb-2">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#70490E]">
+                      <Compass className="w-3.5 h-3.5 text-[#996A19] animate-spin [animation-duration:3.5s]" />
+                      <span>Khoirunnada Deep Search</span>
+                    </div>
+                    <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-bold border border-emerald-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                      Google Web
+                    </span>
+                  </div>
+
+                  {/* Status Teks Dinamis */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs text-slate-800 font-medium">
+                      <Globe className="w-3.5 h-3.5 text-[#996A19] shrink-0 animate-pulse" />
+                      <span className="leading-snug">
+                        {deepSearchStep === 0 && 'Menghubungkan ke mesin pencari Google & web...'}
+                        {deepSearchStep === 1 && 'Menelusuri direktori & profil publik Muhammad Abi Dzarin...'}
+                        {deepSearchStep === 2 && 'Mengekstrak data Co-Founder Nexarin By-Rins & biodata...'}
+                        {deepSearchStep === 3 && 'Menyusun rangkuman data profil profesional...'}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-neutral-400 pl-5.5">
+                      Menganalisis hasil dari beberapa sumber website terverifikasi
+                    </p>
+                  </div>
+
+                  {/* Progress Bar 10 Detik */}
+                  <div className="w-full bg-neutral-100 h-1.5 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#70490E] via-[#996A19] to-[#D4A346] rounded-full transition-all duration-700 ease-out"
+                      style={{
+                        width:
+                          deepSearchStep === 0
+                            ? '25%'
+                            : deepSearchStep === 1
+                            ? '55%'
+                            : deepSearchStep === 2
+                            ? '80%'
+                            : '96%',
+                      }}
+                    />
+                  </div>
+
+                  {/* Sumber Tag */}
+                  <div className="flex items-center gap-1.5 pt-0.5 overflow-x-auto no-scrollbar">
+                    <span className="px-2 py-0.5 rounded bg-neutral-50 text-neutral-600 border border-neutral-200 text-[9px] whitespace-nowrap">
+                      Google Search
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-neutral-50 text-neutral-600 border border-neutral-200 text-[9px] whitespace-nowrap">
+                      Nexarin By-Rins
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-neutral-50 text-neutral-600 border border-neutral-200 text-[9px] whitespace-nowrap">
+                      Profil Publik
+                    </span>
+                  </div>
+                </div>
+              ) : isTyping ? (
+                /* Animated Typing Indicator Biasa */
                 <div className="flex items-center gap-2 bg-white border border-[#996A19]/15 rounded-2xl px-3.5 py-2.5 max-w-[140px] shadow-2xs">
                   <Bot className="w-3.5 h-3.5 text-[#996A19]" />
                   <span className="text-[10px] text-[#70490E] font-medium">Sedang berpikir</span>
@@ -348,13 +465,29 @@ export function KhoirunnadaAIWidget() {
                     <span className="w-1.5 h-1.5 rounded-full bg-[#E6C687] animate-bounce" />
                   </div>
                 </div>
-              )}
+              ) : null}
 
               <div ref={messagesEndRef} />
             </div>
 
             {/* Quick Action Suggestion Bar (Pill Prompt Cepat) */}
             <div className="bg-white px-3 py-1.5 border-t border-black/5 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+              <button
+                type="button"
+                onClick={() => handleSend('Siapa yang membuat dan mengembangkan aplikasi ini?')}
+                data-no-loading="true"
+                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-[#996A19]/10 text-[#525D58] hover:text-[#70490E] text-[10px] font-medium transition-colors cursor-pointer"
+              >
+                Pembuat Aplikasi
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSend('Siapa Dzarin?')}
+                data-no-loading="true"
+                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-[#FAF6EE] hover:bg-[#996A19]/15 text-[#70490E] border border-[#996A19]/20 text-[10px] font-semibold transition-colors cursor-pointer"
+              >
+                👤 Siapa Dzarin?
+              </button>
               <button
                 type="button"
                 onClick={() => handleSend('Bagaimana cara menggunakan aplikasi ini?')}
@@ -394,14 +527,6 @@ export function KhoirunnadaAIWidget() {
                 className="whitespace-nowrap px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-[#996A19]/10 text-[#525D58] hover:text-[#70490E] text-[10px] font-medium transition-colors cursor-pointer"
               >
                 Struktur
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSend('Siapa yang membuat dan mengembangkan aplikasi ini?')}
-                data-no-loading="true"
-                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-[#996A19]/10 text-[#525D58] hover:text-[#70490E] text-[10px] font-medium transition-colors cursor-pointer"
-              >
-                Pembuat Aplikasi
               </button>
             </div>
 
