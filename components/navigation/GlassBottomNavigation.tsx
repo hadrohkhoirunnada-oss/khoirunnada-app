@@ -37,7 +37,7 @@ export function GlassBottomNavigation() {
 
   return (
     <nav className="absolute bottom-0 left-0 right-0 z-40 px-4 pb-3 pt-2 pointer-events-none">
-      <div className="pointer-events-auto glass-dock rounded-2xl px-3 py-1.5 flex items-center justify-around border border-white/70 shadow-lg">
+      <div className="pointer-events-auto rounded-2xl px-2.5 py-1.5 flex items-center justify-around bg-white/95 backdrop-blur-2xl border border-[#996A19]/20 shadow-[0_4px_24px_rgba(153,106,25,0.12)]">
         {navItems.map((item) => {
           const isActive = item.exact
             ? pathname === item.href
@@ -49,7 +49,7 @@ export function GlassBottomNavigation() {
             <Link
               key={item.href}
               href={item.href}
-              className={`relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2.5 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer ${
+              className={`relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer ${
                 isActive
                   ? 'bg-[#996A19]/12 text-[#996A19] font-semibold'
                   : 'text-[#585145] hover:text-[#151917]'

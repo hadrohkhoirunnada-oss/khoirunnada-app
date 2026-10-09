@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -139,9 +139,20 @@ export function MobileAppShell({
           </div>
         )}
 
-        <main className={`flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-4 ${hideNav ? 'pb-6' : 'pb-24'}`}>
+        <main className={`flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-4 ${hideNav ? 'pb-6' : 'pb-32'}`}>
           {children}
         </main>
+
+        {/* Soft protective gradient curtain so scrolled cards don't visually collide with bottom navigation */}
+        {!hideNav && (
+          <div
+            className={`pointer-events-none absolute bottom-0 left-0 right-0 h-28 z-30 transition-colors ${
+              isAdmin
+                ? 'bg-gradient-to-t from-[#0D1210] via-[#0D1210]/80 to-transparent'
+                : 'bg-gradient-to-t from-[#F8F6F0] via-[#F8F6F0]/85 to-transparent'
+            }`}
+          />
+        )}
 
         {!hideNav && (isAdmin ? <AdminBottomNavigation /> : <GlassBottomNavigation />)}
       </div>
