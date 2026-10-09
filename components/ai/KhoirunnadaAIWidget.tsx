@@ -142,7 +142,7 @@ export function KhoirunnadaAIWidget() {
           return (
             <div key={idx} className="flex items-start gap-1.5 pl-1 my-0.5">
               <span className="text-[#996A19] font-bold text-xs shrink-0">{num}</span>
-              <span className="flex-1 text-xs leading-relaxed text-slate-800">
+              <span className="flex-1 text-xs leading-relaxed text-inherit">
                 <span className="font-semibold text-[#70490E]">{label}</span>
                 {desc}
               </span>
@@ -153,7 +153,7 @@ export function KhoirunnadaAIWidget() {
         return (
           <div key={idx} className="flex items-start gap-1.5 pl-1 my-0.5">
             <span className="text-[#996A19] font-bold text-xs shrink-0">{num}</span>
-            <span className="flex-1 text-xs leading-relaxed text-slate-800">{rest}</span>
+            <span className="flex-1 text-xs leading-relaxed text-inherit">{rest}</span>
           </div>
         );
       }
@@ -169,7 +169,7 @@ export function KhoirunnadaAIWidget() {
           return (
             <div key={idx} className="flex items-start gap-1.5 pl-1 my-0.5">
               <span className="text-[#996A19] font-bold text-xs shrink-0">•</span>
-              <span className="flex-1 text-xs leading-relaxed text-slate-800">
+              <span className="flex-1 text-xs leading-relaxed text-inherit">
                 <span className="font-semibold text-[#70490E]">{label}</span>
                 {desc}
               </span>
@@ -180,14 +180,14 @@ export function KhoirunnadaAIWidget() {
         return (
           <div key={idx} className="flex items-start gap-1.5 pl-1 my-0.5">
             <span className="text-[#996A19] font-bold text-xs shrink-0">•</span>
-            <span className="flex-1 text-xs leading-relaxed text-slate-800">{rest}</span>
+            <span className="flex-1 text-xs leading-relaxed text-inherit">{rest}</span>
           </div>
         );
       }
 
-      // Paragraf biasa
+      // Paragraf biasa (mewarisi text color dari container pembungkus)
       return (
-        <p key={idx} className="text-xs leading-relaxed my-0.5 text-slate-800">
+        <p key={idx} className="text-xs leading-relaxed my-0.5 text-inherit">
           {trimmed}
         </p>
       );
@@ -282,10 +282,10 @@ export function KhoirunnadaAIWidget() {
                 >
                   {/* Bubble Container */}
                   <div
-                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 shadow-xs ${
+                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 ${
                       msg.sender === 'user'
-                        ? 'bg-[#151917] text-white rounded-br-xs'
-                        : 'bg-white text-[#151917] border border-[#996A19]/15 rounded-bl-xs'
+                        ? 'bg-[#151917] text-white rounded-br-xs border border-[#996A19]/35 shadow-sm'
+                        : 'bg-white text-[#151917] border border-[#996A19]/15 rounded-bl-xs shadow-xs'
                     }`}
                   >
                     {/* Message Header for AI */}
@@ -296,15 +296,21 @@ export function KhoirunnadaAIWidget() {
                       </div>
                     )}
 
-                    {/* Formatted Content */}
-                    <div className="text-xs break-words">
-                      {formatText(msg.text)}
-                    </div>
+                    {/* Content */}
+                    {msg.sender === 'user' ? (
+                      <p className="text-xs font-semibold leading-relaxed text-white select-text">
+                        {msg.text}
+                      </p>
+                    ) : (
+                      <div className="text-xs break-words text-[#151917]">
+                        {formatText(msg.text)}
+                      </div>
+                    )}
 
                     {/* Timestamp */}
                     <div
-                      className={`text-[9px] mt-1 text-right ${
-                        msg.sender === 'user' ? 'text-white/60' : 'text-neutral-400'
+                      className={`text-[9px] mt-1.5 text-right font-medium ${
+                        msg.sender === 'user' ? 'text-[#D4A346]/90' : 'text-neutral-400'
                       }`}
                     >
                       {msg.timestamp}
