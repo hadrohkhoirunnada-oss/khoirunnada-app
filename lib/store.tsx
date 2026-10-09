@@ -731,8 +731,10 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   const updateAvatar = async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
+    if (currentUser?.id) formData.append('id', currentUser.id);
 
-    const res = await fetch('/api/profile/avatar', {
+    const query = currentUser?.id ? `?id=${encodeURIComponent(currentUser.id)}` : '';
+    const res = await fetch(`/api/profile/avatar${query}`, {
       method: 'POST',
       body: formData,
     });
@@ -776,7 +778,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     const res = await fetch('/api/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, id: currentUser.id }),
     });
 
     const result = await res.json().catch(() => ({}));

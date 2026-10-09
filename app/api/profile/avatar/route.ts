@@ -24,6 +24,7 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
+    const requestedId = formData.get('id') as string | null;
 
     if (!file || !(file instanceof File)) {
       return NextResponse.json({ error: 'File foto profil tidak ditemukan.' }, { status: 400 });
@@ -52,11 +53,20 @@ export async function POST(request: Request) {
     const admin = createAdminClient();
 
     // 0. Ambil profil saat ini dari tabel public.profiles untuk mendapatkan foto lama
-    const { data: currentProfile } = await admin
+    let { data: currentProfile } = await admin
       .from('profiles')
       .select('id, auth_user_id, email, avatar_url')
       .or(`auth_user_id.eq.${user.id},email.eq.${user.email}`)
       .maybeSingle();
+
+    if (!currentProfile && requestedId) {
+      const { data } = await admin
+        .from('profiles')
+        .select('id, auth_user_id, email, avatar_url')
+        .eq('id', requestedId)
+        .maybeSingle();
+      currentProfile = data;
+    }
 
     // 1. Hapus file avatar lama dari Supabase Storage (sehingga tidak ada file sampah menumpuk)
     try {
@@ -151,7 +161,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request: Request) {
   try {
     const supabase = await createClient();
     const {
@@ -165,14 +175,25 @@ export async function DELETE() {
       );
     }
 
+    const url = new URL(request.url);
+    const requestedId = url.searchParams.get('id');
     const admin = createAdminClient();
 
     // 0. Ambil profil saat ini
-    const { data: currentProfile } = await admin
+    let { data: currentProfile } = await admin
       .from('profiles')
       .select('id, auth_user_id, email, avatar_url')
       .or(`auth_user_id.eq.${user.id},email.eq.${user.email}`)
       .maybeSingle();
+
+    if (!currentProfile && requestedId) {
+      const { data } = await admin
+        .from('profiles')
+        .select('id, auth_user_id, email, avatar_url')
+        .eq('id', requestedId)
+        .maybeSingle();
+      currentProfile = data;
+    }
 
     // 1. Hapus semua file foto lama di storage
     try {
