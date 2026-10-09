@@ -107,9 +107,13 @@ export default function AdminMembersManagementPage() {
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div className="flex items-center gap-3">
                     <img
-                      src={member.avatar_url}
-                      alt={member.name}
-                      className="w-10 h-10 rounded-full object-cover border border-[#B58228]/40"
+            src={member.avatar_url || '/logo-khoirunnada-192.png'}
+            alt={member.name}
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.src = '/logo-khoirunnada-192.png';
+            }}
+            className="w-10 h-10 rounded-full object-cover border border-[#B58228]/40"
                     />
                     <div>
                       <h4 className="text-xs font-bold text-[#F8F6F0]">{member.name}</h4>
@@ -177,9 +181,13 @@ export default function AdminMembersManagementPage() {
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-center gap-3">
                     <img
-                      src={member.avatar_url}
-                      alt={member.name}
-                      className="w-10 h-10 rounded-full object-cover border border-[#B58228]/30"
+            src={member.avatar_url || '/logo-khoirunnada-192.png'}
+            alt={member.name}
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.src = '/logo-khoirunnada-192.png';
+            }}
+            className="w-10 h-10 rounded-full object-cover border border-[#B58228]/30"
                     />
                     <div>
                       <div className="flex items-center gap-1.5">

@@ -67,8 +67,12 @@ export default function MemberHomePage() {
           </div>
 
           <img
-            src={currentUser.avatar_url}
+            src={currentUser.avatar_url || '/logo-khoirunnada-192.png'}
             alt={currentUser.name}
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.src = '/logo-khoirunnada-192.png';
+            }}
             className="w-12 h-12 rounded-2xl object-cover border-2 border-white shadow-sm"
           />
         </div>

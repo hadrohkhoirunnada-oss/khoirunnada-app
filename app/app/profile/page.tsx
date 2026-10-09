@@ -72,8 +72,9 @@ export default function ProfilePage() {
     setMessage(null);
 
     try {
-      await updateAvatar(file);
-      setMessage({ text: 'Foto profil berhasil diperbarui!', type: 'success' });
+      const newUrl = await updateAvatar(file);
+      if (newUrl) setPreviewUrl(newUrl);
+      setMessage({ text: 'Foto profil berhasil diperbarui dan tersimpan di database!', type: 'success' });
       setTimeout(() => {
         setMessage((prev) => (prev?.type === 'success' ? null : prev));
       }, 4000);
@@ -141,6 +142,10 @@ export default function ProfilePage() {
             <img
               src={previewUrl || currentUser.avatar_url || '/logo-khoirunnada-192.png'}
               alt={currentUser.name}
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                e.currentTarget.src = '/logo-khoirunnada-192.png';
+              }}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
 

@@ -66,9 +66,13 @@ export default function PendingApprovalPage() {
         <GlassCard className="text-left mb-6" variant="elevated">
           <div className="flex items-center gap-3 pb-3 mb-3 border-b border-black/5">
             <img
-              src={currentUser.avatar_url || '/logo-khoirunnada-192.png'}
-              alt={currentUser.name}
-              className="w-10 h-10 rounded-full object-cover border border-white shadow-xs"
+            src={currentUser.avatar_url || '/logo-khoirunnada-192.png'}
+            alt={currentUser.name}
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.src = '/logo-khoirunnada-192.png';
+            }}
+            className="w-10 h-10 rounded-full object-cover border border-white shadow-xs"
             />
             <div>
               <p className="text-xs font-bold text-[#151917]">{currentUser.name}</p>

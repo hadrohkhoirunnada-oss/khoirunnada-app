@@ -747,6 +747,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       setProfiles((prev) =>
         prev.map((p) => (p.id === currentUser.id ? { ...p, avatar_url: newUrl } : p))
       );
+      await loadData({ ...currentUser, avatar_url: newUrl });
     }
     return newUrl;
   };
@@ -766,6 +767,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     setProfiles((prev) =>
       prev.map((p) => (p.id === currentUser.id ? { ...p, avatar_url: defaultUrl } : p))
     );
+    await loadData({ ...currentUser, avatar_url: defaultUrl });
     return defaultUrl;
   };
 
