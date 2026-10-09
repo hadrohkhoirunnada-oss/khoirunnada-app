@@ -78,6 +78,7 @@ interface AppStoreContextType {
   updateMemberRoleTitle: (id: string, roleTitle: string) => Promise<void>;
   updateAvatar: (file: File) => Promise<string>;
   removeAvatar: () => Promise<string>;
+  updateUsername: (name: string) => Promise<string>;
   auditLogs: AuditLog[];
 }
 
@@ -771,6 +772,27 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     return defaultUrl;
   };
 
+  const updateUsername = async (name: string) => {
+    const res = await fetch('/api/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(result.error || 'Gagal memperbarui username.');
+    }
+
+    const newName = (result.name as string) || name.trim();
+    setCurrentUser((prev) => ({ ...prev, name: newName }));
+    setProfiles((prev) =>
+      prev.map((p) => (p.id === currentUser.id ? { ...p, name: newName } : p))
+    );
+    await loadData({ ...currentUser, name: newName });
+    return newName;
+  };
+
   const unreadNotificationCount = notifications.filter((item) => !item.is_read).length;
 
   return (
@@ -823,6 +845,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
         updateMemberRoleTitle,
         updateAvatar,
         removeAvatar,
+        updateUsername,
         auditLogs,
       }}
     >
