@@ -19,7 +19,7 @@ import { normalizeText, detectNegation } from './normalizer.ts';
 
 // Pola kata rujukan percakapan bahasa Indonesia
 const PRONOUN_REFERENCE_REGEX =
-  /\b(itu|yang tadi|tadi|tersebut|ini|yg tadi|lagu itu|qosidah itu|qosidah tersebut|jadwal itu|acara itu|yang satu lagi|yang satunya)\b/i;
+  /\b(itu|yang tadi|tadi|tersebut|yang ini|lagu ini|jadwal ini|acara ini|yg tadi|lagu itu|qosidah itu|qosidah tersebut|jadwal itu|acara itu|yang satu lagi|yang satunya)\b/i;
 
 // Pola pertanyaan atribut lanjutan
 const TRANSLATION_QUERY_REGEX = /\b(artinya|apa artinya|artinya apa|terjemahan|maknanya|maksudnya|terjemahannya)\b/i;
@@ -135,12 +135,26 @@ export function resolveConversationContext(
   if (CORRECTION_REGEX.test(normQuery)) {
     if (memory.recentEntities && memory.recentEntities.length >= 2) {
       const alternativeEntity = memory.recentEntities[1];
+      let requestedAttribute: FollowUpAttribute = 'general_details';
+      if (TRANSLATION_QUERY_REGEX.test(normQuery)) {
+        requestedAttribute = 'translation';
+      } else if (LYRICS_QUERY_REGEX.test(normQuery)) {
+        requestedAttribute = 'lyrics';
+      } else if (LOCATION_QUERY_REGEX.test(normQuery)) {
+        requestedAttribute = 'location';
+      } else if (DATE_QUERY_REGEX.test(normQuery)) {
+        requestedAttribute = 'date';
+      } else if (NEXT_ITEM_QUERY_REGEX.test(normQuery)) {
+        requestedAttribute = 'next_item';
+      }
+
       return {
         status: 'CORRECTION',
         isFollowUp: true,
         resolvedQuery: `${query} (${alternativeEntity.name})`,
         targetEntity: alternativeEntity,
         targetDomain: alternativeEntity.type,
+        requestedAttribute,
         isCorrection: true,
         confidence: 'high',
         explanation: `Pengguna mengoreksi rujukan ke entitas alternatif sebelumnya: "${alternativeEntity.name}".`,
