@@ -127,11 +127,10 @@ export default function LoginPage() {
                 setRoleType('pemain');
                 setError('');
               }}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                roleType === 'pemain'
-                  ? 'bg-white text-[#996A19] font-bold shadow-xs border border-black/5'
-                  : 'text-[#585145] hover:text-[#151917]'
-              }`}
+              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${roleType === 'pemain'
+                ? 'bg-white text-[#996A19] font-bold shadow-xs border border-black/5'
+                : 'text-[#585145] hover:text-[#151917]'
+                }`}
             >
               <User className="w-3.5 h-3.5" />
               <span>Pemain</span>
@@ -143,11 +142,10 @@ export default function LoginPage() {
                 setRoleType('admin');
                 setError('');
               }}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                roleType === 'admin'
-                  ? 'bg-white text-[#996A19] font-bold shadow-xs border border-black/5'
-                  : 'text-[#585145] hover:text-[#151917]'
-              }`}
+              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${roleType === 'admin'
+                ? 'bg-white text-[#996A19] font-bold shadow-xs border border-black/5'
+                : 'text-[#585145] hover:text-[#151917]'
+                }`}
             >
               <Shield className="w-3.5 h-3.5" />
               <span>Admin & Kas</span>
@@ -282,9 +280,8 @@ export default function LoginPage() {
 
         {/* Footer */}
         <footer className="mt-4 text-xs text-[#585145] flex items-center gap-1.5 justify-center opacity-75">
-          <span>Khidmah Lil Ummah</span>
-          <span>•</span>
-          <span>Hadroh Khoirunnada</span>
+          <span>Developed By</span>
+          <span>Nexarin Production</span>
         </footer>
       </div>
     </div>

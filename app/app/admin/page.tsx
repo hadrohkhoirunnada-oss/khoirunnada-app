@@ -18,6 +18,7 @@ import {
   Wallet,
   ArrowUpRight,
   Eye,
+  Camera,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
@@ -73,11 +74,21 @@ export default function AdminCenterPage() {
               </p>
             </div>
 
-            <img
-              src={currentUser.avatar_url || '/logo-khoirunnada-192.png'}
-              alt={currentUser.name}
-              className="w-12 h-12 rounded-2xl object-cover border-2 border-[#B58228]/60 shadow-md shrink-0"
-            />
+            <button
+              type="button"
+              onClick={() => router.push('/app/profile')}
+              title="Buka Profil & Ubah Foto"
+              className="relative group w-12 h-12 rounded-2xl overflow-hidden border-2 border-[#B58228]/60 shadow-md shrink-0 cursor-pointer active:scale-95 transition-all"
+            >
+              <img
+                src={currentUser.avatar_url || '/logo-khoirunnada-192.png'}
+                alt={currentUser.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+              />
+              <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[#E6C687]">
+                <Camera className="w-4 h-4" />
+              </div>
+            </button>
           </div>
 
           {/* Quick CTA to Add Job directly */}

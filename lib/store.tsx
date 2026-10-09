@@ -75,6 +75,8 @@ interface AppStoreContextType {
   toggleMemberRole: (id: string, roleKey: 'is_member' | 'is_treasurer' | 'is_admin') => Promise<void>;
   deactivateMember: (id: string) => Promise<void>;
   updateMemberRoleTitle: (id: string, roleTitle: string) => Promise<void>;
+  updateAvatar: (file: File) => Promise<string>;
+  removeAvatar: () => Promise<string>;
   auditLogs: AuditLog[];
 }
 
@@ -725,6 +727,48 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   const updateMemberRoleTitle = async (id: string, roleTitle: string) =>
     updateMember(id, { role_title: roleTitle.trim() });
 
+  const updateAvatar = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch('/api/profile/avatar', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(result.error || 'Gagal mengunggah foto profil.');
+    }
+
+    const newUrl = result.avatarUrl;
+    if (newUrl) {
+      setCurrentUser((prev) => ({ ...prev, avatar_url: newUrl }));
+      setProfiles((prev) =>
+        prev.map((p) => (p.id === currentUser.id ? { ...p, avatar_url: newUrl } : p))
+      );
+    }
+    return newUrl;
+  };
+
+  const removeAvatar = async () => {
+    const res = await fetch('/api/profile/avatar', {
+      method: 'DELETE',
+    });
+
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(result.error || 'Gagal menghapus foto profil.');
+    }
+
+    const defaultUrl = result.avatarUrl || '/logo-khoirunnada-192.png';
+    setCurrentUser((prev) => ({ ...prev, avatar_url: defaultUrl }));
+    setProfiles((prev) =>
+      prev.map((p) => (p.id === currentUser.id ? { ...p, avatar_url: defaultUrl } : p))
+    );
+    return defaultUrl;
+  };
+
   const unreadNotificationCount = notifications.filter((item) => !item.is_read).length;
 
   return (
@@ -775,6 +819,8 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
         toggleMemberRole,
         deactivateMember,
         updateMemberRoleTitle,
+        updateAvatar,
+        removeAvatar,
         auditLogs,
       }}
     >

@@ -59,7 +59,7 @@ export function MobileAppShell({
     const isDedicatedAdminAccount =
       (currentUser.is_admin || currentUser.is_treasurer) && !currentUser.is_member;
 
-    if (isDedicatedAdminAccount && !isAdmin) {
+    if (isDedicatedAdminAccount && !isAdmin && pathname !== '/app/profile') {
       router.replace('/app/admin');
       return;
     }
