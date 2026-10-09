@@ -111,8 +111,6 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): AIR
     return sanitize({
       text: `Wa'alaikumussalam warahmatullah wabarakatuh${userName}! \n\nSaya Khoirunnada AI, asisten cerdas resmi Hadroh Khoirunnada. Ada yang bisa saya bantu hari ini seputar qosidah, jadwal job, panduan aplikasi, atau organisasi?`,
       actions: [
-        { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
-        { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
         { label: '📖 Cari Qosidah', promptText: 'Carikan saya qosidah' },
         { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
         { label: '🏛️ Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
@@ -231,7 +229,6 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): AIR
     return sanitize({
       text: KNOWLEDGE_STRUKTUR,
       actions: [
-        { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
         { label: '📜 Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
         { label: '👤 Profil Saya', href: '/app/profile' },
       ],
@@ -366,12 +363,12 @@ export function processKhoirunnadaAI(userInput: string, context: AIContext): AIR
 
   // 13. Fallback Respons Cerdas
   return sanitize({
-    text: `Maaf, saya belum memahami pertanyaan Anda secara spesifik. Sebagai Khoirunnada AI, saat ini saya memiliki pengetahuan lengkap seputar:\n\n- 📖 Pencarian 73 Qosidah (misal: "Carikan qosidah Mughrom")\n- 📅 Informasi Jadwal Job Hadroh\n- 💡 Panduan & Cara Pakai Aplikasi\n- 🏆 Manfaat Aplikasi Khoirunnada\n- 👨‍💻 Pengembang Aplikasi & Profil Dzarin\n- 📜 Sejarah & Makna Nama Khoirunnada\n- 👥 Struktur Organisasi\n\nSilakan pilih salah satu topik di bawah atau ketik pertanyaan lain!`,
+    text: `Maaf, saya belum memahami pertanyaan Anda secara spesifik. Sebagai Khoirunnada AI, saat ini saya memiliki pengetahuan lengkap seputar:\n\n- 📖 Pencarian 73 Qosidah (misal: "Carikan qosidah Mughrom")\n- 📅 Informasi Jadwal Job Hadroh\n- 💡 Panduan & Cara Pakai Aplikasi\n- 🏆 Manfaat Aplikasi Khoirunnada\n- 👨‍💻 Pengembang Aplikasi\n- 📜 Sejarah & Makna Nama Khoirunnada\n- 👥 Struktur Organisasi\n\nSilakan pilih salah satu topik di bawah atau ketik pertanyaan lain!`,
     actions: [
-      { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
-      { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
       { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
       { label: '🏆 Manfaat Aplikasi', promptText: 'Apa saja manfaat aplikasi ini?' },
+      { label: '📜 Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
+      { label: '👥 Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
     ],
   });
 }

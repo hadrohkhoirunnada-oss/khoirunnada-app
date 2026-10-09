@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Compass,
   Globe,
-  Search,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { processKhoirunnadaAI, AIMessage, AIAction } from '@/lib/ai-engine';
@@ -31,16 +30,15 @@ export function KhoirunnadaAIWidget() {
   const initialGreeting: AIMessage = {
     id: 'welcome',
     sender: 'ai',
-    text: `Assalamu'alaikum${currentUser?.name ? ` ${currentUser.name}` : ''}! 🙏\n\nSaya Khoirunnada AI, asisten cerdas resmi Hadroh Khoirunnada.\n\nSaya siap membantu Anda seputar profil Dzarin, syair qosidah, jadwal job, panduan aplikasi, sejarah, hingga struktur organisasi. Silakan tanyakan apa saja!`,
+    text: `Assalamu'alaikum${currentUser?.name ? ` ${currentUser.name}` : ''}! 🙏\n\nSaya Khoirunnada AI, asisten cerdas resmi Hadroh Khoirunnada.\n\nSaya siap membantu Anda seputar syair qosidah, jadwal job, panduan aplikasi, sejarah, hingga struktur organisasi. Silakan tanyakan apa saja!`,
     timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
     actions: [
-      { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
-      { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
       { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
       { label: '📖 Cari Qosidah Busyro Lana', promptText: 'Carikan saya qosidah Busyro Lana' },
       { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
       { label: '📜 Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
       { label: '👥 Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
+      { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
     ],
   };
 
@@ -474,22 +472,6 @@ export function KhoirunnadaAIWidget() {
             <div className="bg-white px-3 py-1.5 border-t border-black/5 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
               <button
                 type="button"
-                onClick={() => handleSend('Siapa yang membuat dan mengembangkan aplikasi ini?')}
-                data-no-loading="true"
-                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-[#996A19]/10 text-[#525D58] hover:text-[#70490E] text-[10px] font-medium transition-colors cursor-pointer"
-              >
-                Pembuat Aplikasi
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSend('Siapa Dzarin?')}
-                data-no-loading="true"
-                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-[#FAF6EE] hover:bg-[#996A19]/15 text-[#70490E] border border-[#996A19]/20 text-[10px] font-semibold transition-colors cursor-pointer"
-              >
-                👤 Siapa Dzarin?
-              </button>
-              <button
-                type="button"
                 onClick={() => handleSend('Bagaimana cara menggunakan aplikasi ini?')}
                 data-no-loading="true"
                 className="whitespace-nowrap px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-[#996A19]/10 text-[#525D58] hover:text-[#70490E] text-[10px] font-medium transition-colors cursor-pointer"
@@ -527,6 +509,14 @@ export function KhoirunnadaAIWidget() {
                 className="whitespace-nowrap px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-[#996A19]/10 text-[#525D58] hover:text-[#70490E] text-[10px] font-medium transition-colors cursor-pointer"
               >
                 Struktur
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSend('Siapa yang membuat dan mengembangkan aplikasi ini?')}
+                data-no-loading="true"
+                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-neutral-100 hover:bg-[#996A19]/10 text-[#525D58] hover:text-[#70490E] text-[10px] font-medium transition-colors cursor-pointer"
+              >
+                Pembuat Aplikasi
               </button>
             </div>
 
