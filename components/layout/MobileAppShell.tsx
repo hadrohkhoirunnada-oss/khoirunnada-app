@@ -7,6 +7,7 @@ import { GlassAppHeader } from '../navigation/GlassAppHeader';
 import { GlassBottomNavigation } from '../navigation/GlassBottomNavigation';
 import { AdminBottomNavigation } from '../navigation/AdminBottomNavigation';
 import { GlobalLoadingOverlay } from '../ui/GlobalLoadingOverlay';
+import { KhoirunnadaAIWidget } from '../ai/KhoirunnadaAIWidget';
 
 interface MobileAppShellProps {
   children: React.ReactNode;
@@ -152,6 +153,9 @@ export function MobileAppShell({
         )}
 
         {!hideNav && (isAdmin ? <AdminBottomNavigation /> : <GlassBottomNavigation />)}
+
+        {/* Floating Khoirunnada AI Widget di Sudut Kanan Bawah */}
+        <KhoirunnadaAIWidget />
       </div>
     </div>
   );
