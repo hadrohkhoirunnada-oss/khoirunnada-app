@@ -57,6 +57,24 @@ import { hubbuAhmadi } from './hubbu-ahmadi';
 import { laIlahaIllallahAllahYaMaulana } from './la-ilaha-illallah-allah-ya-maulana';
 import { sholliwasalim } from './sholliwasalim';
 
+import { addinulana } from './addinulana';
+import { yaKitabalGuyub } from './ya-kitabal-guyub';
+import { atainaka } from './atainaka';
+import { burikiti } from './burikiti';
+import { habibiYaRobbi } from './habibi-ya-robbi';
+import { sholatun } from './sholatun';
+import { alHijrotu } from './al-hijrotu';
+import { hayyulHadi } from './hayyul-hadi';
+import { alKaunuAdoa } from './al-kaunu-adoa';
+import { robbiKholaq } from './robbi-kholaq';
+import { assholatuAlaNabi } from './assholatu-ala-nabi';
+import { khoirolBariyah } from './khoirol-bariyah';
+import { bainaKatifaihi } from './baina-katifaihi';
+import { maulaYaSholli } from './maula-ya-sholli';
+import { atainakaBilfakhri } from './atainaka-bilfakhri';
+import { hadzaRasulullah } from './hadza-rasulullah';
+import { yaHanana } from './ya-hanana';
+
 // ==============================================================================
 // 1. DAFTAR LIRIK QOSIDAH KHOIRUNNADA ('Arobiah & Jawa)
 // ==============================================================================
@@ -117,6 +135,23 @@ export const QOSIDAH_LIST: Qosidah[] = [
   hubbuAhmadi,
   laIlahaIllallahAllahYaMaulana,
   sholliwasalim,
+  addinulana,
+  yaKitabalGuyub,
+  atainaka,
+  burikiti,
+  habibiYaRobbi,
+  sholatun,
+  alHijrotu,
+  hayyulHadi,
+  alKaunuAdoa,
+  robbiKholaq,
+  assholatuAlaNabi,
+  khoirolBariyah,
+  bainaKatifaihi,
+  maulaYaSholli,
+  atainakaBilfakhri,
+  hadzaRasulullah,
+  yaHanana,
 ];
 
 // Re-export semua file & kategori agar modular dan mudah diakses
@@ -178,6 +213,23 @@ export {
   hubbuAhmadi,
   laIlahaIllallahAllahYaMaulana,
   sholliwasalim,
+  addinulana,
+  yaKitabalGuyub,
+  atainaka,
+  burikiti,
+  habibiYaRobbi,
+  sholatun,
+  alHijrotu,
+  hayyulHadi,
+  alKaunuAdoa,
+  robbiKholaq,
+  assholatuAlaNabi,
+  khoirolBariyah,
+  bainaKatifaihi,
+  maulaYaSholli,
+  atainakaBilfakhri,
+  hadzaRasulullah,
+  yaHanana,
 };
 
 // ==============================================================================
