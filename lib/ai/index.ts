@@ -1,5 +1,5 @@
 /**
- * KHOIRUNNADA BRAIN ENGINE v2.0 - NLP, KNOWLEDGE, MEMORY & REASONING CORE
+ * KHOIRUNNADA BRAIN ENGINE v2.0 - NLP, KNOWLEDGE, MEMORY, REASONING & COMPOSER CORE
  * Pure TypeScript Intelligence — Zero AI API Cost
  */
 
@@ -28,3 +28,14 @@ export * from './plan-types.ts';
 export * from './temporal-reasoner.ts';
 export * from './query-planner.ts';
 export * from './reasoning-engine.ts';
+
+// FASE 5: Natural Response Composer
+export * from './composer-types.ts';
+export * from './response-style.ts';
+export * from './fact-extractor.ts';
+export * from './sentence-generator.ts';
+export * from './clarification-builder.ts';
+export * from './action-composer.ts';
+export * from './output-sanitizer.ts';
+export * from './consistency-checker.ts';
+export * from './response-composer.ts';

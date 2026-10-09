@@ -2,16 +2,18 @@
  * KHOIRUNNADA BRAIN ENGINE v2.0 - QUERY PLANNER
  * Pure TypeScript & JavaScript Built-in - Zero AI API Cost
  *
- * Mengubah kueri pengguna menjadi rencana operasi penalaran terstruktur (QueryPlan).
- * Memecah kueri multi-langkah dan menghubungkan konteks percakapan secara deterministik.
+ * Mengubah pertanyaan bahasa alami pengguna menjadi rencana operasi terstruktur (QueryPlan).
+ * Menentukan urutan eksekusi, dependensi antar-operasi, dan parameter tanpa eval/kode dinamis.
  */
 
 import type { AIContext } from '../ai-engine.ts';
 import type { QueryPlan, PlanOperation } from './plan-types.ts';
-import { resolveConversationContext, isContextDependentQuery } from './context-resolver.ts';
 import { extractTemporalWindow } from './temporal-reasoner.ts';
+import {
+  isContextDependentQuery,
+  resolveConversationContext,
+} from './context-resolver.ts';
 import { normalizeText } from './normalizer.ts';
-import { cleanQosidahQuery } from './qosidah-retriever.ts';
 
 export interface PlannerOptions {
   referenceDate?: Date;
@@ -19,7 +21,7 @@ export interface PlannerOptions {
 }
 
 /**
- * Menyusun rencana eksekusi penalaran terstruktur berdasarkan kueri dan konteks aktif.
+ * Menyusun rencana kueri deterministik (QueryPlan) dari input pengguna.
  */
 export function planQuery(
   rawQuery: string,
@@ -64,6 +66,39 @@ export function planQuery(
     };
   }
 
+  // 1b. Kueri Multi-Langkah Mandiri: "Carikan lirik [qosidah]"
+  if (
+    (normQuery.includes('carikan') || normQuery.includes('cari')) &&
+    (normQuery.includes('lirik') || normQuery.includes('syair'))
+  ) {
+    const cleanedTitle = cleanQosidahQuery(
+      query.replace(/\s*(dan\s+)?(tampilkan|lihat|baca)?\s*(liriknya|syairnya).*/i, '')
+    );
+
+    const op1: PlanOperation = {
+      id: 'op-find-qos',
+      type: 'FIND_QOSIDAH',
+      params: { titleQuery: cleanedTitle },
+      explanation: `Mencari qosidah "${cleanedTitle}"`,
+    };
+    const op2: PlanOperation = {
+      id: 'op-attr-lyrics',
+      type: 'GET_ATTRIBUTE',
+      params: { attribute: 'lyrics' },
+      dependsOn: 'op-find-qos',
+      explanation: 'Mengambil teks lirik qosidah yang ditemukan',
+    };
+
+    return {
+      query,
+      intent: 'find_and_show_lyrics',
+      operations: [op1, op2],
+      isMultiStep: true,
+      isFollowUp: false,
+      isSupported: true,
+    };
+  }
+
   // 2. Kueri Multi-Langkah Mandiri: "Berapa jumlah qosidah favorit..."
   if (normQuery.includes('berapa') && (normQuery.includes('favorit') || normQuery.includes('koleksi'))) {
     const op1: PlanOperation = {
@@ -90,7 +125,98 @@ export function planQuery(
     };
   }
 
-  // 3. Kueri Follow-Up Kontekstual (Membutuhkan memori dari FASE 3)
+  // 3. Kueri Jadwal Job Eksplisit (Jadwal Terdekat, Filter Tanggal, Daftar Jadwal)
+  const isJobQuery =
+    normQuery.includes('jadwal') ||
+    normQuery.includes('job') ||
+    normQuery.includes('manggung') ||
+    normQuery.includes('agenda') ||
+    normQuery.includes('acara') ||
+    normQuery.includes('tampil');
+
+  if (isJobQuery) {
+    // 3a. Jadwal Terdekat
+    if (
+      normQuery.includes('terdekat') ||
+      normQuery.includes('job berikutnya') ||
+      normQuery.includes('kapan manggung')
+    ) {
+      return {
+        query,
+        intent: 'get_nearest_job',
+        operations: [
+          {
+            id: 'op-nearest',
+            type: 'GET_NEAREST_JOB',
+            params: {},
+            explanation: 'Mencari satu jadwal job aktif paling dekat dengan waktu saat ini',
+          },
+        ],
+        isMultiStep: false,
+        isFollowUp: false,
+        isSupported: true,
+      };
+    }
+
+    // 3b. Filter Temporal Agenda
+    const temporalWindow = extractTemporalWindow(normQuery, { referenceDate: refDate, timeZone: tz });
+    if (temporalWindow) {
+      const op: PlanOperation = {
+        id: 'op-temp-jobs',
+        type: 'FILTER_JOBS_TEMPORAL',
+        params: { window: temporalWindow },
+        explanation: `Memfilter jadwal job untuk rentang waktu ${temporalWindow.type}`,
+      };
+
+      if (normQuery.includes('berapa')) {
+        const opCount: PlanOperation = {
+          id: 'op-count-jobs',
+          type: 'COUNT_RESULTS',
+          params: {},
+          dependsOn: 'op-temp-jobs',
+          explanation: 'Menghitung jumlah jadwal pada rentang waktu yang diminta',
+        };
+        return {
+          query,
+          intent: `count_jobs_${temporalWindow.type}`,
+          operations: [op, opCount],
+          temporalConstraint: { type: temporalWindow.type },
+          isMultiStep: true,
+          isFollowUp: false,
+          isSupported: true,
+        };
+      }
+
+      return {
+        query,
+        intent: `get_jobs_${temporalWindow.type}`,
+        operations: [op],
+        temporalConstraint: { type: temporalWindow.type },
+        isMultiStep: false,
+        isFollowUp: false,
+        isSupported: true,
+      };
+    }
+
+    // 3c. Jadwal Job Umum Mendatang
+    return {
+      query,
+      intent: 'get_upcoming_jobs',
+      operations: [
+        {
+          id: 'op-upcoming',
+          type: 'GET_UPCOMING_JOBS',
+          params: {},
+          explanation: 'Mengambil seluruh jadwal job yang akan datang',
+        },
+      ],
+      isMultiStep: false,
+      isFollowUp: false,
+      isSupported: true,
+    };
+  }
+
+  // 4. Kueri Follow-Up Kontekstual (Membutuhkan memori dari FASE 3)
   if (isContextDependentQuery(normQuery)) {
     const contextRes = resolveConversationContext(query, context.memory, context, {
       currentTime: refDate.getTime(),
@@ -150,98 +276,7 @@ export function planQuery(
     }
   }
 
-  // 4. Kueri Temporal Jadwal Job (Hanya jika menanyakan jadwal/job/acara/manggung)
-  const isJobQuery =
-    normQuery.includes('jadwal') ||
-    normQuery.includes('job') ||
-    normQuery.includes('manggung') ||
-    normQuery.includes('agenda') ||
-    normQuery.includes('acara') ||
-    normQuery.includes('tampil');
-
-  const temporalWindow = extractTemporalWindow(normQuery, { referenceDate: refDate, timeZone: tz });
-  if (temporalWindow && isJobQuery) {
-    const op: PlanOperation = {
-      id: 'op-temp-jobs',
-      type: 'FILTER_JOBS_TEMPORAL',
-      params: { window: temporalWindow },
-      explanation: `Memfilter jadwal job untuk rentang waktu ${temporalWindow.type}`,
-    };
-
-    if (normQuery.includes('berapa')) {
-      const opCount: PlanOperation = {
-        id: 'op-count-jobs',
-        type: 'COUNT_RESULTS',
-        params: {},
-        dependsOn: 'op-temp-jobs',
-        explanation: 'Menghitung jumlah jadwal pada rentang waktu yang diminta',
-      };
-      return {
-        query,
-        intent: `count_jobs_${temporalWindow.type}`,
-        operations: [op, opCount],
-        temporalConstraint: { type: temporalWindow.type },
-        isMultiStep: true,
-        isFollowUp: false,
-        isSupported: true,
-      };
-    }
-
-    return {
-      query,
-      intent: `get_jobs_${temporalWindow.type}`,
-      operations: [op],
-      temporalConstraint: { type: temporalWindow.type },
-      isMultiStep: false,
-      isFollowUp: false,
-      isSupported: true,
-    };
-  }
-
-  // 5. Kueri Jadwal Terdekat
-  if (
-    isJobQuery &&
-    (normQuery.includes('terdekat') ||
-      normQuery.includes('job berikutnya') ||
-      normQuery.includes('kapan manggung'))
-  ) {
-    return {
-      query,
-      intent: 'get_nearest_job',
-      operations: [
-        {
-          id: 'op-nearest',
-          type: 'GET_NEAREST_JOB',
-          params: {},
-          explanation: 'Mencari satu jadwal job aktif paling dekat dengan waktu saat ini',
-        },
-      ],
-      isMultiStep: false,
-      isFollowUp: false,
-      isSupported: true,
-    };
-  }
-
-  // 6. Kueri Jadwal Umum
-  if (isJobQuery) {
-    return {
-      query,
-      intent: 'get_upcoming_jobs',
-      operations: [
-        {
-          id: 'op-upcoming',
-          type: 'GET_UPCOMING_JOBS',
-          params: {},
-          explanation: 'Mengambil seluruh jadwal job yang akan datang',
-        },
-      ],
-      isMultiStep: false,
-      isFollowUp: false,
-      isSupported: true,
-    };
-  }
-
-  // 7. Kueri Favorit Umum
+  // 5. Kueri Favorit Umum
   if (normQuery.includes('favorit')) {
     return {
       query,
@@ -260,7 +295,7 @@ export function planQuery(
     };
   }
 
-  // 8. Kueri Statis (Sejarah, Struktur, Dzarin, Cara Pakai, Manfaat, Developer)
+  // 6. Kueri Statis (Sejarah, Struktur, Dzarin, Cara Pakai, Manfaat, Developer)
   if (
     normQuery.includes('sejarah') ||
     normQuery.includes('struktur') ||
@@ -288,14 +323,15 @@ export function planQuery(
     };
   }
 
-  // 9. Kueri Pencarian Qosidah Spesifik
+  // 7. Kueri Pencarian Qosidah Spesifik
   if (
     normQuery.includes('qosidah') ||
     normQuery.includes('sholawat') ||
     normQuery.includes('lagu') ||
     normQuery.includes('lirik') ||
     normQuery.includes('carikan') ||
-    normQuery.includes('cari')
+    normQuery.includes('cari') ||
+    normQuery.includes('jelaskan')
   ) {
     const cleaned = cleanQosidahQuery(query);
     if (cleaned.length >= 2) {
@@ -317,7 +353,7 @@ export function planQuery(
     }
   }
 
-  // 10. Pertanyaan Out of Scope
+  // 8. Pertanyaan Out of Scope
   return {
     query,
     intent: 'out_of_scope',
@@ -333,4 +369,15 @@ export function planQuery(
     isFollowUp: false,
     isSupported: false,
   };
+}
+
+/**
+ * Membersihkan awalan kueri pencarian qosidah agar hanya menyisakan judul/kata kunci.
+ */
+function cleanQosidahQuery(raw: string): string {
+  let clean = raw.trim();
+  clean = clean.replace(/^(jelaskan\s+(secara\s+detail\s+)?(tentang\s+)?)/i, '');
+  clean = clean.replace(/^(carikan|cari)\s+(saya\s+)?(qosidah\s+|sholawat\s+|lagu\s+|syair\s+|lirik\s+)?/i, '');
+  clean = clean.replace(/^(qosidah|sholawat|lagu|syair|lirik)\s+/i, '');
+  return clean.trim();
 }
