@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Smartphone,
@@ -13,6 +14,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Upload,
+  Heart,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
@@ -21,7 +23,7 @@ import { GlassButton } from '@/components/ui/GlassButton';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { currentUser, logout, updateAvatar, removeAvatar } = useAppStore();
+  const { currentUser, logout, updateAvatar, removeAvatar, favorites } = useAppStore();
 
   const [notificationEnabled, setNotificationEnabled] = useState(true);
   const [installPromptShown, setInstallPromptShown] = useState(false);
@@ -267,13 +269,37 @@ export default function ProfilePage() {
           </button>
         </div>
 
+        {/* Menu Qosidah Favorit (Tepat di bawah Pemberitahuan Push) */}
+        <Link
+          href="/app/profile/favorites"
+          className="flex items-center justify-between p-3 rounded-xl hover:bg-black/5 transition-colors cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#C84A45]/12 flex items-center justify-center text-[#C84A45]">
+              <Heart className="w-4 h-4 fill-current" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs font-bold text-[#151917]">Qosidah Favorit</p>
+                {favorites.length > 0 && (
+                  <span className="px-1.5 py-0.2 rounded-full bg-[#C84A45]/15 text-[#C84A45] text-[10px] font-bold">
+                    {favorites.length}
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] text-[#525D58]">Koleksi syair & sholawat pilihan saya</p>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+        </Link>
+
         {/* PWA Install Info */}
         <div
           onClick={() => setInstallPromptShown(true)}
           className="flex items-center justify-between p-3 rounded-xl hover:bg-black/5 transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#B58A3A]/15 flex items-center justify-center text-[#8C6821]">
+            <div className="w-8 h-8 rounded-lg bg-[#B58228]/15 flex items-center justify-center text-[#8C6821]">
               <Smartphone className="w-4 h-4" />
             </div>
             <div>
