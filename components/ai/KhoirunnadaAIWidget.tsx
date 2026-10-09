@@ -24,7 +24,7 @@ export function KhoirunnadaAIWidget() {
   const initialGreeting: AIMessage = {
     id: 'welcome',
     sender: 'ai',
-    text: `Assalamu'alaikum${currentUser?.name ? ` **${currentUser.name}**` : ''}! 🙏\n\nSaya **Khoirunnada AI**, asisten cerdas resmi Hadroh Khoirunnada.\n\nSaya siap membantu Anda seputar syair qosidah, jadwal job, panduan aplikasi, sejarah, hingga struktur organisasi. Silakan tanyakan apa saja!`,
+    text: `Assalamu'alaikum${currentUser?.name ? ` ${currentUser.name}` : ''}! 🙏\n\nSaya Khoirunnada AI, asisten cerdas resmi Hadroh Khoirunnada.\n\nSaya siap membantu Anda seputar syair qosidah, jadwal job, panduan aplikasi, sejarah, hingga struktur organisasi. Silakan tanyakan apa saja!`,
     timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
     actions: [
       { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
@@ -109,38 +109,86 @@ export function KhoirunnadaAIWidget() {
     setInputValue('');
   };
 
-  // Render teks markdown sederhana (bold, list, bullet)
-  const formatMarkdown = (content: string) => {
-    return content.split('\n').map((line, idx) => {
-      if (!line.trim()) {
+  // Render teks format rapi tanpa simbol * sama sekali
+  const formatText = (content: string) => {
+    // Bersihkan semua simbol * agar tidak pernah tampil di layar
+    const cleanContent = content.replace(/\*/g, '');
+
+    return cleanContent.split('\n').map((line, idx) => {
+      const trimmed = line.trim();
+      if (!trimmed) {
         return <div key={idx} className="h-1.5" />;
       }
 
-      // Format bold text **text**
-      const parts = line.split(/(\*\*.*?\*\*)/g);
-      const renderedLine = parts.map((part, pIdx) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
+      // Heading dengan titik dua di akhir (misal: "Sejarah Hadroh Khoirunnada:")
+      if (trimmed.endsWith(':') && !trimmed.startsWith('-') && !trimmed.match(/^\d+\./)) {
+        return (
+          <p key={idx} className="text-xs font-bold text-[#70490E] tracking-tight mt-1 mb-0.5">
+            {trimmed}
+          </p>
+        );
+      }
+
+      // Baris berpoin nomor (1. Beranda: ..., 2. ...)
+      const numberedMatch = trimmed.match(/^(\d+\.)\s*(.*)$/);
+      if (numberedMatch) {
+        const num = numberedMatch[1];
+        const rest = numberedMatch[2];
+        const colonIdx = rest.indexOf(':');
+
+        if (colonIdx !== -1) {
+          const label = rest.slice(0, colonIdx + 1);
+          const desc = rest.slice(colonIdx + 1);
           return (
-            <strong key={pIdx} className="font-bold text-[#70490E]">
-              {part.slice(2, -2)}
-            </strong>
+            <div key={idx} className="flex items-start gap-1.5 pl-1 my-0.5">
+              <span className="text-[#996A19] font-bold text-xs shrink-0">{num}</span>
+              <span className="flex-1 text-xs leading-relaxed text-slate-800">
+                <span className="font-semibold text-[#70490E]">{label}</span>
+                {desc}
+              </span>
+            </div>
           );
         }
-        return part;
-      });
 
-      if (line.startsWith('- ') || line.startsWith('• ') || line.match(/^\d+\.\s/)) {
         return (
           <div key={idx} className="flex items-start gap-1.5 pl-1 my-0.5">
-            <span className="text-[#996A19] font-bold text-xs leading-relaxed">•</span>
-            <span className="flex-1 text-xs leading-relaxed">{renderedLine}</span>
+            <span className="text-[#996A19] font-bold text-xs shrink-0">{num}</span>
+            <span className="flex-1 text-xs leading-relaxed text-slate-800">{rest}</span>
           </div>
         );
       }
 
+      // Baris poin tanda hubung atau bullet (- Ketua Umum: ...)
+      if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+        const rest = trimmed.replace(/^[-•]\s*/, '');
+        const colonIdx = rest.indexOf(':');
+
+        if (colonIdx !== -1) {
+          const label = rest.slice(0, colonIdx + 1);
+          const desc = rest.slice(colonIdx + 1);
+          return (
+            <div key={idx} className="flex items-start gap-1.5 pl-1 my-0.5">
+              <span className="text-[#996A19] font-bold text-xs shrink-0">•</span>
+              <span className="flex-1 text-xs leading-relaxed text-slate-800">
+                <span className="font-semibold text-[#70490E]">{label}</span>
+                {desc}
+              </span>
+            </div>
+          );
+        }
+
+        return (
+          <div key={idx} className="flex items-start gap-1.5 pl-1 my-0.5">
+            <span className="text-[#996A19] font-bold text-xs shrink-0">•</span>
+            <span className="flex-1 text-xs leading-relaxed text-slate-800">{rest}</span>
+          </div>
+        );
+      }
+
+      // Paragraf biasa
       return (
-        <p key={idx} className="text-xs leading-relaxed my-0.5">
-          {renderedLine}
+        <p key={idx} className="text-xs leading-relaxed my-0.5 text-slate-800">
+          {trimmed}
         </p>
       );
     });
@@ -248,9 +296,9 @@ export function KhoirunnadaAIWidget() {
                       </div>
                     )}
 
-                    {/* Formatted Markdown Content */}
+                    {/* Formatted Content */}
                     <div className="text-xs break-words">
-                      {formatMarkdown(msg.text)}
+                      {formatText(msg.text)}
                     </div>
 
                     {/* Timestamp */}
