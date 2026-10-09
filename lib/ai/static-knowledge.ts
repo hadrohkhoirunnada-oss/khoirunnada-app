@@ -1,0 +1,259 @@
+/**
+ * KHOIRUNNADA BRAIN ENGINE v2.0 - STATIC KNOWLEDGE BASE
+ * Pure TypeScript Intelligence - Zero AI API Cost
+ *
+ * Pengetahuan statis resmi dan terverifikasi mengenai Hadroh Khoirunnada,
+ * kepengurusan, panduan aplikasi, dan profil pengembang.
+ * Dipisahkan dari algoritma retrieval sesuai prinsip Modular Knowledge Base (FASE 2).
+ * Bebas dari simbol asteris (*) mutlak.
+ */
+
+import type { StaticKnowledgeArticle, RetrievalResult } from './retrieval-types.ts';
+import { normalizeText } from './normalizer.ts';
+import { stringSimilarity, tokenOverlapScore } from './matcher.ts';
+
+export const STATIC_KNOWLEDGE_ARTICLES: StaticKnowledgeArticle[] = [
+  {
+    id: 'static-sejarah',
+    title: 'Sejarah & Makna Nama Hadroh Khoirunnada',
+    category: 'sejarah',
+    keywords: [
+      'sejarah',
+      'asal usul',
+      'latar belakang',
+      'kapan berdiri',
+      'arti nama',
+      'makna nama',
+      'khoirunnada',
+      'nada kebaikan',
+      'suara kebaikan',
+      'rebana',
+      'hadroh',
+    ],
+    content: `Sejarah Hadroh Khoirunnada:
+Grup seni hadroh Khoirunnada didirikan sebagai wadah syiar dakwah Islamiyah melalui alunan musik rebana dan qosidah sholawat. Nama "Khoirunnada" bermakna "Nada Kebaikan / Suara Kebaikan".
+
+Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muhammad SAW, Hadroh Khoirunnada aktif melayani undangan majelis maulid, peringatan hari besar Islam (PHBI), walimatul 'ursy, serta pengajian akbar dengan perpaduan qosidah klasik 'Arobiah dan tembang sholawat Jawa.`,
+    actions: [
+      { label: '👥 Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
+      { label: '📖 Daftar Qosidah', href: '/app/qosidah' },
+    ],
+  },
+  {
+    id: 'static-struktur',
+    title: 'Struktur Organisasi Kepengurusan Hadroh Khoirunnada',
+    category: 'organisasi',
+    keywords: [
+      'struktur',
+      'organisasi',
+      'kepengurusan',
+      'ketua',
+      'ketua umum',
+      'siapa ketua',
+      'pengurus',
+      'bendahara',
+      'personel',
+      'vokal',
+      'terbang',
+      'darbuka',
+    ],
+    content: `Struktur Kepengurusan Hadroh Khoirunnada:
+- Ketua Umum: Muhammad Abi Dzarin (Penanggung jawab umum, arah kebijakan grup, dan pengembangan digital)
+- Pengurus Admin: Bertanggung jawab atas administrasi, manajemen jadwal booking acara, dan koordinasi personel
+- Bendahara: Mengatur tata kelola kas hadroh, transparansi keuangan, dan operasional perlengkapan
+- Personel Resmi: Tim vokal, penabuh terbang, bass, tam, dan darbuka yang berdedikasi menjaga harmoni setiap penampilan.`,
+    actions: [
+      { label: '📜 Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
+      { label: '👤 Profil Saya', href: '/app/profile' },
+    ],
+  },
+  {
+    id: 'static-cara-pakai',
+    title: 'Panduan Cara Menggunakan Aplikasi Khoirunnada',
+    category: 'aplikasi',
+    keywords: [
+      'cara pakai',
+      'cara menggunakan',
+      'bagaimana pakai',
+      'tutorial',
+      'panduan',
+      'bisa apa aja',
+      'fitur',
+      'menu',
+      'aplikasi',
+      'pwa',
+    ],
+    content: `Panduan Cara Menggunakan Aplikasi Khoirunnada:
+1. Beranda: Pantau ringkasan job terdekat, pengumuman hadroh, dan status keaktifan Anda.
+2. Katalog Qosidah: Buka tab Qosidah untuk membaca 73 lirik syair qosidah ('Arobiah & Jawa) lengkap teks Arab, Latin, dan terjemahan. Anda dapat menandai bintang favorit.
+3. Jadwal Job: Lihat tanggal, lokasi panggung, dan daftar personel yang ditugaskan pada setiap acara.
+4. Profil: Atur nama/username, ganti foto profil akun Anda, dan lihat daftar qosidah favorit.
+5. Install PWA: Aplikasi dapat dipasang langsung di layar utama smartphone tanpa perlu download dari PlayStore.`,
+    actions: [
+      { label: '📖 Buka Qosidah', href: '/app/qosidah' },
+      { label: '📅 Buka Jadwal Job', href: '/app/jobs' },
+      { label: '👤 Pengaturan Profil', href: '/app/profile' },
+    ],
+  },
+  {
+    id: 'static-manfaat',
+    title: 'Manfaat & Keunggulan Aplikasi Khoirunnada',
+    category: 'aplikasi',
+    keywords: [
+      'manfaat',
+      'kegunaan',
+      'keuntungan',
+      'fungsi aplikasi',
+      'tujuan',
+      'keunggulan',
+      'manfaat aplikasi',
+    ],
+    content: `Manfaat Aplikasi Hadroh Khoirunnada:
+- Praktis & Lengkap: Tidak perlu lagi membawa kertas lirik manual; seluruh 73 qosidah siap dibaca kapan saja.
+- Koordinasi Cepat: Personel langsung mengetahui jadwal job dan pembagian tugas tanpa miskomunikasi.
+- Transparansi Organisasi: Pengelolaan administrasi dan kas hadroh tercatat rapi dan profesional.
+- Identitas Digital: Menjadi portal resmi yang memperkuat eksistensi grup seni Hadroh Khoirunnada.`,
+    actions: [
+      { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
+      { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
+    ],
+  },
+  {
+    id: 'static-developer',
+    title: 'Pengembang & Pembuat Aplikasi Hadroh Khoirunnada',
+    category: 'pengembang',
+    keywords: [
+      'siapa yang membuat',
+      'siapa yang kembang',
+      'siapa buat',
+      'siapa bikin',
+      'pembuat',
+      'developer',
+      'pengembang',
+      'arsitek',
+      'engineer',
+    ],
+    content: `Pengembang & Pembuat Aplikasi:
+Aplikasi web resmi Hadroh Khoirunnada dirancang, dibangun, dan dikembangkan secara mandiri oleh Muhammad Abi Dzarin.
+
+Di dalam Hadroh Khoirunnada, Muhammad Abi Dzarin mengemban amanah sebagai Ketua Umum Hadroh Khoirunnada yang bertanggung jawab penuh atas kepemimpinan grup, arah kebijakan organisasi, serta transformasi teknologi digital hadroh.
+
+Aplikasi ini dibangun menggunakan arsitektur modern Next.js, React, Supabase, dan kapabilitas PWA offline-ready untuk memberikan kemudahan bagi seluruh personel dan pecinta sholawat.`,
+    actions: [
+      { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
+      { label: '🏛️ Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
+      { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
+    ],
+  },
+  {
+    id: 'static-dzarin-profile',
+    title: 'Profil Publik Resmi Muhammad Abi Dzarin',
+    category: 'profil_dzarin',
+    isDeepSearch: true,
+    keywords: [
+      'siapa dzarin',
+      'siapa abi dzarin',
+      'siapa muhammad abi dzarin',
+      'profil dzarin',
+      'biodata dzarin',
+      'tentang dzarin',
+      'nexarin',
+      'by-rins',
+      'kotanagaya',
+      '15 september 2006',
+    ],
+    content: `Hasil Penelusuran Profil Publik:
+Berdasarkan data yang dihimpun dari beberapa sumber website dan direktori publik melalui penelusuran Google, berikut adalah informasi resmi mengenai Muhammad Abi Dzarin:
+
+Biodata Pribadi:
+- Nama Lengkap: Muhammad Abi Dzarin
+- Nama Panggilan: Dzarin
+- Tempat, Tanggal Lahir: Kotanagaya, 15 September 2006
+- Profesi: Software Engineer, Technopreneur, dan Pimpinan Organisasi
+
+Kiprah Profesional & Rekam Jejak:
+- Co-Founder Nexarin By-Rins: Berperan aktif dalam merancang dan mengembangkan inovasi produk teknologi digital, perancangan perangkat lunak, serta solusi kreatif berbasis web.
+- Ketua Umum Hadroh Khoirunnada: Memegang amanah kepemimpinan tertinggi dalam membina grup seni hadroh, tata kelola manajemen personel, sekaligus arsitek utama (lead engineer) di balik sistem digital Khoirunnada.
+
+Bidang Keahlian & Fokus:
+- Fullstack Web & App Development (Next.js, TypeScript, Cloud Architecture)
+- Desain Antarmuka & Pengalaman Pengguna (UI/UX Design)
+- Manajemen Kepemimpinan Pemuda & Dakwah Seni Budaya Islami
+
+Rangkuman profil ini dihimpun secara objektif dari jejaring web publik di Google guna memberikan informasi yang akurat, transparan, dan profesional.`,
+    actions: [
+      { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
+      { label: '🏛️ Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
+      { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
+    ],
+  },
+];
+
+/**
+ * Mencari artikel pengetahuan statis berdasarkan kecocokan keyword dan judul.
+ */
+export function searchStaticKnowledge(
+  rawQuery: string,
+  minThreshold = 0.5
+): RetrievalResult<StaticKnowledgeArticle>[] {
+  const normQuery = normalizeText(rawQuery).toLowerCase().trim();
+  if (normQuery.length < 2) return [];
+
+  const results: RetrievalResult<StaticKnowledgeArticle>[] = [];
+
+  for (const article of STATIC_KNOWLEDGE_ARTICLES) {
+    let bestScore = 0;
+    let bestStrategy = 'keyword_match';
+    let matchedKeyword = '';
+
+    for (const kw of article.keywords) {
+      const normKw = normalizeText(kw).toLowerCase().trim();
+
+      // 1. Exact match dengan keyword
+      if (normQuery === normKw) {
+        bestScore = 1.0;
+        bestStrategy = 'exact_title';
+        matchedKeyword = kw;
+        break;
+      }
+
+      // 2. Query mengandung keyword utuh atau sebaliknya
+      if (normQuery.includes(normKw) || normKw.includes(normQuery)) {
+        const score = 0.85;
+        if (score > bestScore) {
+          bestScore = score;
+          bestStrategy = 'prefix_title';
+          matchedKeyword = kw;
+        }
+      }
+
+      // 3. String similarity
+      const sim = stringSimilarity(normQuery, normKw);
+      if (sim > bestScore) {
+        bestScore = sim;
+        bestStrategy = 'fuzzy_title';
+        matchedKeyword = kw;
+      }
+    }
+
+    if (bestScore >= minThreshold) {
+      results.push({
+        item: article,
+        score: Math.min(1.0, bestScore),
+        confidence: bestScore >= 0.85 ? 'high' : bestScore >= 0.7 ? 'medium' : 'low',
+        strategy: bestStrategy,
+        evidence: [
+          {
+            field: 'keywords',
+            strategy: bestStrategy,
+            score: bestScore,
+            matchedTerm: matchedKeyword,
+            snippet: article.title,
+          },
+        ],
+      });
+    }
+  }
+
+  return results.sort((a, b) => b.score - a.score);
+}
