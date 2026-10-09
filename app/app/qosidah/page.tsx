@@ -55,9 +55,8 @@ export default function QosidahLibraryPage() {
 
   return (
     <MobileAppShell title="Qosidah" subtitle="Hadroh Khoirunnada">
-      {/* 1. Sleek Search Bar with Zero Icon Overlap */}
-      <div className="relative mb-3.5 group">
-        <Search className="w-4 h-4 text-[#996A19] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors" />
+      {/* 1. Sleek Search Bar with Visible Magnifying Glass Icon */}
+      <div className="relative mb-3.5 group flex items-center">
         <input
           type="text"
           value={searchQuery}
@@ -66,11 +65,14 @@ export default function QosidahLibraryPage() {
           className="w-full bg-white/90 hover:bg-white focus:bg-white backdrop-blur-md border border-[#B58228]/25 focus:border-[#996A19] focus:ring-2 focus:ring-[#996A19]/15 rounded-2xl py-3 text-xs sm:text-sm text-[#151917] placeholder:text-[#585145]/60 shadow-[0_2px_10px_rgba(153,106,25,0.04)] focus:shadow-[0_4px_16px_rgba(153,106,25,0.1)] transition-all outline-none"
           style={{ paddingLeft: '44px', paddingRight: '40px' }}
         />
+        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-20 flex items-center justify-center">
+          <Search className="w-4 h-4 text-[#585145] group-focus-within:text-[#996A19] transition-colors" />
+        </div>
         {searchQuery && (
           <button
             type="button"
             onClick={() => setSearchQuery('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/5 hover:bg-black/10 text-[#585145] hover:text-[#151917] flex items-center justify-center transition-all cursor-pointer"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/5 hover:bg-black/10 text-[#585145] hover:text-[#151917] flex items-center justify-center transition-all cursor-pointer z-20"
             aria-label="Hapus pencarian"
           >
             <X className="w-3.5 h-3.5" />
