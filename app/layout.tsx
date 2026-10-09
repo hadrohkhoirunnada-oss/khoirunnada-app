@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Noto_Naskh_Arabic } from "next/font/google";
 import "./globals.css";
 import { AppStoreProvider } from "@/lib/store";
+import { GlobalLoadingProvider } from "@/lib/loading-context";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -48,7 +49,9 @@ export default function RootLayout({
     <html lang="id" suppressHydrationWarning>
       <body className={`${jakarta.variable} ${notoArabic.variable} min-h-screen flex flex-col bg-[#F8F6F0] text-[#151917] antialiased`} suppressHydrationWarning>
         <AppStoreProvider>
-                    {children}
+          <GlobalLoadingProvider>
+            {children}
+          </GlobalLoadingProvider>
         </AppStoreProvider>
       </body>
     </html>

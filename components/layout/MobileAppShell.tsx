@@ -6,6 +6,7 @@ import { useAppStore } from '@/lib/store';
 import { GlassAppHeader } from '../navigation/GlassAppHeader';
 import { GlassBottomNavigation } from '../navigation/GlassBottomNavigation';
 import { AdminBottomNavigation } from '../navigation/AdminBottomNavigation';
+import { GlobalLoadingOverlay } from '../ui/GlobalLoadingOverlay';
 
 interface MobileAppShellProps {
   children: React.ReactNode;
@@ -48,11 +49,7 @@ export function MobileAppShell({
     };
   }, [isAdmin]);
 
-  // Bilateral route guard:
-  // 1. Akun khusus Admin & Bendahara (admin.khoirunnada@gmail.com)
-  //    TIDAK BISA akses portal pemain (/app, /app/jobs, /app/profile, /app/qosidah, /app/finance) -> direct redirect ke /app/admin
-  // 2. Pemain biasa (!is_admin && !is_treasurer)
-  //    TIDAK BISA akses portal admin (/app/admin/*) -> direct redirect ke /app
+  // Bilateral route guard
   useEffect(() => {
     if (isLoading || !currentUser.id) return;
 
@@ -72,8 +69,8 @@ export function MobileAppShell({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F8F6F0] flex items-center justify-center text-[#996A19] text-xs font-medium">
-        Memuat data Khoirunnada...
+      <div className="min-h-screen bg-[#F8F6F0] flex items-center justify-center">
+        <GlobalLoadingOverlay isLoading={true} message="Memuat Hadroh Khoirunnada..." />
       </div>
     );
   }
@@ -91,16 +88,16 @@ export function MobileAppShell({
 
   if (isDedicatedAdminAccount && !isAdmin) {
     return (
-      <div className="min-h-screen bg-[#070908] flex items-center justify-center text-[#D4A346] text-xs font-medium">
-        Mengarahkan ke Portal Khusus Admin & Bendahara...
+      <div className="min-h-screen bg-[#070908] flex items-center justify-center">
+        <GlobalLoadingOverlay isLoading={true} message="Membuka Portal Admin..." />
       </div>
     );
   }
 
   if (!currentUser?.is_admin && !currentUser?.is_treasurer && isAdmin) {
     return (
-      <div className="min-h-screen bg-[#F8F6F0] flex items-center justify-center text-[#996A19] text-xs font-medium">
-        Mengarahkan ke Portal Pemain...
+      <div className="min-h-screen bg-[#F8F6F0] flex items-center justify-center">
+        <GlobalLoadingOverlay isLoading={true} message="Membuka Portal Pemain..." />
       </div>
     );
   }
