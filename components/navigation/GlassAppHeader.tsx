@@ -40,7 +40,7 @@ export function GlassAppHeader({
       className={`sticky top-0 z-40 px-4 py-3 flex items-center justify-between transition-colors ${
         isAdmin
           ? 'bg-[#0E1311]/92 backdrop-blur-2xl border-b border-[#B58228]/35 shadow-[0_4px_24px_rgba(0,0,0,0.5)]'
-          : 'glass-header'
+          : 'bg-white border-b border-[#996A19]/15 shadow-[0_2px_12px_rgba(153,106,25,0.06)]'
       }`}
     >
       {/* Left: Logo (Tanpa card background) & Title */}
