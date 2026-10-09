@@ -1,5 +1,5 @@
 /**
- * KHOIRUNNADA BRAIN ENGINE v2.0 - NLP, KNOWLEDGE, MEMORY, REASONING & COMPOSER CORE
+ * KHOIRUNNADA BRAIN ENGINE v2.0 - NLP, KNOWLEDGE, MEMORY, REASONING, COMPOSER & SECURITY CORE
  * Pure TypeScript Intelligence — Zero AI API Cost
  */
 
@@ -39,3 +39,12 @@ export * from './action-composer.ts';
 export * from './output-sanitizer.ts';
 export * from './consistency-checker.ts';
 export * from './response-composer.ts';
+
+// FASE 6: Confidence, Validation & Security Engine
+export * from './confidence-types.ts';
+export * from './input-validator.ts';
+export * from './data-sanitizer.ts';
+export * from './confidence-scorer.ts';
+export * from './decision-engine.ts';
+export * from './fact-validator.ts';
+export * from './security-gateway.ts';
