@@ -83,8 +83,12 @@ export function composeResponseWithMeta(
   // Susun tombol tindakan (AIAction) yang aman dan relevan
   const rawActions = composeActions(facts, { maxActions: options.maxActions });
 
-  // Tentukan apakah memerlukan deep search animation (misal profil Dzarin)
-  const isDeepSearch = result.intent === 'dzarin_profile' || result.intent === 'siapa_dzarin';
+  // Tentukan apakah memerlukan deep search animation (misal profil Dzarin / Nexarin)
+  const isDeepSearch =
+    result.intent === 'dzarin_profile' ||
+    result.intent === 'siapa_dzarin' ||
+    Boolean(facts.staticContent && facts.staticContent.includes('Muhammad Abi Dzarin')) ||
+    Boolean(result.plan?.query && /\b(dzarin|nexarin|by-rins)\b/i.test(result.plan.query));
 
   // Sanitasi akhir: jamin Zero Asterisk (*), bebas HTML berbahaya, dan bebas trace internal
   const sanitizedResponse = sanitizeResponse({

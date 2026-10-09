@@ -60,7 +60,9 @@ export type StaticCategory =
   | 'organisasi'
   | 'aplikasi'
   | 'pengembang'
-  | 'profil_dzarin';
+  | 'profil_dzarin'
+  | 'salam'
+  | 'syukron';
 
 export interface StaticKnowledgeArticle {
   id: string;

@@ -4,13 +4,13 @@
  *
  * Mesin pencari qosidah hybrid: Exact, Alternate/Alias, Arabic Normalized,
  * Prefix, Damerau-Levenshtein, N-Gram Dice, Tags, Category, dan Content Lyrics.
+ * Dioptimalkan dengan filter panjang (length filter guard) untuk efisiensi O(1) pruning.
  */
 
 import type { Qosidah } from '../types.ts';
 import type { RetrievalResult, MatchEvidence, RetrievalStrategy } from './retrieval-types.ts';
 import { normalizeText, normalizeArabic, normalizeSlang } from './normalizer.ts';
-import { extractWords } from './tokenizer.ts';
-import { damerauLevenshtein, ngramSimilarity, stringSimilarity, tokenOverlapScore } from './matcher.ts';
+import { damerauLevenshtein, ngramSimilarity } from './matcher.ts';
 
 export interface QosidahRetrievalOptions {
   limit?: number;
@@ -23,22 +23,17 @@ export interface QosidahRetrievalOptions {
  */
 export function cleanQosidahQuery(input: string): string {
   let q = input.trim();
-  // Hilangkan tanda baca luar
   q = q.replace(/^[?"'«»“”…\s]+|[?"'«»“”…\s]+$/g, '');
-  // Hilangkan slang & pola pencarian umum
   q = normalizeSlang(q);
 
   const prefixRegex =
     /^(carikan|cariin|carikn|cari|buka|lihat|tampilkan|bacakan)\s+(saya\s+|dong\s+|in\s+)?(qosidah|qasidah|sholawat|salawat|lagu|syair|lirik|teks|bacaan)?\s*/i;
   const withoutCommand = q.replace(prefixRegex, '').trim();
 
-  // Jika setelah dibersihkan tersisa sesuatu, gunakan itu
   if (withoutCommand.length >= 2) {
     q = withoutCommand;
   }
 
-  // Jika kata pertama adalah qosidah/sholawat tetapi diikuti kata lain, kita simpan juga
-  // agar query seperti "Sholawat Badar" atau "Qosidah Burdah" tetap dapat dicocokkan utuh
   return q.trim();
 }
 
@@ -63,7 +58,6 @@ export function retrieveQosidahs(
   const cleaned = cleanQosidahQuery(rawTrimmed);
   const normQuery = normalizeText(cleaned).toLowerCase();
 
-  // Varian query tanpa kata awalan "qosidah"/"sholawat" jika ada
   const strippedPrefix = normRaw.replace(/^(qosidah|qasidah|sholawat|salawat|syair|lirik|lagu)\s+/i, '').trim();
 
   const normArabicQuery = normalizeArabic(rawTrimmed);
@@ -106,52 +100,51 @@ export function retrieveQosidahs(
       topStrategy = 'exact_title';
     }
 
-    // 2. EXACT ALTERNATE TITLE MATCH
-    if (rawAlt && (normRaw === normAlt || normQuery === normAlt || (strippedPrefix.length >= 2 && strippedPrefix === normAlt))) {
-      const score = 0.95;
-      evidences.push({
-        field: 'alternate_title',
-        strategy: 'exact_alias',
-        score,
-        matchedTerm: rawAlt,
-        snippet: rawAlt,
-      });
-      topScore = Math.max(topScore, score);
-      if (topStrategy !== 'exact_title') topStrategy = 'exact_alias';
-    }
-
-    // 3. NORMALIZED ARABIC MATCH (Dengan atau Tanpa Harakat)
-    if (isQueryArabic && normArabicQuery.length >= 2) {
-      const normArabicTitle = normalizeArabic(rawTitle);
-      if (normArabicQuery === normArabicTitle || normArabicQuery === normArabic) {
+    // 2. ALTERNATE TITLE / ALIAS MATCHING
+    if (rawAlt && topScore < 0.95) {
+      if (normRaw === normAlt || normQuery === normAlt || (strippedPrefix.length >= 2 && strippedPrefix === normAlt)) {
         const score = 0.95;
         evidences.push({
-          field: 'arabic_text',
-          strategy: 'arabic_normalized',
+          field: 'alternate_title',
+          strategy: 'exact_alias',
           score,
-          matchedTerm: rawTrimmed,
-          snippet: rawArabic.slice(0, 50),
+          matchedTerm: rawAlt,
+          snippet: `Alias cocok: "${rawAlt}"`,
         });
         topScore = Math.max(topScore, score);
-        topStrategy = 'arabic_normalized';
-      } else if (normArabic.includes(normArabicQuery) || normArabicQuery.includes(normArabic)) {
-        const score = 0.85;
+        if (topScore === score) topStrategy = 'exact_alias';
+      }
+    }
+
+    // 3. ARABIC TEXT MATCHING (Normalisasi Harakat & Teks Gundul)
+    if (rawArabic && (isQueryArabic || normArabicQuery.length >= 2) && topScore < 0.95) {
+      if (normArabic === normArabicQuery) {
+        const score = 1.0;
         evidences.push({
           field: 'arabic_text',
           strategy: 'arabic_normalized',
           score,
-          matchedTerm: rawTrimmed,
-          snippet: rawArabic.slice(0, 50),
+          matchedTerm: rawArabic,
+          snippet: rawArabic,
         });
         topScore = Math.max(topScore, score);
-        if (topStrategy !== 'exact_title' && topStrategy !== 'exact_alias') {
-          topStrategy = 'arabic_normalized';
-        }
+        if (topScore === score) topStrategy = 'arabic_normalized';
+      } else if (normArabic.includes(normArabicQuery) || normArabicQuery.includes(normArabic)) {
+        const score = 0.90;
+        evidences.push({
+          field: 'arabic_text',
+          strategy: 'arabic_normalized',
+          score,
+          matchedTerm: rawArabic,
+          snippet: rawArabic,
+        });
+        topScore = Math.max(topScore, score);
+        if (topScore === score) topStrategy = 'arabic_normalized';
       }
     }
 
     // 4. CATEGORY MATCHING (Jika mencari nama kategori seperti "Qosidah Jawa")
-    if (normCategory) {
+    if (normCategory && topScore < 0.9) {
       if (normRaw === normCategory || normQuery === normCategory) {
         const score = 0.90;
         evidences.push({
@@ -219,37 +212,39 @@ export function retrieveQosidahs(
       }
     }
 
-    // 6. FUZZY MATCHING (Hanya jika query > 3 karakter agar konservatif)
+    // 6. FUZZY MATCHING (Optimasi O(1) Length Filter Guard, hanya jika topScore < 0.88)
     const effectiveQuery = strippedPrefix.length >= 3 ? strippedPrefix : normQuery;
-    if (effectiveQuery.length > 3) {
+    if (effectiveQuery.length > 3 && topScore < 0.88) {
       // Damerau-Levenshtein pada Judul Utama
-      const distTitle = damerauLevenshtein(effectiveQuery, normTitle);
-      if (distTitle <= 1) {
-        const score = 0.88;
-        evidences.push({
-          field: 'title',
-          strategy: 'fuzzy_title',
-          score,
-          matchedTerm: rawTitle,
-          snippet: `Typo 1 edit: "${effectiveQuery}" vs "${normTitle}"`,
-        });
-        topScore = Math.max(topScore, score);
-        if (topScore === score) topStrategy = 'fuzzy_title';
-      } else if (distTitle === 2 && effectiveQuery.length >= 6) {
-        const score = 0.78;
-        evidences.push({
-          field: 'title',
-          strategy: 'fuzzy_title',
-          score,
-          matchedTerm: rawTitle,
-          snippet: `Typo 2 edit: "${effectiveQuery}" vs "${normTitle}"`,
-        });
-        topScore = Math.max(topScore, score);
-        if (topScore === score) topStrategy = 'fuzzy_title';
+      if (Math.abs(effectiveQuery.length - normTitle.length) <= 2) {
+        const distTitle = damerauLevenshtein(effectiveQuery, normTitle);
+        if (distTitle <= 1) {
+          const score = 0.88;
+          evidences.push({
+            field: 'title',
+            strategy: 'fuzzy_title',
+            score,
+            matchedTerm: rawTitle,
+            snippet: `Typo 1 edit: "${effectiveQuery}" vs "${normTitle}"`,
+          });
+          topScore = Math.max(topScore, score);
+          if (topScore === score) topStrategy = 'fuzzy_title';
+        } else if (distTitle === 2 && effectiveQuery.length >= 6) {
+          const score = 0.78;
+          evidences.push({
+            field: 'title',
+            strategy: 'fuzzy_title',
+            score,
+            matchedTerm: rawTitle,
+            snippet: `Typo 2 edit: "${effectiveQuery}" vs "${normTitle}"`,
+          });
+          topScore = Math.max(topScore, score);
+          if (topScore === score) topStrategy = 'fuzzy_title';
+        }
       }
 
       // Damerau-Levenshtein pada Alternate Title
-      if (rawAlt) {
+      if (rawAlt && Math.abs(effectiveQuery.length - normAlt.length) <= 2) {
         const distAlt = damerauLevenshtein(effectiveQuery, normAlt);
         if (distAlt <= 1) {
           const score = 0.85;
@@ -277,51 +272,55 @@ export function retrieveQosidahs(
       }
 
       // N-Gram Character Dice Similarity
-      const charNgramScore = ngramSimilarity(effectiveQuery, normTitle, 3);
-      if (charNgramScore >= 0.7) {
-        const score = Math.min(0.85, charNgramScore * 0.9);
-        evidences.push({
-          field: 'title',
-          strategy: 'ngram_title',
-          score,
-          matchedTerm: rawTitle,
-          snippet: `N-gram Dice: ${(charNgramScore * 100).toFixed(0)}%`,
-        });
-        topScore = Math.max(topScore, score);
-        if (topScore === score) topStrategy = 'ngram_title';
+      if (Math.abs(effectiveQuery.length - normTitle.length) <= 4) {
+        const charNgramScore = ngramSimilarity(effectiveQuery, normTitle, 3);
+        if (charNgramScore >= 0.7) {
+          const score = Math.min(0.85, charNgramScore * 0.9);
+          evidences.push({
+            field: 'title',
+            strategy: 'ngram_title',
+            score,
+            matchedTerm: rawTitle,
+            snippet: `N-gram Dice: ${(charNgramScore * 100).toFixed(0)}%`,
+          });
+          topScore = Math.max(topScore, score);
+          if (topScore === score) topStrategy = 'ngram_title';
+        }
       }
     }
 
     // 7. TAGS MATCHING
-    for (const tag of tags) {
-      const normTag = normalizeText(tag).toLowerCase();
-      if (normTag === normQuery || normTag === normRaw || (strippedPrefix.length >= 2 && normTag === strippedPrefix)) {
-        const score = 0.82;
-        evidences.push({
-          field: 'tags',
-          strategy: 'tag_match',
-          score,
-          matchedTerm: tag,
-          snippet: `Tag cocok persis: "${tag}"`,
-        });
-        topScore = Math.max(topScore, score);
-        if (topScore === score) topStrategy = 'tag_match';
-      } else if (normQuery.length >= 4 && normTag.includes(normQuery)) {
-        const score = 0.72;
-        evidences.push({
-          field: 'tags',
-          strategy: 'tag_match',
-          score,
-          matchedTerm: tag,
-          snippet: `Tag mengandung kata kunci: "${tag}"`,
-        });
-        topScore = Math.max(topScore, score);
-        if (topScore === score) topStrategy = 'tag_match';
+    if (topScore < 0.85) {
+      for (const tag of tags) {
+        const normTag = normalizeText(tag).toLowerCase();
+        if (normTag === normQuery || normTag === normRaw || (strippedPrefix.length >= 2 && normTag === strippedPrefix)) {
+          const score = 0.82;
+          evidences.push({
+            field: 'tags',
+            strategy: 'tag_match',
+            score,
+            matchedTerm: tag,
+            snippet: `Tag cocok persis: "${tag}"`,
+          });
+          topScore = Math.max(topScore, score);
+          if (topScore === score) topStrategy = 'tag_match';
+        } else if (normQuery.length >= 4 && normTag.includes(normQuery)) {
+          const score = 0.72;
+          evidences.push({
+            field: 'tags',
+            strategy: 'tag_match',
+            score,
+            matchedTerm: tag,
+            snippet: `Tag mengandung kata kunci: "${tag}"`,
+          });
+          topScore = Math.max(topScore, score);
+          if (topScore === score) topStrategy = 'tag_match';
+        }
       }
     }
 
-    // 8. CONTENT LATIN & TRANSLATION MATCHING (Jika Diaktifkan)
-    if (enableContentSearch && effectiveQuery.length >= 4) {
+    // 8. CONTENT LATIN & TRANSLATION MATCHING (Hanya jika belum ada match kuat)
+    if (enableContentSearch && effectiveQuery.length >= 4 && topScore < 0.8) {
       if (normLatin.includes(effectiveQuery)) {
         const score = 0.68;
         const index = normLatin.indexOf(effectiveQuery);

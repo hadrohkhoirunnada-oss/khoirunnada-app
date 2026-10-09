@@ -48,3 +48,6 @@ export * from './confidence-scorer.ts';
 export * from './decision-engine.ts';
 export * from './fact-validator.ts';
 export * from './security-gateway.ts';
+
+// FASE 7: Final Testing, Memory Adapter & Controlled Integration
+export * from './memory-adapter.ts';

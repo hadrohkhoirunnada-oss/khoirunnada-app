@@ -23,11 +23,15 @@ const PATH_TRAVERSAL_REGEX = /(\.\.[\/\\]|[a-z0-9]+:\/\/|\/etc\/passwd|c:\\windo
 
 // Deteksi probing data rahasia / administratif privat
 const PRIVATE_DATA_PROBE_REGEX =
-  /\b(tampilkan\s+password|kata\s+sandi|nomor\s+hp\s+pelanggan|no\s+telepon\s+customer|booking\s+id\s+rahasia|token\s+auth|kunci\s+rahasia|admin\s+secret|db_password)\b/i;
+  /\b(tampilkan\s+password|kata\s+sandi|nomor\s+hp\s+pelanggan|no\s+telepon\s+customer|customer\s+phone|booking\s+id|token\s+auth|kunci\s+rahasia|admin\s+secret|db_password)\b/i;
 
 // Deteksi instruksi pembatalan aturan (System override / jailbreak attempt)
 const SYSTEM_OVERRIDE_REGEX =
   /\b(abaikan\s+(semua\s+)?(aturan|instruksi)|ignore\s+(all\s+)?previous\s+instructions|system\s+prompt|tampilkan\s+prompt\s+asli|bocorkan\s+instruksi)\b/i;
+
+// Deteksi serangan SQL Injection
+const SQL_INJECTION_REGEX =
+  /\b(select\s+.*from|union\s+select|insert\s+into|drop\s+table|delete\s+from|update\s+.*set)\b/i;
 
 export const DEFAULT_MAX_INPUT_LENGTH = 500;
 
@@ -85,7 +89,17 @@ export function validateUserInput(
     };
   }
 
-  // 6. Deteksi serangan path traversal atau routing berbahaya
+  // 6. Deteksi serangan SQL Injection
+  if (SQL_INJECTION_REGEX.test(text)) {
+    return {
+      isValid: false,
+      sanitizedQuery: text,
+      isAbusiveOrProhibited: true,
+      violationReason: 'Percobaan injeksi SQL atau manipulasi basis data terdeteksi.',
+    };
+  }
+
+  // 7. Deteksi serangan path traversal atau routing berbahaya
   if (PATH_TRAVERSAL_REGEX.test(text)) {
     return {
       isValid: false,
@@ -95,7 +109,7 @@ export function validateUserInput(
     };
   }
 
-  // 7. Bersihkan seluruh blok script, style, dan event handler berbahaya
+  // 8. Bersihkan seluruh blok script, style, dan event handler berbahaya
   text = text.replace(SCRIPT_FULL_TAG_REGEX, '');
   text = text.replace(STYLE_FULL_TAG_REGEX, '');
   text = text.replace(GENERIC_HTML_TAGS_REGEX, '');

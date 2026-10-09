@@ -1,6 +1,7 @@
 import type { Qosidah, Job, Profile } from '@/lib/types';
 
 import type { AIConversationMemory } from "./ai/memory-types.ts";
+import { processWithSecurityGate } from "./ai/security-gateway.ts";
 
 export interface AIContext {
   currentUser?: Profile;
@@ -8,6 +9,13 @@ export interface AIContext {
   jobs?: Job[];
   favorites?: string[];
   memory?: AIConversationMemory;
+  enableV2Engine?: boolean;
+}
+
+export interface ProcessAIOptions {
+  enableV2Engine?: boolean;
+  timeZone?: string;
+  referenceDate?: Date;
 }
 
 export interface AIAction {
@@ -88,11 +96,50 @@ function sanitize(result: AIResponse): AIResponse {
   return {
     ...result,
     text: result.text.replace(/\*/g, ''),
+    actions: result.actions?.map((a) => ({
+      ...a,
+      label: a.label.replace(/\*/g, ''),
+      promptText: a.promptText ? a.promptText.replace(/\*/g, '') : undefined,
+    })),
   };
 }
 
 // Fungsi Pemrosesan Bahasa Alami (NLP Engine Internal Khoirunnada)
-export function processKhoirunnadaAI(userInput: string, context: AIContext): AIResponse {
+export function processKhoirunnadaAI(
+  userInput: string,
+  context: AIContext,
+  options?: ProcessAIOptions
+): AIResponse {
+  // FASE 7: CONTROLLED INTEGRATION ADAPTER
+  // Feature flag default: OFF (false).
+  // Hanya aktif jika options.enableV2Engine === true atau context.enableV2Engine === true.
+  const isV2Enabled = Boolean(options?.enableV2Engine ?? context?.enableV2Engine ?? false);
+
+  if (isV2Enabled) {
+    try {
+      const gateResult = processWithSecurityGate(userInput, context, {
+        timeZone: options?.timeZone,
+        referenceDate: options?.referenceDate,
+      });
+
+      if (gateResult && gateResult.response && typeof gateResult.response.text === 'string') {
+        // Jika keputusan keamanan menolak (DENY / UNAUTHORIZED),
+        // kembalikan penolakan v2 langsung (dilarang fallback ke legacy agar tidak membypass security gateway)
+        return sanitize(gateResult.response);
+      }
+    } catch {
+      // Fallback aman jika terjadi anomali tak terduga pada v2
+      return sanitize({
+        text: 'Afwan, sistem sedang memproses permintaan Anda dengan perlindungan aman. Silakan coba tanyakan kembali seputar qosidah atau jadwal job Hadroh Khoirunnada.',
+        actions: [
+          { label: '📖 Cari Qosidah', promptText: 'Carikan saya qosidah' },
+          { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
+        ],
+      });
+    }
+  }
+
+  // --- LEGACY ENGINE (DEFAULT: enableV2Engine = false) ---
   const query = userInput.toLowerCase().trim();
   const qosidahs = context.qosidahs || [];
   const jobs = context.jobs || [];

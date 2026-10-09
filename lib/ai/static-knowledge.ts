@@ -3,32 +3,96 @@
  * Pure TypeScript Intelligence - Zero AI API Cost
  *
  * Pengetahuan statis resmi dan terverifikasi mengenai Hadroh Khoirunnada,
- * kepengurusan, panduan aplikasi, dan profil pengembang.
+ * kepengurusan, panduan aplikasi, profil pengembang, sapaan islami, dan ucapan terima kasih.
  * Dipisahkan dari algoritma retrieval sesuai prinsip Modular Knowledge Base (FASE 2).
  * Bebas dari simbol asteris (*) mutlak.
  */
 
 import type { StaticKnowledgeArticle, RetrievalResult } from './retrieval-types.ts';
 import { normalizeText } from './normalizer.ts';
-import { stringSimilarity, tokenOverlapScore } from './matcher.ts';
+import { stringSimilarity } from './matcher.ts';
 
 export const STATIC_KNOWLEDGE_ARTICLES: StaticKnowledgeArticle[] = [
+  {
+    id: 'static-greeting',
+    title: 'Sapaan & Salam Islami Hadroh Khoirunnada',
+    category: 'salam',
+    keywords: [
+      'assalamu',
+      'assalamualaikum',
+      'kulonuwun',
+      'kulo nuwun',
+      'halo',
+      'hai',
+      'pagi',
+      'siang',
+      'malam',
+      'sugeng enjang',
+      'sugeng',
+      'salam',
+      'ass wr wb',
+      'asslmualaikum',
+      'السلام عليكم',
+      'السلام عليكم ورحمة الله وبركاته',
+    ],
+    content: `Wa'alaikumussalam warahmatullah wabarakatuh! \n\nSaya Khoirunnada AI, asisten cerdas resmi Hadroh Khoirunnada. Ada yang bisa saya bantu hari ini seputar qosidah, jadwal job, panduan aplikasi, atau organisasi?`,
+    actions: [
+      { label: '📖 Cari Qosidah', promptText: 'Carikan saya qosidah' },
+      { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
+      { label: '🏛️ Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
+    ],
+  },
+  {
+    id: 'static-gratitude',
+    title: 'Ucapan Terima Kasih & Doa Berkah',
+    category: 'syukron',
+    keywords: [
+      'terima kasih',
+      'terimakasih',
+      'makasih',
+      'makaci',
+      'syukron',
+      'matur nuwun',
+      'matur suwun',
+      'thanks',
+      'jazakallah',
+      'barakallah',
+      'syukron jazakallah',
+      'شكرا',
+      'شكرا جزيلا',
+      'بارك الله فيكم',
+    ],
+    content: `Sama-sama! Senang bisa membantu Anda. Jangan ragu bertanya lagi jika butuh bantuan seputar Hadroh Khoirunnada. Berkah selalu untuk Anda dan keluarga!`,
+    actions: [
+      { label: '📖 Cari Qosidah Lain', href: '/app/qosidah' },
+      { label: '📅 Cek Jadwal Job', href: '/app/jobs' },
+    ],
+  },
   {
     id: 'static-sejarah',
     title: 'Sejarah & Makna Nama Hadroh Khoirunnada',
     category: 'sejarah',
     keywords: [
       'sejarah',
+      'sejarh',
       'asal usul',
       'latar belakang',
       'kapan berdiri',
+      'didirikan',
+      'kapan didirikan',
       'arti nama',
       'makna nama',
-      'khoirunnada',
+      'arti dan makna',
       'nada kebaikan',
       'suara kebaikan',
-      'rebana',
-      'hadroh',
+      'histori',
+      'kilas balik',
+      'critane',
+      'sejarahipun',
+      'berdirinya grup',
+      'pembentukan hadroh',
+      'تاريخ',
+      'تاريخ خير الندى',
     ],
     content: `Sejarah Hadroh Khoirunnada:
 Grup seni hadroh Khoirunnada didirikan sebagai wadah syiar dakwah Islamiyah melalui alunan musik rebana dan qosidah sholawat. Nama "Khoirunnada" bermakna "Nada Kebaikan / Suara Kebaikan".
@@ -47,8 +111,10 @@ Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muha
       'struktur',
       'organisasi',
       'kepengurusan',
+      'susunan struktur',
       'ketua',
       'ketua umum',
+      'ketum',
       'siapa ketua',
       'pengurus',
       'bendahara',
@@ -56,6 +122,13 @@ Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muha
       'vokal',
       'terbang',
       'darbuka',
+      'pimpinan',
+      'pimpinan tertinggi',
+      'nakhoda',
+      'sopo sing dadi pimpinan',
+      'organissasi',
+      'administrasi dan booking',
+      'booking job',
     ],
     content: `Struktur Kepengurusan Hadroh Khoirunnada:
 - Ketua Umum: Muhammad Abi Dzarin (Penanggung jawab umum, arah kebijakan grup, dan pengembangan digital)
@@ -73,8 +146,10 @@ Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muha
     category: 'aplikasi',
     keywords: [
       'cara pakai',
-      'cara menggunakan',
+      'caraa pake',
+      'cara mengguna',
       'bagaimana pakai',
+      'bagaimana cara menggunakan',
       'tutorial',
       'panduan',
       'bisa apa aja',
@@ -82,6 +157,14 @@ Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muha
       'menu',
       'aplikasi',
       'pwa',
+      'install',
+      'install aplikasi pwa',
+      'tutor',
+      'nganggo',
+      'kepriye carane',
+      'pengoperasian',
+      'petunjuk operasional',
+      'menyimpan qosidah ke dalam daftar koleksi',
     ],
     content: `Panduan Cara Menggunakan Aplikasi Khoirunnada:
 1. Beranda: Pantau ringkasan job terdekat, pengumuman hadroh, dan status keaktifan Anda.
@@ -101,12 +184,20 @@ Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muha
     category: 'aplikasi',
     keywords: [
       'manfaat',
+      'manffaat',
       'kegunaan',
       'keuntungan',
       'fungsi aplikasi',
       'tujuan',
       'keunggulan',
       'manfaat aplikasi',
+      'faedah',
+      'gunanya',
+      'opo manfaate',
+      'nilai guna',
+      'keuntungan menggunakan',
+      'fungsi utama',
+      'manfaat strategis',
     ],
     content: `Manfaat Aplikasi Hadroh Khoirunnada:
 - Praktis & Lengkap: Tidak perlu lagi membawa kertas lirik manual; seluruh 73 qosidah siap dibaca kapan saja.
@@ -130,8 +221,14 @@ Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muha
       'pembuat',
       'developer',
       'pengembang',
+      'pngembang',
       'arsitek',
       'engineer',
+      'dev',
+      'sing nggawe',
+      'arsitek perangkat lunak',
+      'pembuat dan pengembang',
+      'di balik aplikasi',
     ],
     content: `Pengembang & Pembuat Aplikasi:
 Aplikasi web resmi Hadroh Khoirunnada dirancang, dibangun, dan dikembangkan secara mandiri oleh Muhammad Abi Dzarin.
@@ -161,6 +258,13 @@ Aplikasi ini dibangun menggunakan arsitektur modern Next.js, React, Supabase, da
       'by-rins',
       'kotanagaya',
       '15 september 2006',
+      'dzzarin',
+      'muhammad abi dzarin',
+      'abi dzarin',
+      'dzarin ketua umum',
+      'profil lengkap dzarin',
+      'محمد أبي ذرين',
+      'من هو محمد أبي ذرين',
     ],
     content: `Hasil Penelusuran Profil Publik:
 Berdasarkan data yang dihimpun dari beberapa sumber website dan direktori publik melalui penelusuran Google, berikut adalah informasi resmi mengenai Muhammad Abi Dzarin:
@@ -209,7 +313,7 @@ export function searchStaticKnowledge(
     for (const kw of article.keywords) {
       const normKw = normalizeText(kw).toLowerCase().trim();
 
-      // 1. Exact match dengan keyword
+      // 1. Exact match dengan query
       if (normQuery === normKw) {
         bestScore = 1.0;
         bestStrategy = 'exact_title';
@@ -217,22 +321,30 @@ export function searchStaticKnowledge(
         break;
       }
 
-      // 2. Query mengandung keyword utuh atau sebaliknya
-      if (normQuery.includes(normKw) || normKw.includes(normQuery)) {
-        const score = 0.85;
+      // 2. Query mengandung keyword utuh
+      if (normQuery.includes(normKw)) {
+        // Bobot ditingkatkan sesuai kepanjangan frasa spesifik
+        const score = 0.85 + Math.min(0.14, normKw.length * 0.01);
+        if (score > bestScore) {
+          bestScore = score;
+          bestStrategy = 'phrase_match';
+          matchedKeyword = kw;
+        }
+      } else if (normKw.includes(normQuery) && normQuery.length >= 4) {
+        const score = 0.75 + Math.min(0.1, normQuery.length * 0.01);
         if (score > bestScore) {
           bestScore = score;
           bestStrategy = 'prefix_title';
           matchedKeyword = kw;
         }
-      }
-
-      // 3. String similarity
-      const sim = stringSimilarity(normQuery, normKw);
-      if (sim > bestScore) {
-        bestScore = sim;
-        bestStrategy = 'fuzzy_title';
-        matchedKeyword = kw;
+      } else {
+        // 3. String similarity
+        const sim = stringSimilarity(normQuery, normKw);
+        if (sim > bestScore && sim >= 0.72) {
+          bestScore = sim;
+          bestStrategy = 'fuzzy_title';
+          matchedKeyword = kw;
+        }
       }
     }
 

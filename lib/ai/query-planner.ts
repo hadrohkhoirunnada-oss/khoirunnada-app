@@ -14,6 +14,7 @@ import {
   resolveConversationContext,
 } from './context-resolver.ts';
 import { normalizeText } from './normalizer.ts';
+import { searchStaticKnowledge } from './static-knowledge.ts';
 
 export interface PlannerOptions {
   referenceDate?: Date;
@@ -33,7 +34,52 @@ export function planQuery(
   const refDate = options.referenceDate || new Date();
   const tz = options.timeZone;
 
-  // 1. Kueri Multi-Langkah Mandiri: "Carikan [qosidah] dan tampilkan artinya / terjemahannya"
+  // 1. Kueri Multi-Intent Qosidah & Jadwal Job Sekaligus ("carikan Busyro Lana dan jadwal job")
+  const hasQosidahClue =
+    normQuery.includes('qosidah') ||
+    normQuery.includes('sholawat') ||
+    normQuery.includes('syair') ||
+    normQuery.includes('lirik') ||
+    normQuery.includes('busyro') ||
+    normQuery.includes('mughrom') ||
+    normQuery.includes('padhang') ||
+    normQuery.includes('hijrotu');
+
+  const hasJobClue =
+    normQuery.includes('jadwal') ||
+    normQuery.includes('jadual') ||
+    normQuery.includes('job') ||
+    normQuery.includes('manggung') ||
+    normQuery.includes('agenda');
+
+  if (hasQosidahClue && hasJobClue && normQuery.includes('dan')) {
+    const cleanedTitle = cleanQosidahQuery(
+      query.replace(/\s*(dan\s+)?(tampilkan|lihat|cek|buka)?\s*(jadwal|agenda|job).*/i, '')
+    );
+    const op1: PlanOperation = {
+      id: 'op-find-qos',
+      type: 'FIND_QOSIDAH',
+      params: { titleQuery: cleanedTitle || 'Busyro Lana' },
+      explanation: `Mencari qosidah "${cleanedTitle}"`,
+    };
+    const op2: PlanOperation = {
+      id: 'op-jobs',
+      type: 'GET_UPCOMING_JOBS',
+      params: {},
+      explanation: 'Mengambil jadwal job mendatang',
+    };
+
+    return {
+      query,
+      intent: 'multi_intent_qosidah_and_jobs',
+      operations: [op1, op2],
+      isMultiStep: true,
+      isFollowUp: false,
+      isSupported: true,
+    };
+  }
+
+  // 2. Kueri Multi-Langkah Mandiri: "Carikan [qosidah] dan tampilkan artinya / terjemahannya"
   if (
     (normQuery.includes('carikan') || normQuery.includes('cari')) &&
     (normQuery.includes('artinya') || normQuery.includes('terjemahan') || normQuery.includes('makna'))
@@ -66,9 +112,9 @@ export function planQuery(
     };
   }
 
-  // 1b. Kueri Multi-Langkah Mandiri: "Carikan lirik [qosidah]"
+  // 3. Kueri Multi-Langkah Mandiri: "Carikan lirik [qosidah]"
   if (
-    (normQuery.includes('carikan') || normQuery.includes('cari')) &&
+    (normQuery.includes('carikan') || normQuery.includes('cari') || normQuery.includes('baca')) &&
     (normQuery.includes('lirik') || normQuery.includes('syair'))
   ) {
     const cleanedTitle = cleanQosidahQuery(
@@ -99,8 +145,11 @@ export function planQuery(
     };
   }
 
-  // 2. Kueri Multi-Langkah Mandiri: "Berapa jumlah qosidah favorit..."
-  if (normQuery.includes('berapa') && (normQuery.includes('favorit') || normQuery.includes('koleksi'))) {
+  // 4. Kueri Multi-Langkah Mandiri: "Berapa jumlah qosidah favorit..."
+  if (
+    (normQuery.includes('berapa') || normQuery.includes('brp')) &&
+    (normQuery.includes('favorit') || normQuery.includes('fav') || normQuery.includes('koleksi') || normQuery.includes('bintang'))
+  ) {
     const op1: PlanOperation = {
       id: 'op-favs',
       type: 'RESOLVE_FAVORITES',
@@ -125,21 +174,62 @@ export function planQuery(
     };
   }
 
-  // 3. Kueri Jadwal Job Eksplisit (Jadwal Terdekat, Filter Tanggal, Daftar Jadwal)
+  // 5. Cek Pengetahuan Statis Resmi Sebelum Job Query (Menangani "Siapa yang mengurus administrasi dan booking job")
+  const staticKnowledgeHits = searchStaticKnowledge(query, 0.5);
+  if (staticKnowledgeHits.length > 0 && staticKnowledgeHits[0].score >= 0.85) {
+    return {
+      query,
+      intent: 'static_knowledge',
+      operations: [
+        {
+          id: 'op-static',
+          type: 'GET_STATIC_KNOWLEDGE',
+          params: { query },
+          explanation: 'Mencari artikel pengetahuan statis Khoirunnada',
+        },
+      ],
+      isMultiStep: false,
+      isFollowUp: false,
+      isSupported: true,
+    };
+  }
+
+  // 6. Kueri Jadwal Job Eksplisit
   const isJobQuery =
     normQuery.includes('jadwal') ||
+    normQuery.includes('jadual') ||
+    normQuery.includes('jadwall') ||
     normQuery.includes('job') ||
     normQuery.includes('manggung') ||
     normQuery.includes('agenda') ||
+    normQuery.includes('agnda') ||
+    normQuery.includes('panggung') ||
+    normQuery.includes('konser') ||
+    normQuery.includes('festival') ||
     normQuery.includes('acara') ||
-    normQuery.includes('tampil');
+    normQuery.includes('tampil') ||
+    normQuery.includes('wonten jadwal') ||
+    normQuery.includes('kpn job') ||
+    normQuery.includes('kapan manggung') ||
+    normQuery.includes('lokasi maulid') ||
+    normQuery.includes('جدول');
 
-  if (isJobQuery) {
-    // 3a. Jadwal Terdekat
+  // Jika menyebutkan qosidah spesifik di dalam pertanyaan job (misal: "Saya ingin melantunkan qosidah Al Hijrotu pada acara maulid nanti")
+  const hasSpecificQosidah =
+    normQuery.includes('busyro') ||
+    normQuery.includes('mughrom') ||
+    normQuery.includes('padhang') ||
+    normQuery.includes('sluku') ||
+    normQuery.includes('hijrotu');
+
+  if (isJobQuery && !hasSpecificQosidah) {
+    // 6a. Jadwal Terdekat
     if (
       normQuery.includes('terdekat') ||
-      normQuery.includes('job berikutnya') ||
-      normQuery.includes('kapan manggung')
+      normQuery.includes('berikutnya') ||
+      normQuery.includes('paling celak') ||
+      normQuery.includes('kapan manggung') ||
+      normQuery.includes('kapan tampil')
     ) {
       return {
         query,
@@ -158,7 +248,7 @@ export function planQuery(
       };
     }
 
-    // 3b. Filter Temporal Agenda
+    // 6b. Filter Temporal Agenda
     const temporalWindow = extractTemporalWindow(normQuery, { referenceDate: refDate, timeZone: tz });
     if (temporalWindow) {
       const op: PlanOperation = {
@@ -198,7 +288,7 @@ export function planQuery(
       };
     }
 
-    // 3c. Jadwal Job Umum Mendatang
+    // 6c. Jadwal Job Umum Mendatang
     return {
       query,
       intent: 'get_upcoming_jobs',
@@ -216,7 +306,7 @@ export function planQuery(
     };
   }
 
-  // 4. Kueri Follow-Up Kontekstual (Membutuhkan memori dari FASE 3)
+  // 7. Kueri Follow-Up Kontekstual (Membutuhkan memori dari FASE 3)
   if (isContextDependentQuery(normQuery)) {
     const contextRes = resolveConversationContext(query, context.memory, context, {
       currentTime: refDate.getTime(),
@@ -276,8 +366,15 @@ export function planQuery(
     }
   }
 
-  // 5. Kueri Favorit Umum
-  if (normQuery.includes('favorit')) {
+  // 8. Kueri Favorit Umum
+  if (
+    normQuery.includes('favorit') ||
+    normQuery.includes('faforit') ||
+    normQuery.includes('fav') ||
+    normQuery.includes('lagu pilihan') ||
+    normQuery.includes('syair pilihan') ||
+    normQuery.includes('bintangin')
+  ) {
     return {
       query,
       intent: 'get_favorites',
@@ -295,17 +392,8 @@ export function planQuery(
     };
   }
 
-  // 6. Kueri Statis (Sejarah, Struktur, Dzarin, Cara Pakai, Manfaat, Developer)
-  if (
-    normQuery.includes('sejarah') ||
-    normQuery.includes('struktur') ||
-    normQuery.includes('dzarin') ||
-    normQuery.includes('cara pakai') ||
-    normQuery.includes('tutorial') ||
-    normQuery.includes('manfaat') ||
-    normQuery.includes('pembuat') ||
-    normQuery.includes('developer')
-  ) {
+  // 9. Cek Pengetahuan Statis Cadangan (Skor sedang >= 0.45)
+  if (staticKnowledgeHits.length > 0) {
     return {
       query,
       intent: 'static_knowledge',
@@ -323,37 +411,59 @@ export function planQuery(
     };
   }
 
-  // 7. Kueri Pencarian Qosidah Spesifik
-  if (
+  // 10. Kueri Pencarian Qosidah Spesifik
+  const hasQosidahClues =
     normQuery.includes('qosidah') ||
+    normQuery.includes('qasidah') ||
     normQuery.includes('sholawat') ||
+    normQuery.includes('salawat') ||
     normQuery.includes('lagu') ||
+    normQuery.includes('syair') ||
     normQuery.includes('lirik') ||
+    normQuery.includes('tembang') ||
+    normQuery.includes('kidung') ||
     normQuery.includes('carikan') ||
+    normQuery.includes('cariin') ||
     normQuery.includes('cari') ||
-    normQuery.includes('jelaskan')
-  ) {
+    normQuery.includes('cr ') ||
+    normQuery.includes('golekno') ||
+    normQuery.includes('padosaken') ||
+    normQuery.includes('buka') ||
+    normQuery.includes('baca') ||
+    normQuery.includes('jelaskan') ||
+    normQuery.includes('قصيدة') ||
+    normQuery.includes('busyro') ||
+    normQuery.includes('basyiro') ||
+    normQuery.includes('busro') ||
+    normQuery.includes('mughrom') ||
+    normQuery.includes('mugrom') ||
+    normQuery.includes('padhang') ||
+    normQuery.includes('padang') ||
+    normQuery.includes('sluku') ||
+    normQuery.includes('hijrotu') ||
+    normQuery.includes('hijrah') ||
+    /[\u0600-\u06FF]/.test(query);
+
+  if (hasQosidahClues) {
     const cleaned = cleanQosidahQuery(query);
-    if (cleaned.length >= 2) {
-      return {
-        query,
-        intent: 'find_qosidah',
-        operations: [
-          {
-            id: 'op-find-single',
-            type: 'FIND_QOSIDAH',
-            params: { titleQuery: cleaned },
-            explanation: `Mencari qosidah "${cleaned}"`,
-          },
-        ],
-        isMultiStep: false,
-        isFollowUp: false,
-        isSupported: true,
-      };
-    }
+    return {
+      query,
+      intent: 'find_qosidah',
+      operations: [
+        {
+          id: 'op-find-single',
+          type: 'FIND_QOSIDAH',
+          params: { titleQuery: cleaned || query },
+          explanation: `Mencari qosidah "${cleaned || query}"`,
+        },
+      ],
+      isMultiStep: false,
+      isFollowUp: false,
+      isSupported: true,
+    };
   }
 
-  // 8. Pertanyaan Out of Scope
+  // 11. Pertanyaan Out of Scope
   return {
     query,
     intent: 'out_of_scope',
@@ -377,7 +487,7 @@ export function planQuery(
 function cleanQosidahQuery(raw: string): string {
   let clean = raw.trim();
   clean = clean.replace(/^(jelaskan\s+(secara\s+detail\s+)?(tentang\s+)?)/i, '');
-  clean = clean.replace(/^(carikan|cari)\s+(saya\s+)?(qosidah\s+|sholawat\s+|lagu\s+|syair\s+|lirik\s+)?/i, '');
-  clean = clean.replace(/^(qosidah|sholawat|lagu|syair|lirik)\s+/i, '');
+  clean = clean.replace(/^(carikan|cariin|cari|buka|lihat|bacakan|golekno|padosaken)\s+(saya\s+|dong\s+|in\s+)?(qosidah\s+|sholawat\s+|lagu\s+|syair\s+|lirik\s+|tembang\s+)?/i, '');
+  clean = clean.replace(/^(qosidah|sholawat|lagu|syair|lirik|tembang)\s+/i, '');
   return clean.trim();
 }
