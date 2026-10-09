@@ -8,6 +8,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { QOSIDAH_LIST, QOSIDAH_CATEGORIES } from './data/qosidah';
 import type { User } from '@supabase/supabase-js';
 import { createClient } from './supabase/client';
 import { isSupabaseConfigured } from './supabase/config';
@@ -148,8 +149,8 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [attendances, setAttendances] = useState<JobAttendance[]>([]);
   const [assignments, setAssignments] = useState<JobAssignment[]>([]);
-  const [qosidahs, setQosidahs] = useState<Qosidah[]>([]);
-  const [categories, setCategories] = useState<QosidahCategory[]>([]);
+  const [qosidahs, setQosidahs] = useState<Qosidah[]>(QOSIDAH_LIST);
+  const [categories, setCategories] = useState<QosidahCategory[]>(QOSIDAH_CATEGORIES);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const [transactions, setTransactions] = useState<FinanceTransaction[]>([]);
@@ -165,8 +166,8 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     setJobs([]);
     setAttendances([]);
     setAssignments([]);
-    setQosidahs([]);
-    setCategories([]);
+    setQosidahs(QOSIDAH_LIST);
+    setCategories(QOSIDAH_CATEGORIES);
     setFavorites([]);
     setRecentIds([]);
     setTransactions([]);
@@ -202,8 +203,8 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       .then((res) => (res.ok ? res.json() : null))
       .catch(() => null);
 
-    // 4. Ambil Qosidah & Kategori
-    const fetchQosidahPromise = fetch('/api/qosidah')
+    // 4. Ambil Favorit Qosidah Personal dari Database via Server API
+    const fetchFavsPromise = fetch('/api/qosidah/favorites')
       .then((res) => (res.ok ? res.json() : null))
       .catch(() => null);
 
@@ -218,7 +219,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       apiNotifs,
       apiBookings,
       apiMembers,
-      apiQosidah,
+      apiFavs,
     ] = await Promise.all([
       client.from('jobs').select('*').order('event_date', { ascending: true }),
       client.from('job_attendance').select('*').order('updated_at', { ascending: false }),
@@ -229,7 +230,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       fetchNotifsPromise,
       fetchBookingsPromise,
       fetchMembersPromise,
-      fetchQosidahPromise,
+      fetchFavsPromise,
     ]);
 
     // Set Jobs, Attendance, Assignments
@@ -239,20 +240,13 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     setFavorites(((favoritesResult.data ?? []) as Array<{ qosidah_id: string }>).map((item) => item.qosidah_id));
     setRecentIds(((recentResult.data ?? []) as Array<{ qosidah_id: string }>).map((item) => item.qosidah_id));
 
-    // Set Qosidah & Kategori
-    if (apiQosidah?.qosidahs) {
-      setQosidahs(apiQosidah.qosidahs as Qosidah[]);
-      setCategories(apiQosidah.categories as QosidahCategory[]);
-    } else {
-      // Fallback direct supabase
-      const { data: qCats } = await client.from('qosidah_categories').select('*').order('sort_order');
-      const { data: qSongs } = await client.from('qosidah').select('*').order('sort_order');
-      if (qCats && qSongs) {
-        const catRows = qCats as unknown as QosidahCategory[];
-        const catMap = new Map(catRows.map((c) => [c.id, c.name]));
-        setCategories(catRows);
-        setQosidahs((qSongs as unknown as Qosidah[]).map((s) => ({ ...s, tags: s.tags ?? [], category_name: catMap.get(s.category_id) || 'Sholawat' })));
-      }
+    // Set Qosidah & Kategori langsung dari kode
+    setQosidahs(QOSIDAH_LIST);
+    setCategories(QOSIDAH_CATEGORIES);
+
+    // Set Favorit Personal dari database
+    if (apiFavs?.favorites && Array.isArray(apiFavs.favorites)) {
+      setFavorites(apiFavs.favorites);
     }
 
     // Set Bookings (Untuk Admin maupun Pemain)
@@ -571,15 +565,21 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleFavorite = async (qosidahId: string) => {
-    const client = ensureClient(supabase);
-    if (favorites.includes(qosidahId)) {
-      const { error } = await client.from('qosidah_favorites').delete().eq('user_id', currentUser.id).eq('qosidah_id', qosidahId);
-      if (error) throw new Error(error.message);
-      setFavorites((items) => items.filter((id) => id !== qosidahId));
-    } else {
-      const { error } = await client.from('qosidah_favorites').insert({ user_id: currentUser.id, qosidah_id: qosidahId });
-      if (error) throw new Error(error.message);
-      setFavorites((items) => [...items, qosidahId]);
+    const isFav = favorites.includes(qosidahId);
+    const updated = isFav ? favorites.filter((id) => id !== qosidahId) : [...favorites, qosidahId];
+    setFavorites(updated);
+
+    try {
+      const res = await fetch('/api/qosidah/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ qosidah_id: qosidahId }),
+      });
+      if (!res.ok) {
+        console.warn('Sync favorite response status:', res.status);
+      }
+    } catch (err) {
+      console.warn('Gagal sinkronisasi favorit ke database:', err);
     }
   };
 

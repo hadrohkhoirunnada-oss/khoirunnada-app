@@ -18,6 +18,7 @@ import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { PerformanceMode } from '@/components/qosidah/PerformanceMode';
+import { getQosidahById } from '@/lib/data/qosidah';
 
 export default function QosidahDetailPage() {
   const params = useParams();
@@ -25,7 +26,7 @@ export default function QosidahDetailPage() {
   const { qosidahs, favorites, toggleFavorite, markAsRecent } = useAppStore();
 
   const qosidahId = params?.id as string;
-  const qosidah = qosidahs.find((q) => q.id === qosidahId);
+  const qosidah = qosidahs.find((q) => q.id === qosidahId) || getQosidahById(qosidahId);
 
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isPerformanceModeOpen, setIsPerformanceModeOpen] = useState(false);
