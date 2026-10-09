@@ -222,7 +222,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       apiMembers,
       apiFavs,
     ] = await Promise.all([
-      client.from('jobs').select('*').order('event_date', { ascending: true }),
+      (profile.is_admin ? client.from('jobs').select('*') : client.from('jobs').select('id,title,event_type,customer_name,event_date,gather_time,start_time,location,maps_url,dress_code,transport_info,notes,status,created_by,created_at,updated_at')).order('event_date', { ascending: true }),
       client.from('job_attendance').select('*').order('updated_at', { ascending: false }),
       client.from('job_assignments').select('*').order('created_at', { ascending: false }),
       client.from('qosidah_favorites').select('qosidah_id').eq('user_id', profile.id),

@@ -43,7 +43,7 @@ export function composeResponseWithMeta(
   context: AIContext,
   options: ComposerOptions = {}
 ): ComposedResponse {
-  const timeZone = options.timeZone || 'Asia/Jakarta';
+  const timeZone = options.timeZone || 'Asia/Makassar';
   const facts = extractFacts(result, timeZone);
 
   // Tentukan gaya respons (concise, informative, detailed)

@@ -23,7 +23,7 @@ export function parseJobDate(dateStr: string | undefined | null): Date | null {
 /**
  * Format tanggal ke format standar Indonesia (id-ID).
  */
-export function formatJobDateIndonesia(date: Date): string {
+export function formatJobDateIndonesia(date: Date, timeZone = 'Asia/Makassar'): string {
   try {
     return date.toLocaleDateString('id-ID', {
       weekday: 'long',
@@ -40,7 +40,7 @@ export function formatJobDateIndonesia(date: Date): string {
  * Mengubah entitas Job mentah menjadi SafeJob yang aman bagi publik.
  * Menyembunyikan customer_phone, booking_id, dan notes privat demi kepatuhan sekuriti.
  */
-export function toSafeJob(job: Job, referenceDate: Date = new Date()): SafeJob {
+export function toSafeJob(job: Job, referenceDate: Date = new Date(), timeZone = 'Asia/Makassar'): SafeJob {
   const d = parseJobDate(job.event_date);
   const isValid = d !== null;
   const isUpcoming = isValid ? d.getTime() >= referenceDate.getTime() : false;
@@ -56,7 +56,7 @@ export function toSafeJob(job: Job, referenceDate: Date = new Date()): SafeJob {
     maps_url: job.maps_url,
     status: job.status || 'upcoming',
     isUpcoming,
-    formattedDate: isValid ? formatJobDateIndonesia(d) : 'Tanggal tidak valid',
+    formattedDate: isValid ? formatJobDateIndonesia(d, timeZone) : 'Tanggal tidak valid',
   };
 }
 

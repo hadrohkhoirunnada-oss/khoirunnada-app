@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { processKhoirunnadaAI } from '../lib/ai-engine.ts';
+import { toSafeJob } from '../lib/ai/job-retriever.ts';
 import {
   processWithSecurityGate,
   safeProcessKhoirunnadaAI,
@@ -291,7 +292,7 @@ test('11. Timezone Consistency - Validasi tanggal UTC dan representasi jam pangg
   const res = processKhoirunnadaAI('jadwal job terdekat', context, {
     enableV2Engine: true,
     referenceDate: refDate,
-    timeZone: 'Asia/Jakarta',
+    timeZone: 'Asia/Makassar',
   });
 
   // Agenda terdekat adalah job-1 (15 Oktober 2026)
@@ -388,4 +389,47 @@ test('14. Kompatibilitas 13 Intent Lama Tanpa Regresi Saat V2 Disabled', () => {
     assert.ok(typeof res.text === 'string' && res.text.length > 0);
     assert.strictEqual(res.text.includes('*'), false);
   }
+});
+
+test('15. Client Data Minimization - Role-aware data handling', () => {
+  // Verifikasi objek Job non-admin aman jika customer_phone dan booking_id ditiadakan
+  const nonAdminJob = {
+    id: 'job-member',
+    title: 'Acara Maulid Akbar',
+    event_type: 'Maulid',
+    customer_name: 'Haji Ahmad',
+    event_date: '2026-10-20T19:30:00Z',
+    gather_time: '18:30 WITA',
+    start_time: '19:30 WITA',
+    location: 'Masjid Agung',
+    maps_url: 'https://maps.google.com',
+    status: 'upcoming',
+    created_by: 'usr-admin',
+    created_at: '2026-10-01',
+    // customer_phone dan booking_id sengaja undefined untuk non-admin
+  };
+
+  const safe = toSafeJob(nonAdminJob);
+  assert.strictEqual(safe.id, 'job-member');
+  assert.strictEqual('customer_phone' in safe, false);
+  assert.strictEqual('booking_id' in safe, false);
+  assert.strictEqual(safe.formattedDate.includes('Oktober 2026'), true);
+});
+
+test('16. Timezone Konsisten - Default Brain Engine v2 menggunakan Asia/Makassar (WITA, UTC+8)', () => {
+  const context = {
+    currentUser: mockUser,
+    qosidahs: mockQosidahs,
+    jobs: mockJobs,
+    favorites: [],
+  };
+
+  // Ujy kueri tanpa opsi timeZone (wajib default Asia/Makassar)
+  const resDefault = processKhoirunnadaAI('jadwal job terdekat', context, {
+    enableV2Engine: true,
+    referenceDate: new Date('2026-10-10T00:00:00Z'),
+  });
+
+  assert.ok(resDefault.text.includes('15 Oktober 2026') || resDefault.text.includes('Maulid Nabi'));
+  assert.strictEqual(resDefault.text.includes('*'), false);
 });

@@ -54,7 +54,7 @@ export interface Job {
   title: string;
   event_type: string;
   customer_name: string;
-  customer_phone: string;
+  customer_phone?: string;
   event_date: string;
   gather_time: string;
   start_time: string;

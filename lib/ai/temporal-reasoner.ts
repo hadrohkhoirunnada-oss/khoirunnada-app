@@ -32,10 +32,10 @@ export interface TemporalWindow {
 
 export interface TemporalOptions {
   referenceDate?: Date;
-  timeZone?: string; // Default: 'Asia/Jakarta' (WIB, UTC+7)
+  timeZone?: string; // Default: 'Asia/Makassar' (WITA, UTC+8)
 }
 
-export const DEFAULT_TIMEZONE = 'Asia/Jakarta';
+export const DEFAULT_TIMEZONE = 'Asia/Makassar';
 
 /**
  * Mendapatkan komponen tanggal (tahun, bulan 0-11, hari 1-31) dalam zona waktu yang ditentukan.

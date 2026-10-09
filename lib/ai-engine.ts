@@ -313,6 +313,7 @@ export function processKhoirunnadaAI(
             day: 'numeric',
             month: 'long',
             year: 'numeric',
+            timeZone: options?.timeZone || 'Asia/Makassar',
           })}\n   - Lokasi: ${j.location || 'Menunggu konfirmasi'}\n   - Status: ${j.status.toUpperCase()}`
       )
       .join('\n\n');

@@ -34,7 +34,7 @@ function sanitizeText(text?: string): string {
 /**
  * Format tanggal agenda job secara aman dan konsisten.
  */
-function formatJobDate(dateStr: string, timeZone: string = 'Asia/Jakarta'): string {
+function formatJobDate(dateStr: string, timeZone: string = 'Asia/Makassar'): string {
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return 'Tanggal belum ditentukan';
@@ -69,7 +69,7 @@ function extractSnippet(latinText?: string): string {
  */
 export function extractFacts(
   result: ReasoningResult,
-  timeZone: string = 'Asia/Jakarta'
+  timeZone: string = 'Asia/Makassar'
 ): ExtractedFacts {
   const data = result.data || {};
 
