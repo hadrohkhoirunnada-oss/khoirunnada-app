@@ -4,8 +4,8 @@ export const busyroLana: Qosidah = {
   id: 'a305cfe1-9aed-4de4-8774-0d073cfc8a9c',
   title: 'Busyro Lana',
   alternate_title: 'Nilnal Munaa Zaalal ‘Anaa',
-  category_id: 'sholawat',
-  category_name: 'Sholawat',
+  category_id: 'qosidah-arobiah',
+  category_name: "Qosidah 'Arobiah",
   arabic_text: `بُشْرَى لَنَا نِلْنَا الْمُنَى
 زَالَ الْعَنَا وَافَى الْهَنَا
 وَالدَّهْرُ أَنْجَزَ وَعْدَهُ

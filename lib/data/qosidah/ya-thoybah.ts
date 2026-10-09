@@ -4,8 +4,8 @@ export const yaThoybah: Qosidah = {
   id: '43b48f3e-f883-4993-a62f-d26db88790e4',
   title: 'Ya Thoybah',
   alternate_title: 'Yaa Thoybah Yaa Dawal ‘Ayaana',
-  category_id: 'qosidah-inti',
-  category_name: 'Qosidah Inti',
+  category_id: 'qosidah-arobiah',
+  category_name: "Qosidah 'Arobiah",
   arabic_text: `يَا طَيْبَةْ يَا طَيْبَةْ يَا دَوَا الْعَيَانَا
 اِشْتَقْنَا لِكْ وَالْهَوَى نَدَانَا
 وَالْهَوَى نَدَانَا

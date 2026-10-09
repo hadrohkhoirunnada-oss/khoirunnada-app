@@ -8,9 +8,12 @@ import { busyroLana } from './busyro-lana';
 import { qosidahBurdah } from './qosidah-burdah';
 import { alQolbuMutayyam } from './al-qolbu-mutayyam';
 import { doaPenutupMajelis } from './doa-penutup-majelis';
+import { padhangBulan } from './padhang-bulan';
+import { slukuSlukuBathok } from './sluku-sluku-bathok';
+import { turiTuriPutih } from './turi-turi-putih';
 
 // ==============================================================================
-// 1. DAFTAR LIRIK QOSIDAH KHOIRUNNADA
+// 1. DAFTAR LIRIK QOSIDAH KHOIRUNNADA ('Arobiah & Jawa)
 // ==============================================================================
 export const QOSIDAH_LIST: Qosidah[] = [
   sholawatNahdliyah,
@@ -21,6 +24,9 @@ export const QOSIDAH_LIST: Qosidah[] = [
   qosidahBurdah,
   alQolbuMutayyam,
   doaPenutupMajelis,
+  padhangBulan,
+  slukuSlukuBathok,
+  turiTuriPutih,
 ];
 
 // Re-export semua file & kategori agar modular dan mudah diakses
@@ -34,6 +40,9 @@ export {
   qosidahBurdah,
   alQolbuMutayyam,
   doaPenutupMajelis,
+  padhangBulan,
+  slukuSlukuBathok,
+  turiTuriPutih,
 };
 
 // ==============================================================================

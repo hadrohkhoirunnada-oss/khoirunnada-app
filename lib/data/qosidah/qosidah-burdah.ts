@@ -4,8 +4,8 @@ export const qosidahBurdah: Qosidah = {
   id: 'f367b3e2-e359-4b37-be6c-15334be4bee3',
   title: 'Qosidah Burdah (Maula ya sholli)',
   alternate_title: 'Mawlaaya Sholli wa Sallim Daa-iman Abadaa',
-  category_id: 'pembukaan',
-  category_name: 'Pembukaan',
+  category_id: 'qosidah-arobiah',
+  category_name: "Qosidah 'Arobiah",
   arabic_text: `مَوْلَايَ صَلِّ وَسَلِّمْ دَائِمًا أَبَدًا
 عَلَى حَبِيبِكَ خَيْرِ الْخَلْقِ كُلِّهِمِ
 

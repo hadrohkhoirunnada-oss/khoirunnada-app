@@ -4,8 +4,8 @@ export const doaPenutupMajelis: Qosidah = {
   id: 'a546c9f1-496e-4b89-86b0-59f605a40004',
   title: 'Doa Penutup Majelis',
   alternate_title: 'Subhanakallahumma wa Bihamdika',
-  category_id: 'penutup',
-  category_name: 'Penutup',
+  category_id: 'qosidah-arobiah',
+  category_name: "Qosidah 'Arobiah",
   arabic_text: `سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ
 أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ
 أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ

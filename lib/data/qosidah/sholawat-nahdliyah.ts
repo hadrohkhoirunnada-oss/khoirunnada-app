@@ -4,8 +4,8 @@ export const sholawatNahdliyah: Qosidah = {
   id: '218e45bd-56c2-4c95-be82-d9cd5cae038f',
   title: 'Sholawat Nahdliyah',
   alternate_title: 'Allahumma Sholli ‘Ala Sayyidina Muhammad',
-  category_id: 'sholawat',
-  category_name: 'Sholawat',
+  category_id: 'qosidah-arobiah',
+  category_name: "Qosidah 'Arobiah",
   arabic_text: `اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ
 صَلَاةً تُغَيِّرُ بِهَا حَالَنَا إِلَى أَحْسَنِ حَالٍ
 وَتَجْعَلُنَا بِهَا مِنْ عِبَادِكَ الصَّالِحِينَ

@@ -12,18 +12,12 @@ export default function QosidahLibraryPage() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
 
   // Filtered list
   const filteredQosidahs = useMemo(() => {
     return qosidahs.filter((q) => {
       // Category match
       if (selectedCategory !== 'all' && q.category_id !== selectedCategory) {
-        return false;
-      }
-
-      // Favorite match
-      if (showOnlyFavorites && !favorites.includes(q.id)) {
         return false;
       }
 
@@ -43,7 +37,7 @@ export default function QosidahLibraryPage() {
 
       return true;
     });
-  }, [qosidahs, selectedCategory, showOnlyFavorites, searchQuery, favorites]);
+  }, [qosidahs, selectedCategory, searchQuery]);
 
   // Recently opened qosidahs
   const recentQosidahs = useMemo(() => {
@@ -80,16 +74,13 @@ export default function QosidahLibraryPage() {
         )}
       </div>
 
-      {/* 2. Category Filter Pills */}
+      {/* 2. Category Filter Pills (Semua, Qosidah 'Arobiah, Qosidah Jawa) */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 mb-3.5 scrollbar-none no-scrollbar -mx-4 px-4">
         {/* Semua */}
         <button
-          onClick={() => {
-            setSelectedCategory('all');
-            setShowOnlyFavorites(false);
-          }}
+          onClick={() => setSelectedCategory('all')}
           className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
-            selectedCategory === 'all' && !showOnlyFavorites
+            selectedCategory === 'all'
               ? 'bg-gradient-to-r from-[#996A19] to-[#70490E] text-white shadow-[0_2px_8px_rgba(153,106,25,0.3)]'
               : 'bg-white/85 hover:bg-white text-[#585145] hover:text-[#151917] border border-black/[0.06] shadow-2xs'
           }`}
@@ -97,7 +88,7 @@ export default function QosidahLibraryPage() {
           <span>Semua</span>
           <span
             className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-              selectedCategory === 'all' && !showOnlyFavorites
+              selectedCategory === 'all'
                 ? 'bg-white/25 text-white'
                 : 'bg-black/5 text-[#585145]'
             }`}
@@ -106,52 +97,37 @@ export default function QosidahLibraryPage() {
           </span>
         </button>
 
-        {/* Favorit */}
-        <button
-          onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
-          className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
-            showOnlyFavorites
-              ? 'bg-gradient-to-r from-[#C84A45] to-[#A12B26] text-white shadow-[0_2px_8px_rgba(200,74,69,0.3)]'
-              : 'bg-white/85 hover:bg-white text-[#C84A45] border border-[#C84A45]/25 shadow-2xs'
-          }`}
-        >
-          <Heart className={`w-3.5 h-3.5 ${showOnlyFavorites ? 'fill-current' : ''}`} />
-          <span>Favorit</span>
-          <span
-            className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-              showOnlyFavorites
-                ? 'bg-white/25 text-white'
-                : 'bg-[#C84A45]/10 text-[#C84A45]'
-            }`}
-          >
-            {favorites.length}
-          </span>
-        </button>
-
-        {/* Kategori dinamis */}
+        {/* Kategori Khusus: Qosidah 'Arobiah & Qosidah Jawa */}
         {categories.map((cat) => {
-          const isSelected = selectedCategory === cat.id && !showOnlyFavorites;
+          const isSelected = selectedCategory === cat.id;
+          const count = qosidahs.filter((q) => q.category_id === cat.id).length;
           return (
             <button
               key={cat.id}
-              onClick={() => {
-                setSelectedCategory(cat.id);
-                setShowOnlyFavorites(false);
-              }}
-              className={`shrink-0 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
                 isSelected
                   ? 'bg-gradient-to-r from-[#996A19] to-[#70490E] text-white shadow-[0_2px_8px_rgba(153,106,25,0.3)]'
                   : 'bg-white/85 hover:bg-white text-[#585145] hover:text-[#151917] border border-black/[0.06] shadow-2xs'
               }`}
             >
-              {cat.name}
+              <span>{cat.name}</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                  isSelected
+                    ? 'bg-white/25 text-white'
+                    : 'bg-black/5 text-[#585145]'
+                }`}
+              >
+                {count}
+              </span>
             </button>
           );
         })}
       </div>
 
       {/* 3. Recently Opened Section */}
-      {!searchQuery && !showOnlyFavorites && selectedCategory === 'all' && recentQosidahs.length > 0 && (
+      {!searchQuery && selectedCategory === 'all' && recentQosidahs.length > 0 && (
         <section className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#8C6821] uppercase tracking-wider">

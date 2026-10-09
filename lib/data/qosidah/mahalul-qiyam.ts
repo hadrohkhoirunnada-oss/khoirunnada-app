@@ -4,8 +4,8 @@ export const mahalulQiyam: Qosidah = {
   id: 'b7513308-3992-44a2-8ade-d0e2a6a39e12',
   title: 'Mahalul Qiyam (Simthud Duror)',
   alternate_title: 'Yaa Nabi Salaam ‘Alaika',
-  category_id: 'mahalul-qiyam',
-  category_name: 'Mahalul Qiyam',
+  category_id: 'qosidah-arobiah',
+  category_name: "Qosidah 'Arobiah",
   arabic_text: `يَا نَبِي سَلَامٌ عَلَيْكَ
 يَا رَسُول سَلَامٌ عَلَيْكَ
 يَا حَبِيب سَلَامٌ عَلَيْكَ

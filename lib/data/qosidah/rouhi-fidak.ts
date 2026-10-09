@@ -4,8 +4,8 @@ export const rouhiFidak: Qosidah = {
   id: '3402e8fb-0c0a-48d4-8ad8-28b6b8eba1f8',
   title: 'Rouhi Fidak',
   alternate_title: 'Maddad Yaa Rasulallah',
-  category_id: 'qosidah-inti',
-  category_name: 'Qosidah Inti',
+  category_id: 'qosidah-arobiah',
+  category_name: "Qosidah 'Arobiah",
   arabic_text: `رُوحِي فِدَاكَ يَا رَسُولَ اللَّهِ
 يَا خَيْرَ خَلْقِ اللَّهِ كُلِّهِمِ
 مَالِي سِوَاكَ أَرْتَجِي مَدَدًا

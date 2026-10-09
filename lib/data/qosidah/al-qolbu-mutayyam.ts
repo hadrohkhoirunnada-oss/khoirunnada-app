@@ -4,8 +4,8 @@ export const alQolbuMutayyam: Qosidah = {
   id: 'e819f2a1-7c9b-4e12-b9e3-82a938d10001',
   title: 'Al-Qolbu Mutayyam',
   alternate_title: 'Bi Thohannabi Al-Amin',
-  category_id: 'qosidah-inti',
-  category_name: 'Qosidah Inti',
+  category_id: 'qosidah-arobiah',
+  category_name: "Qosidah 'Arobiah",
   arabic_text: `الْقَلْبُ مُتَيَّمْ بِطَهَ النَّبِي
 وَصَلَّى وَسَلَّمْ عَلَى الْمُجْتَبَى
 
