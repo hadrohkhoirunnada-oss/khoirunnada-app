@@ -247,9 +247,9 @@ Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muha
     content: `Pengembang & Pembuat Aplikasi:
 Aplikasi web resmi Hadroh Khoirunnada dirancang, dibangun, dan dikembangkan secara mandiri oleh Muhammad Abi Dzarin.
 
-Di dalam Hadroh Khoirunnada, Muhammad Abi Dzarin mengemban amanah sebagai Ketua Umum Hadroh Khoirunnada yang bertanggung jawab penuh atas kepemimpinan grup, arah kebijakan organisasi, serta transformasi teknologi digital hadroh.
+Muhammad Abi Dzarin merupakan Co-Founder Nexarin By-Rins yang berdedikasi dalam pengembangan inovasi teknologi digital dan solusi perangkat lunak.
 
-Aplikasi ini dibangun menggunakan arsitektur modern Next.js, React, Supabase, dan kapabilitas PWA offline-ready untuk memberikan kemudahan bagi seluruh personel dan pecinta sholawat.`,
+Di dalam Hadroh Khoirunnada, beliau mengemban amanah sebagai Ketua Umum Hadroh Khoirunnada yang bertanggung jawab penuh atas kepemimpinan grup, arah kebijakan organisasi, serta transformasi inovasi digital demi kemudahan seluruh personel dan pecinta sholawat.`,
     actions: [
       { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
       { label: '🏛️ Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
@@ -294,7 +294,7 @@ Kiprah Profesional & Rekam Jejak:
 - Ketua Umum Hadroh Khoirunnada: Memegang amanah kepemimpinan tertinggi dalam membina grup seni hadroh, tata kelola manajemen personel, sekaligus arsitek utama (lead engineer) di balik sistem digital Khoirunnada.
 
 Bidang Keahlian & Fokus:
-- Fullstack Web & App Development (Next.js, TypeScript, Cloud Architecture)
+- Fullstack Web & Application Engineering
 - Desain Antarmuka & Pengalaman Pengguna (UI/UX Design)
 - Manajemen Kepemimpinan Pemuda & Dakwah Seni Budaya Islami
 
