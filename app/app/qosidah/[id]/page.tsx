@@ -4,10 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Heart,
-  Play,
-  Pause,
   Maximize2,
-  Volume2,
   Info,
   BookOpen,
   Share2,
@@ -28,15 +25,16 @@ export default function QosidahDetailPage() {
   const qosidahId = params?.id as string;
   const qosidah = qosidahs.find((q) => q.id === qosidahId) || getQosidahById(qosidahId);
 
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isPerformanceModeOpen, setIsPerformanceModeOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (qosidahId) {
-      markAsRecent(qosidahId);
+      void markAsRecent(qosidahId).catch((error: unknown) => {
+        console.warn('Gagal menyimpan qosidah terakhir dibuka:', error);
+      });
     }
-  }, [qosidahId]);
+  }, [qosidahId, markAsRecent]);
 
   if (!qosidah) {
     return (
@@ -111,28 +109,7 @@ export default function QosidahDetailPage() {
         </div>
       </section>
 
-      {/* 2. Audio Reference Player Bar if available */}
-      <section className="mb-4">
-        <GlassCard className="p-3.5 flex items-center justify-between" variant="emerald">
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-              className="w-9 h-9 rounded-full bg-[#996A19] text-white flex items-center justify-center shadow-sm active:scale-95 transition-all"
-            >
-              {isPlayingAudio ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
-            </button>
-            <div>
-              <p className="text-xs font-bold text-[#151917]">Audio Referensi Latihan</p>
-              <p className="text-[10px] text-[#525D58]">
-                {isPlayingAudio ? 'Sedang memutar audio demo Khoirunnada...' : 'Ketuk untuk mendengarkan lagu'}
-              </p>
-            </div>
-          </div>
-          <Volume2 className="w-4 h-4 text-[#996A19] opacity-60" />
-        </GlassCard>
-      </section>
-
-      {/* 3. Main Arabic Text Display (WCAG AAA contrast, Noto Naskh, 2.3x line height) */}
+      {/* 2. Main Arabic Text Display (WCAG AAA contrast, Noto Naskh, 2.3x line height) */}
       <section className="mb-6">
         <GlassCard className="p-6 sm:p-8" variant="elevated">
           <div className="border-b border-black/5 pb-3 mb-6 text-center">
@@ -149,7 +126,7 @@ export default function QosidahDetailPage() {
         </GlassCard>
       </section>
 
-      {/* 4. Latin Transliteration & Indonesian Translation */}
+      {/* 3. Latin Transliteration & Indonesian Translation */}
       <section className="space-y-4 mb-6">
         <GlassCard className="p-5">
           <h3 className="text-xs font-bold uppercase tracking-wider text-[#996A19] mb-2 flex items-center gap-1.5">

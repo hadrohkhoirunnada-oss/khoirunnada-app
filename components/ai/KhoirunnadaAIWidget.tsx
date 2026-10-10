@@ -9,6 +9,11 @@ import {
   X,
   RotateCcw,
   ChevronRight,
+  Crown,
+  ClipboardList,
+  Wallet,
+  Users,
+  GitFork,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { processKhoirunnadaAI, AIMessage, AIAction, AIContext } from '@/lib/ai-engine';
@@ -20,9 +25,108 @@ import {
 } from '@/lib/ai/memory-adapter';
 import type { AIConversationMemory } from '@/lib/ai/memory-types';
 
+function OrganizationChart() {
+  return (
+    <section aria-label="Bagan struktur organisasi Hadroh Khoirunnada" className="mt-3 w-full max-w-full overflow-hidden rounded-2xl border border-[#D6C49E] bg-[#FCFBF8] p-3 text-[#151917] shadow-sm sm:p-4">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div>
+          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#9A762F]">Hadroh Khoirunnada</p>
+          <h3 className="mt-0.5 text-xs font-bold tracking-tight text-[#28251F] sm:text-sm">Struktur Organisasi</h3>
+        </div>
+        <span className="rounded-full border border-[#D6C49E] bg-[#F5F0E5] px-2 py-1 text-[9px] font-semibold text-[#765923]">
+          Susunan Pengurus
+        </span>
+      </div>
+
+      <div className="rounded-xl border border-[#B99A5C] bg-gradient-to-br from-[#684711] via-[#80591A] to-[#A47B31] p-3 text-white shadow-md shadow-[#70490E]/15 sm:p-3.5">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 shadow-inner">
+            <Crown className="h-5 w-5 text-[#F5DFA8]" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#F3DDA7]">Penanggung Jawab</p>
+            <p className="mt-1 text-xs font-bold leading-tight sm:text-sm">Muhammad Abi Dzarin</p>
+          </div>
+        </div>
+        <p className="mt-2.5 border-t border-white/20 pt-2 text-[10px] leading-relaxed text-white/85">
+          Pimpinan dan penanggung jawab utama organisasi
+        </p>
+      </div>
+
+      <div aria-hidden="true" className="mx-auto flex h-7 w-6 flex-col items-center">
+        <span className="h-5 w-px bg-[#B99A5C]" />
+        <span className="flex h-2.5 w-2.5 items-center justify-center rounded-full border-2 border-[#B99A5C] bg-[#FCFBF8]" />
+      </div>
+
+      <div className="rounded-xl border border-[#D9CEB5] bg-[#F6F2E9] p-2.5 sm:p-3">
+        <div className="mb-2.5 flex items-center justify-between gap-2 border-b border-[#E1D8C5] pb-2">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-[#8B6827] shadow-xs ring-1 ring-[#E7DDC7]">
+              <GitFork className="h-3.5 w-3.5" />
+            </span>
+            <div>
+              <p className="text-[10px] font-bold text-[#4C4029]">Kepengurusan</p>
+              <p className="mt-0.5 text-[9px] text-[#80765F]">Susunan jabatan</p>
+            </div>
+          </div>
+          <span className="rounded-full bg-white px-2 py-1 text-[9px] font-semibold text-[#80632B] ring-1 ring-[#E6DCC5]">4 jabatan</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl border border-[#E7E0D2] bg-white p-2.5 shadow-sm shadow-[#473719]/5 sm:p-3">
+            <div className="mb-2 flex items-center gap-1.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#F5EBD5] text-[#8B6827]">
+                <ClipboardList className="h-3.5 w-3.5" />
+              </span>
+              <span className="text-[8px] font-bold uppercase tracking-wide text-[#9A762F]">01</span>
+            </div>
+            <p className="text-[10px] font-bold text-[#383329] sm:text-[11px]">Ketua</p>
+            <p className="mt-1 break-words text-[10px] leading-snug text-[#6F6A5D]">Anwarul Mu&apos;arif</p>
+          </div>
+
+          <div className="rounded-xl border border-[#E7E0D2] bg-white p-2.5 shadow-sm shadow-[#473719]/5 sm:p-3">
+            <div className="mb-2 flex items-center gap-1.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#F5EBD5] text-[#8B6827]">
+                <Wallet className="h-3.5 w-3.5" />
+              </span>
+              <span className="text-[8px] font-bold uppercase tracking-wide text-[#9A762F]">02</span>
+            </div>
+            <p className="text-[10px] font-bold text-[#383329] sm:text-[11px]">Bendahara</p>
+            <p className="mt-1 break-words text-[10px] leading-snug text-[#6F6A5D]">Restu</p>
+          </div>
+
+          <div className="rounded-xl border border-[#E7E0D2] bg-white p-2.5 shadow-sm shadow-[#473719]/5 sm:p-3">
+            <div className="mb-2 flex items-center gap-1.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#F5EBD5] text-[#8B6827]">
+                <ClipboardList className="h-3.5 w-3.5" />
+              </span>
+              <span className="text-[8px] font-bold uppercase tracking-wide text-[#9A762F]">03</span>
+            </div>
+            <p className="text-[10px] font-bold text-[#383329] sm:text-[11px]">Sekretaris</p>
+            <p className="mt-1 break-words text-[10px] leading-snug text-[#6F6A5D]">Haniyah</p>
+          </div>
+
+          <div className="rounded-xl border border-[#E7E0D2] bg-white p-2.5 shadow-sm shadow-[#473719]/5 sm:p-3">
+            <div className="mb-2 flex items-center gap-1.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#F5EBD5] text-[#8B6827]">
+                <Users className="h-3.5 w-3.5" />
+              </span>
+              <span className="text-[8px] font-bold uppercase tracking-wide text-[#9A762F]">04</span>
+            </div>
+            <p className="text-[10px] font-bold text-[#383329] sm:text-[11px]">Pendamping</p>
+            <p className="mt-1 break-words text-[10px] leading-snug text-[#6F6A5D]">Muhammad Ali Mutohar</p>
+          </div>
+        </div>
+      </div>
+
+      <p className="mt-2 text-center text-[9px] leading-relaxed text-[#918873]">Bagan susunan kepengurusan Hadroh Khoirunnada</p>
+    </section>
+  );
+}
+
 export function KhoirunnadaAIWidget() {
   const router = useRouter();
-  const { currentUser, qosidahs, jobs, favorites } = useAppStore();
+  const { currentUser, qosidahs, categories, jobs, favorites } = useAppStore();
 
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
@@ -103,6 +207,7 @@ export function KhoirunnadaAIWidget() {
     const aiContext: AIContext = {
       currentUser,
       qosidahs,
+      categories,
       jobs,
       favorites,
       memory: memoryRef.current ?? undefined,
@@ -164,6 +269,7 @@ export function KhoirunnadaAIWidget() {
           text: response.text,
           timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
           actions: response.actions,
+          visualization: response.visualization,
         };
 
         setMessages((prev) => [...prev, aiMessage]);
@@ -184,6 +290,7 @@ export function KhoirunnadaAIWidget() {
         text: response.text,
         timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
         actions: response.actions,
+        visualization: response.visualization,
       };
 
       setMessages((prev) => [...prev, aiMessage]);
@@ -400,7 +507,7 @@ export function KhoirunnadaAIWidget() {
                 >
                   {/* Bubble Container */}
                   <div
-                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 ${
+                    className={`${msg.visualization === 'organization-chart' ? 'w-[95%] max-w-[95%] sm:max-w-[90%]' : 'max-w-[85%]'} rounded-2xl px-3.5 py-2.5 ${
                       msg.sender === 'user'
                         ? 'bg-[#151917] text-white rounded-br-xs border border-[#996A19]/35 shadow-sm'
                         : 'bg-white text-[#151917] border border-[#996A19]/15 rounded-bl-xs shadow-xs'
@@ -422,6 +529,7 @@ export function KhoirunnadaAIWidget() {
                     ) : (
                       <div className="text-xs break-words text-[#151917]">
                         {formatText(msg.text)}
+                        {msg.visualization === 'organization-chart' && <OrganizationChart />}
                       </div>
                     )}
 

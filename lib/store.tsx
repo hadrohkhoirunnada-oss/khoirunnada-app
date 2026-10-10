@@ -584,12 +584,20 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const markAsRecent = async (qosidahId: string) => {
+  const markAsRecent = useCallback(async (qosidahId: string) => {
+    const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (
+      !supabase ||
+      !uuidPattern.test(currentUser.id) ||
+      !uuidPattern.test(qosidahId) ||
+      !qosidahs.some((qosidah) => qosidah.id === qosidahId)
+    ) return;
+
     const client = ensureClient(supabase);
     const { error } = await client.from('qosidah_recent').upsert({ user_id: currentUser.id, qosidah_id: qosidahId, last_opened_at: new Date().toISOString() }, { onConflict: 'user_id,qosidah_id' });
     if (error) throw new Error(error.message);
     setRecentIds((items) => [qosidahId, ...items.filter((id) => id !== qosidahId)].slice(0, 8));
-  };
+  }, [supabase, currentUser.id, qosidahs]);
 
   const createQosidah: AppStoreContextType['createQosidah'] = async (input) => {
     const res = await fetch('/api/qosidah', {

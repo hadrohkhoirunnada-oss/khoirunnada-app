@@ -2,10 +2,13 @@ import type { Qosidah, Job, Profile } from '@/lib/types';
 
 import type { AIConversationMemory, EntityReference } from "./ai/memory-types.ts";
 import { processWithSecurityGate } from "./ai/security-gateway.ts";
+import { damerauLevenshtein } from './ai/matcher.ts';
+import { STATIC_KNOWLEDGE_ARTICLES } from './ai/static-knowledge.ts';
 
 export interface AIContext {
   currentUser?: Profile;
   qosidahs?: Qosidah[];
+  categories?: import('@/lib/types').QosidahCategory[];
   jobs?: Job[];
   favorites?: string[];
   memory?: AIConversationMemory;
@@ -31,6 +34,7 @@ export interface AIMessage {
   text: string;
   timestamp: string;
   actions?: AIAction[];
+  visualization?: 'organization-chart';
 }
 
 export interface AIResponse {
@@ -39,20 +43,19 @@ export interface AIResponse {
   isDeepSearch?: boolean;
   intent?: string;
   targetEntity?: EntityReference;
+  visualization?: 'organization-chart';
 }
 
 // Basis Pengetahuan Internal Hadroh Khoirunnada (KNOWLEDGE BASE)
 // Tanpa simbol * sama sekali
-const KNOWLEDGE_SEJARAH = `Sejarah Hadroh Khoirunnada:
-Grup seni hadroh Khoirunnada didirikan sebagai wadah syiar dakwah Islamiyah melalui alunan musik rebana dan qosidah sholawat. Nama "Khoirunnada" bermakna "Nada Kebaikan / Suara Kebaikan".
+const KNOWLEDGE_SEJARAH = 'Informasi mengenai sejarah Hadroh Khoirunnada sedang disusun dan diverifikasi dengan baik oleh developer.';
 
-Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muhammad SAW, Hadroh Khoirunnada aktif melayani undangan majelis maulid, peringatan hari besar Islam (PHBI), walimatul 'ursy, serta pengajian akbar dengan perpaduan qosidah klasik 'Arobiah dan tembang sholawat Jawa.`;
-
-const KNOWLEDGE_STRUKTUR = `Struktur Kepengurusan Hadroh Khoirunnada:
-- Penanggung Jawab: Muhammad Abi Dzarin (Penanggung jawab utama Hadroh Khoirunnada, arah kebijakan grup, dan pengembangan digital)
-- Pengurus Admin: Bertanggung jawab atas administrasi, manajemen jadwal booking acara, dan koordinasi personel
-- Bendahara: Mengatur tata kelola kas hadroh, transparansi keuangan, dan operasional perlengkapan
-- Personel Resmi: Tim vokal, penabuh terbang, bass, tam, dan darbuka yang berdedikasi menjaga harmoni setiap penampilan.`;
+const KNOWLEDGE_STRUKTUR = `Struktur Organisasi Hadroh Khoirunnada:
+- Penanggung Jawab: Muhammad Abi Dzarin
+- Ketua: Anwarul Mu'arif
+- Bendahara: Restu
+- Sekretaris: Haniyah
+- Pendamping: Muhammad Ali Mutohar`;
 
 const KNOWLEDGE_CARA_PAKAI = `Panduan Cara Menggunakan Aplikasi Khoirunnada:
 1. Beranda: Pantau ringkasan job terdekat, pengumuman hadroh, dan status keaktifan Anda.
@@ -107,12 +110,335 @@ function sanitize(result: AIResponse): AIResponse {
   };
 }
 
+function normalizeGreetingInput(input: string): string {
+  return input
+    .normalize('NFC')
+    .toLocaleLowerCase('id-ID')
+    .replace(/[.!?,;:'"`~()[\]{}]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function buildOpeningResponse(userInput: string, context: AIContext): AIResponse | undefined {
+  const query = normalizeGreetingInput(userInput);
+  const words = query.split(' ').filter(Boolean);
+  const greetingWords = new Set([
+    'halo', 'hello', 'hallo', 'hai', 'hi', 'hey', 'assalamualaikum',
+    'assalamu alaikum', 'assalamuallaikum', 'assalamualaikum wr wb',
+    'assalamu alaikum wr wb', 'kulonuwun', 'pagi', 'siang', 'sore', 'malam',
+  ]);
+  const isGreeting = greetingWords.has(query) ||
+    (words.length <= 4 && /^(hai|hi|hey|halo|hello|hallo)( ai| khoirunnada)?$/.test(query));
+
+  if (isGreeting) {
+    const isIslamicGreeting = query.startsWith('assalam');
+    const userName = context.currentUser?.name ? `, ${context.currentUser.name}` : '';
+    return sanitize({
+      text: isIslamicGreeting
+        ? `Wa'alaikumussalam warahmatullahi wabarakatuh${userName}! Saya Khoirunnada AI. Ada yang bisa saya bantu?`
+        : `Halo${userName}! Saya Khoirunnada AI. Ada yang bisa saya bantu hari ini?`,
+      actions: [
+        { label: '📖 Cari Qosidah', promptText: 'Carikan saya qosidah' },
+        { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
+      ],
+    });
+  }
+
+  return undefined;
+}
+
+function buildDeveloperSupportResponse(userInput: string): AIResponse | undefined {
+  const query = normalizeGreetingInput(userInput);
+  const asksForChangeOrReportsProblem =
+    /\b(bug|error|eror|kesalahan|bermasalah|masalah|gangguan|rusak|tidak berfungsi|gagal|tidak bisa|nggak bisa|gabisa|fitur baru|tambah(?:kan)? fitur|menambahkan fitur|permintaan fitur|usul(?:an)? fitur|saran fitur|perbaiki|dibetulkan|koreksi|salah lirik|liriknya salah|tambah(?:kan)? qosidah|qosidah baru|lagu baru)\b/.test(query);
+
+  return asksForChangeOrReportsProblem
+    ? sanitize({
+        text: 'Untuk melaporkan bug atau masalah aplikasi, mengusulkan fitur baru, atau meminta penambahan maupun koreksi qosidah, silakan hubungi developer/pengembang aplikasi melalui kontak berikut:\n\nWhatsApp: 085173057576\nEmail: nexarinbyrins@gmail.com\n\nSertakan detail kendala atau permintaan agar dapat ditindaklanjuti.',
+        actions: [{ label: '👨‍💻 Informasi Developer', promptText: 'Siapa developer aplikasi Khoirunnada?' }],
+      })
+    : undefined;
+}
+
+function buildAssistantIdentityResponse(userInput: string): AIResponse | undefined {
+  const query = normalizeGreetingInput(userInput);
+  const asksAssistantIdentity =
+    /\b(kamu siapa|siapa kamu|anda siapa|siapa anda|kamu itu siapa|kamu ini siapa|anda itu siapa|anda ini siapa|siapa sih kamu|kamu sebenarnya siapa|siapa dirimu|identitas kamu|identitas anda|tentang kamu|tentang khoirunnada ai|khoirunnada ai itu siapa|apa itu khoirunnada ai|apa tugas kamu|apa tugas anda|tugas kamu apa|tugas anda apa|fungsi kamu|fungsi anda|peran kamu|peran anda|kamu bisa apa|anda bisa apa|kamu ini ai apa)\b/.test(query);
+
+  if (!asksAssistantIdentity) return undefined;
+
+  return sanitize({
+    text: `Saya Khoirunnada AI, asisten digital resmi Hadroh Khoirunnada. Saya dirancang untuk membantu personel memperoleh informasi dan menggunakan layanan yang tersedia di aplikasi dengan lebih mudah.
+
+Yang dapat saya bantu antara lain:
+- Menemukan qosidah dalam katalog dan membantu membuka lirik yang tersedia.
+- Memberikan informasi jadwal job yang tercatat di aplikasi.
+- Menjelaskan panduan penggunaan dan fitur aplikasi.
+- Menyampaikan informasi umum tentang Hadroh Khoirunnada yang tersedia dalam basis pengetahuan saya.
+
+Jawaban saya mengacu pada data aplikasi dan informasi yang telah disediakan. Jika informasi belum tersedia atau pertanyaan masih belum jelas, saya akan meminta penjelasan atau menyarankan langkah yang sesuai, bukan mengarang jawaban. Untuk melaporkan bug, meminta fitur baru, atau mengusulkan penambahan maupun koreksi data qosidah, silakan hubungi developer/pengembang aplikasi melalui kanal resmi yang tersedia.`,
+    actions: [
+      { label: '📖 Cari Qosidah', promptText: 'Carikan saya qosidah' },
+      { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
+      { label: '💡 Panduan Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
+    ],
+  });
+}
+
+function buildHistoryStatusResponse(userInput: string): AIResponse | undefined {
+  const query = normalizeGreetingInput(userInput);
+  const words = query.match(/[\p{L}\p{N}]+/gu) || [];
+  const historyTerms = ['sejarah', 'histori', 'asal', 'usul', 'latar', 'berdiri', 'didirikan'];
+  const organizationTerms = ['khoirunnada', 'hadroh', 'hadrah', 'organisasi'];
+  const typoDistance = (word: string, candidates: string[]) => {
+    if (word.length < 5) return Number.POSITIVE_INFINITY;
+    return Math.min(...candidates.map((candidate) => damerauLevenshtein(word, candidate)));
+  };
+  const exactHistoryQuestion = words.some((word) => historyTerms.includes(word));
+  const historyTypo = words.some((word) => typoDistance(word, historyTerms) > 0 && typoDistance(word, historyTerms) <= 2);
+  const exactOrganizationMention = words.some((word) => organizationTerms.includes(word)) ||
+    /\b(grup kami|grup ini|organisasi ini)\b/.test(query);
+  const organizationTypo = words.some((word) => typoDistance(word, organizationTerms) > 0 && typoDistance(word, organizationTerms) <= 2);
+  const mentionsKhoirunnada = exactOrganizationMention || organizationTypo;
+  const namesAnotherHistoryTopic = /\b(islam|indonesia|dunia|nabi|rasul|kerajaan|perang|peradaban)\b/.test(query);
+  const isShortUnspecifiedHistoryQuestion = words.length <= 5;
+  const refersToHistory = exactHistoryQuestion || historyTypo;
+
+  if (!refersToHistory || (!mentionsKhoirunnada && (namesAnotherHistoryTopic || !isShortUnspecifiedHistoryQuestion))) {
+    return undefined;
+  }
+
+  if (historyTypo || organizationTypo) {
+    return sanitize({
+      text: 'Maaf, saya belum yakin dengan maksud pertanyaan Anda. Apakah yang Anda tanyakan adalah sejarah Hadroh Khoirunnada? Silakan konfirmasi atau tulis ulang pertanyaannya agar saya tidak salah memahami.',
+      actions: [{ label: '📜 Tanya Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' }],
+    });
+  }
+
+  return sanitize({
+    text: 'Informasi mengenai sejarah Hadroh Khoirunnada sedang disusun dan diverifikasi dengan baik oleh developer. Setelah materi sejarahnya siap, informasi tersebut akan tersedia agar dapat disampaikan secara akurat. Terima kasih atas pengertiannya.',
+    actions: [{ label: '👨‍💻 Hubungi Developer', promptText: 'Siapa developer aplikasi Khoirunnada?' }],
+  });
+}
+
+function buildDomainTypoResponse(userInput: string, context: AIContext): AIResponse | undefined {
+  const query = normalizeGreetingInput(userInput);
+  const words = query.match(/[\p{L}\p{N}]+/gu) || [];
+  const coreTerms = [
+    'khoirunnada', 'hadroh', 'hadrah', 'qosidah', 'qasidah', 'sholawat', 'jadwal', 'job',
+    'manggung', 'agenda', 'latihan', 'favorit', 'lirik', 'syair', 'terjemahan', 'sejarah',
+    'histori', 'struktur', 'organisasi', 'bagan', 'pengurus', 'bendahara', 'personel', 'anggota',
+    'panduan', 'tutorial', 'aplikasi', 'fitur', 'manfaat', 'kegunaan', 'developer',
+    'pengembang', 'pembuat', 'profil', 'keuangan', 'kas', 'booking', 'lokasi', 'terdekat',
+    'berapa', 'apakah', 'bagaimana', 'kapan', 'siapa', 'carikan', 'cari', 'tampilkan',
+    'berikan', 'tolong', 'jelaskan', 'sebutkan', 'makna', 'arti', 'lagu', 'qosidah',
+    'jawa', 'indonesia', 'arobiah', 'arab', 'kategori', 'jumlah', 'semua', 'seluruh', 'daftar', 'koleksi',
+  ];
+  const articleTerms = STATIC_KNOWLEDGE_ARTICLES.flatMap((article) => [article.title, ...article.keywords]);
+  const qosidahTerms = (context.qosidahs || []).flatMap((qosidah) => [
+    qosidah.title,
+    qosidah.alternate_title || '',
+    qosidah.category_name || '',
+    ...(qosidah.tags || []),
+  ]);
+  const commonWords = new Set([
+    'saya', 'kami', 'kamu', 'anda', 'yang', 'ini', 'itu', 'ada', 'bisa', 'akan', 'untuk',
+    'dari', 'pada', 'dengan', 'oleh', 'atau', 'juga', 'saja', 'mana', 'dong', 'sih',
+    'jawa', 'indonesia', 'arab', 'arobiah', 'kategori', 'jumlah', 'semua', 'seluruh', 'daftar', 'koleksi',
+  ]);
+  const domainTerms = [...coreTerms, ...articleTerms, ...qosidahTerms]
+    .flatMap((term) => term.toLocaleLowerCase('id-ID').match(/[\p{L}\p{N}]+/gu) || [])
+    .filter((term) => !['organissasi', 'caraa', 'kembang'].includes(term))
+    .filter((term) => term.length >= 4);
+  const uniqueTerms = [...new Set(domainTerms)];
+  const coreTermSet = new Set(coreTerms);
+  const isWithinDomain = words.some((word) => coreTermSet.has(word)) ||
+    words.some((word) => uniqueTerms.some((term) => {
+      if (word === term || word.length < 4 || commonWords.has(word)) return false;
+      const distance = damerauLevenshtein(word, term);
+      return distance > 0 && distance <= (Math.max(word.length, term.length) >= 9 ? 2 : 1);
+    }));
+
+  if (!isWithinDomain) return undefined;
+
+  const typoCandidates = words.flatMap((word) => {
+    if (word.length < 4 || commonWords.has(word) || uniqueTerms.includes(word)) return [];
+    const matches = uniqueTerms
+      .map((term) => ({ term, distance: damerauLevenshtein(word, term) }))
+      .filter(({ term, distance }) => distance > 0 && distance <= (Math.max(word.length, term.length) >= 9 ? 2 : 1))
+      .sort((a, b) => a.distance - b.distance);
+    if (matches.length === 0) return [];
+    const bestDistance = matches[0].distance;
+    const bestTerms = [...new Set(matches.filter((match) => match.distance === bestDistance).map((match) => match.term))];
+    return [{ word, suggestion: bestTerms.length === 1 ? bestTerms[0] : undefined }];
+  });
+
+  if (typoCandidates.length === 0) return undefined;
+
+  const firstTypo = typoCandidates[0];
+  const clarification = firstTypo.suggestion
+    ? `Saya mendeteksi kemungkinan salah ketik pada "${firstTypo.word}". Apakah yang Anda maksud "${firstTypo.suggestion}"? Mohon konfirmasi atau tulis ulang pertanyaannya agar saya tidak salah memahami.`
+    : `Saya mendeteksi kemungkinan salah ketik pada "${firstTypo.word}" dan belum yakin kata yang dimaksud. Mohon tulis ulang atau jelaskan pertanyaan Anda agar saya dapat membantu dengan tepat.`;
+
+  return sanitize({
+    text: clarification,
+    actions: [{ label: '✍️ Tulis Ulang Pertanyaan', promptText: 'Saya ingin menulis ulang pertanyaan saya.' }],
+  });
+}
+
+function buildQosidahCatalogResponse(userInput: string, context: AIContext): AIResponse | undefined {
+  const query = normalizeGreetingInput(userInput);
+  const containsQosidahTerm = /\b(qosidah|qasidah|sholawat|syair)\b/.test(query);
+  const hasRecentList = [...(context.memory?.turns || [])].some((turn) =>
+    /\b(qosidah|qasidah|sholawat)\b/.test(normalizeGreetingInput(turn.userQuery)) &&
+    /\b(semua|seluruh|daftar|list|tampilkan|judul|cari|carikan)\b/.test(normalizeGreetingInput(turn.userQuery))
+  );
+  const asksForLyrics = /\b(lirik|liriknya|teks|bait|arti|artinya|terjemahan|makna)\b/.test(query);
+  const qosidahs = context.qosidahs ?? [];
+  const normalizedQuery = ` ${query.replace(/[^\p{L}\p{N}]+/gu, ' ').trim()} `;
+  const mentionsSong = qosidahs.some((song) => [song.title, song.alternate_title || ''].some((title) => {
+    const normalizedTitle = normalizeGreetingInput(title).replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+    return normalizedTitle.length >= 3 && normalizedQuery.includes(` ${normalizedTitle} `);
+  }));
+  if (!containsQosidahTerm && !(asksForLyrics && (hasRecentList || mentionsSong))) return undefined;
+
+  const categories = context.categories ?? [...new Map(qosidahs.filter((song) => song.category_id && song.category_name).map((song) => [song.category_id, { id: song.category_id, name: song.category_name! }])).values()];
+  if (asksForLyrics) {
+    const normalizeTitle = (value: string) => normalizeGreetingInput(value).replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+    const selected = new Map<string, Qosidah>();
+    for (const song of qosidahs) {
+      const titleVariants = [song.title, song.alternate_title || '']
+        .map(normalizeTitle)
+        .filter((title) => title.length >= 3);
+      if (titleVariants.some((title) => ` ${query} `.includes(` ${title} `))) selected.set(song.id, song);
+    }
+
+    const recentListQuery = [...(context.memory?.turns || [])]
+      .reverse()
+      .find((turn) => /\b(qosidah|qasidah|sholawat)\b/.test(normalizeGreetingInput(turn.userQuery)) && /\b(semua|seluruh|daftar|list|tampilkan|judul|cari|carikan)\b/.test(normalizeGreetingInput(turn.userQuery)));
+    const ordinalNumbers = query.match(/\b\d+\b/g)?.map(Number) || [];
+    if (recentListQuery && ordinalNumbers.length > 0) {
+      const previousQuery = normalizeGreetingInput(recentListQuery.userQuery);
+      const previousCategory = categories.find((item) => {
+        const name = normalizeTitle(item.name);
+        return previousQuery.includes(name) || (item.id === 'qosidah-arobiah' && /\b(arobiah|arab|arabiah)\b/.test(previousQuery));
+      });
+      const orderedSongs = previousCategory
+        ? qosidahs.filter((song) => song.category_id === previousCategory.id)
+        : qosidahs;
+      for (const ordinal of ordinalNumbers) {
+        const song = orderedSongs[ordinal - 1];
+        if (song) selected.set(song.id, song);
+      }
+    }
+
+    if (selected.size === 0) {
+      return sanitize({
+        text: 'Tentu, saya bisa menampilkan lirik lengkap dan artinya. Saya belum dapat memastikan judul qosidah yang dimaksud. Silakan tulis judul qosidahnya, atau sebutkan nomor dari daftar yang baru saja ditampilkan.',
+        actions: [{ label: '📚 Lihat Daftar Qosidah', href: '/app/qosidah' }],
+        intent: 'clarify_qosidah_lyrics',
+      });
+    }
+
+    const lyricSections = [...selected.values()].map((song) => [
+      `${song.title}${song.category_name ? ` — ${song.category_name}` : ''}`,
+      'Teks Arab:',
+      song.arabic_text || 'Teks Arab tidak tersedia dalam data.',
+      'Lirik Latin:',
+      song.latin_text || 'Lirik Latin tidak tersedia dalam data.',
+      'Arti / Terjemahan:',
+      song.translation || 'Terjemahan belum tersedia dalam data.',
+    ].join('\n'));
+    const primarySong = selected.size === 1 ? [...selected.values()][0] : undefined;
+    return sanitize({
+      text: `Berikut lirik lengkap dan arti dari ${selected.size === 1 ? 'qosidah yang Anda pilih' : `${selected.size} qosidah yang Anda pilih`}, berdasarkan data katalog resmi:\n\n${lyricSections.join('\n\n────────────────────\n\n')}`,
+      intent: 'get_qosidah_lyrics',
+      targetEntity: primarySong ? { type: 'qosidah', id: primarySong.id, name: primarySong.title, category: primarySong.category_name } : undefined,
+      actions: [{ label: '📖 Buka Katalog Qosidah', href: '/app/qosidah' }],
+    });
+  }
+
+  const category = categories.find((item) => {
+    const words = item.name.toLocaleLowerCase('id-ID').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+    return query.includes(words) || (item.id === 'qosidah-arobiah' && /\b(arobiah|arab|arabiah)\b/.test(query));
+  });
+  const wantsCount = /\b(berapa|jumlah|banyak|total)\b/.test(query);
+  const wantsList = /\b(semua|seluruh|daftar|list|tampilkan|sebutkan|judul|cari|carikan)\b/.test(query);
+  const isFullLibraryRequest = /\b(semua|seluruh|daftar|list|tampilkan|sebutkan)\b/.test(query);
+  const isGenericCatalog = !category && !isFullLibraryRequest && /\b(cari|carikan|kategori|apa saja|apa aja)\b/.test(query);
+
+  if (isGenericCatalog) {
+    const categoryLines = categories.map((item) => {
+      const count = qosidahs.filter((song) => song.category_id === item.id).length;
+      return `• ${item.name}: ${count} qosidah`;
+    });
+    return sanitize({
+      text: `Berikut semua kategori qosidah yang tersedia di katalog Khoirunnada (${qosidahs.length} judul):\n\n${categoryLines.join('\n')}\n\nSebutkan kategori yang ingin Anda lihat, atau minta “tampilkan semua qosidah” untuk melihat seluruh judul.`,
+      actions: categories.slice(0, 4).map((item) => ({ label: `📚 ${item.name}`, promptText: `Tampilkan semua qosidah kategori ${item.name}` })),
+    });
+  }
+
+  if (!category) {
+    if (/\b(semua|seluruh|daftar|list|tampilkan)\b/.test(query)) {
+      const grouped = categories.map((item) => {
+        const songs = qosidahs.filter((song) => song.category_id === item.id);
+        return `${item.name} (${songs.length}):\n${songs.map((song, index) => `${index + 1}. ${song.title}`).join('\n') || 'Belum ada qosidah.'}`;
+      });
+      return sanitize({ text: `Berikut seluruh ${qosidahs.length} qosidah dalam data katalog resmi, dikelompokkan berdasarkan kategori:\n\n${grouped.join('\n\n')}`, actions: [{ label: '📖 Buka Katalog Qosidah', href: '/app/qosidah' }] });
+    }
+    return undefined;
+  }
+
+  const songs = qosidahs.filter((song) => song.category_id === category.id);
+  if (wantsCount && !wantsList) {
+    return sanitize({ text: `Kategori ${category.name} memiliki ${songs.length} qosidah dalam data katalog resmi Khoirunnada.`, actions: [{ label: `📚 Lihat ${category.name}`, promptText: `Tampilkan semua qosidah kategori ${category.name}` }] });
+  }
+  if (wantsList) {
+    const titles = songs.map((song, index) => `${index + 1}. ${song.title}`).join('\n');
+    return sanitize({ text: `Berikut seluruh ${songs.length} qosidah kategori ${category.name} sesuai data katalog resmi:\n\n${titles || 'Belum ada qosidah pada kategori ini.'}`, actions: [{ label: '📖 Buka Katalog Qosidah', href: '/app/qosidah' }] });
+  }
+  return undefined;
+}
+
+function buildOutOfScopeResponse(userInput: string): AIResponse | undefined {
+  const query = normalizeGreetingInput(userInput);
+  const explicitlyOutsideDomain =
+    /\b(politik|politikus|pemilu|pilpres|pileg|presiden|wakil presiden|partai politik|kampanye|pemerintahan|parlemen|dpr|dprd|demokrasi|kebijakan negara|kurs|saham|cuaca|resep masakan|rumus matematika)\b/.test(query);
+
+  if (!explicitlyOutsideDomain) return undefined;
+
+  return sanitize({
+    text: 'Maaf, pertanyaan tersebut berada di luar lingkup informasi resmi Khoirunnada AI. Saya berfokus membantu personel terkait informasi Hadroh Khoirunnada dan data yang tersedia di aplikasi, seperti qosidah, jadwal job, panduan aplikasi, serta organisasi.',
+    actions: [
+      { label: '📖 Cari Qosidah', promptText: 'Carikan saya qosidah' },
+      { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
+    ],
+  });
+}
+
+function buildOrganizationChartResponse(userInput: string): AIResponse | undefined {
+  const query = normalizeGreetingInput(userInput);
+  const asksForOrganizationStructure =
+    /\b(struktur|organisasi|kepengurusan|susunan pengurus|susunan organisasi|bagan|organigram|ketua|ketum|pengurus|bendahara|penanggung jawab|personel resmi)\b/.test(query);
+
+  if (!asksForOrganizationStructure) return undefined;
+
+  return sanitize({
+    text: 'Berikut bagan struktur organisasi Hadroh Khoirunnada berdasarkan informasi yang tersedia:',
+    visualization: 'organization-chart',
+    actions: [{ label: '📜 Informasi Sejarah', promptText: 'Bagaimana sejarah Khoirunnada?' }],
+  });
+}
+
 // Fungsi Pemrosesan Bahasa Alami (NLP Engine Internal Khoirunnada)
 export function processKhoirunnadaAI(
   userInput: string,
   context: AIContext,
   options?: ProcessAIOptions
 ): AIResponse {
+  const openingResponse = buildOpeningResponse(userInput, context);
+  if (openingResponse) return openingResponse;
+
   // FASE 7: CONTROLLED INTEGRATION ADAPTER
   // Feature flag default: OFF (false).
   // Hanya aktif jika options.enableV2Engine === true atau context.enableV2Engine === true.
@@ -132,6 +458,22 @@ export function processKhoirunnadaAI(
         const isAmbiguous = gateResult.decision === 'CLARIFY' || Boolean(gateResult.reasoningResult?.isAmbiguous);
         const topEntity = isAmbiguous || gateResult.decision === 'DENY' ? undefined : gateResult.reasoningResult?.targetEntity;
         const intent = gateResult.reasoningResult?.intent || gateResult.reasoningResult?.operationsExecuted?.[0]?.type;
+        if (gateResult.decision !== 'DENY') {
+          const typoResponse = buildDomainTypoResponse(userInput, context);
+          if (typoResponse) return typoResponse;
+          const qosidahCatalogResponse = buildQosidahCatalogResponse(userInput, context);
+          if (qosidahCatalogResponse) return qosidahCatalogResponse;
+          const outOfScopeResponse = buildOutOfScopeResponse(userInput);
+          if (outOfScopeResponse) return outOfScopeResponse;
+          const organizationChartResponse = buildOrganizationChartResponse(userInput);
+          if (organizationChartResponse) return organizationChartResponse;
+          const historyResponse = buildHistoryStatusResponse(userInput);
+          if (historyResponse) return historyResponse;
+          const identityResponse = buildAssistantIdentityResponse(userInput);
+          if (identityResponse) return identityResponse;
+          const supportResponse = buildDeveloperSupportResponse(userInput);
+          if (supportResponse) return supportResponse;
+        }
         return sanitize({
           ...gateResult.response,
           intent,
@@ -149,6 +491,27 @@ export function processKhoirunnadaAI(
       });
     }
   }
+
+  const typoResponse = buildDomainTypoResponse(userInput, context);
+  if (typoResponse) return typoResponse;
+
+  const qosidahCatalogResponse = buildQosidahCatalogResponse(userInput, context);
+  if (qosidahCatalogResponse) return qosidahCatalogResponse;
+
+  const outOfScopeResponse = buildOutOfScopeResponse(userInput);
+  if (outOfScopeResponse) return outOfScopeResponse;
+
+  const organizationChartResponse = buildOrganizationChartResponse(userInput);
+  if (organizationChartResponse) return organizationChartResponse;
+
+  const historyResponse = buildHistoryStatusResponse(userInput);
+  if (historyResponse) return historyResponse;
+
+  const identityResponse = buildAssistantIdentityResponse(userInput);
+  if (identityResponse) return identityResponse;
+
+  const supportResponse = buildDeveloperSupportResponse(userInput);
+  if (supportResponse) return supportResponse;
 
   // --- LEGACY ENGINE (DEFAULT: enableV2Engine = false) ---
   const query = userInput.toLowerCase().trim();
@@ -425,7 +788,7 @@ export function processKhoirunnadaAI(
 
   // 13. Fallback Respons Cerdas
   return sanitize({
-    text: `Maaf, saya belum memahami pertanyaan Anda secara spesifik. Sebagai Khoirunnada AI, saat ini saya memiliki pengetahuan lengkap seputar:\n\n- 📖 Pencarian 73 Qosidah (misal: "Carikan qosidah Mughrom")\n- 📅 Informasi Jadwal Job Hadroh\n- 💡 Panduan & Cara Pakai Aplikasi\n- 🏆 Manfaat Aplikasi Khoirunnada\n- 👨‍💻 Pengembang Aplikasi\n- 📜 Sejarah & Makna Nama Khoirunnada\n- 👥 Struktur Organisasi\n\nSilakan pilih salah satu topik di bawah atau ketik pertanyaan lain!`,
+    text: `Maaf, pertanyaan tersebut belum dapat saya pahami atau berada di luar lingkup informasi resmi Khoirunnada AI. Saya berfokus membantu personel terkait data Hadroh Khoirunnada yang tersedia, seperti pencarian qosidah, jadwal job, panduan aplikasi, profil pengembang, dan informasi organisasi. Jika maksud Anda berkaitan dengan Khoirunnada tetapi ada salah ketik, silakan tulis ulang atau jelaskan pertanyaannya agar saya tidak salah menjawab.`,
     actions: [
       { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
       { label: '🏆 Manfaat Aplikasi', promptText: 'Apa saja manfaat aplikasi ini?' },

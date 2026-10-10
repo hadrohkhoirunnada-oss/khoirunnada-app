@@ -84,11 +84,10 @@ export const STATIC_KNOWLEDGE_ARTICLES: StaticKnowledgeArticle[] = [
   },
   {
     id: 'static-sejarah',
-    title: 'Sejarah & Makna Nama Hadroh Khoirunnada',
+    title: 'Status Penyusunan Sejarah Hadroh Khoirunnada',
     category: 'sejarah',
     keywords: [
       'sejarah',
-      'sejarh',
       'asal usul',
       'latar belakang',
       'kapan berdiri',
@@ -108,10 +107,7 @@ export const STATIC_KNOWLEDGE_ARTICLES: StaticKnowledgeArticle[] = [
       'تاريخ',
       'تاريخ خير الندى',
     ],
-    content: `Sejarah Hadroh Khoirunnada:
-Grup seni hadroh Khoirunnada didirikan sebagai wadah syiar dakwah Islamiyah melalui alunan musik rebana dan qosidah sholawat. Nama "Khoirunnada" bermakna "Nada Kebaikan / Suara Kebaikan".
-
-Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muhammad SAW, Hadroh Khoirunnada aktif melayani undangan majelis maulid, peringatan hari besar Islam (PHBI), walimatul 'ursy, serta pengajian akbar dengan perpaduan qosidah klasik 'Arobiah dan tembang sholawat Jawa.`,
+    content: `Informasi mengenai sejarah Hadroh Khoirunnada sedang disusun dan diverifikasi dengan baik oleh developer. Setelah materi sejarahnya siap, informasi tersebut akan tersedia agar dapat disampaikan secara akurat.`,
     actions: [
       { label: '👥 Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
       { label: '📖 Daftar Qosidah', href: '/app/qosidah' },
@@ -147,11 +143,12 @@ Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muha
       'administrasi dan booking',
       'booking job',
     ],
-    content: `Struktur Kepengurusan Hadroh Khoirunnada:
-- Penanggung Jawab: Muhammad Abi Dzarin (Penanggung jawab utama Hadroh Khoirunnada, arah kebijakan grup, dan pengembangan digital)
-- Pengurus Admin: Bertanggung jawab atas administrasi, manajemen jadwal booking acara, dan koordinasi personel
-- Bendahara: Mengatur tata kelola kas hadroh, transparansi keuangan, dan operasional perlengkapan
-- Personel Resmi: Tim vokal, penabuh terbang, bass, tam, dan darbuka yang berdedikasi menjaga harmoni setiap penampilan.`,
+    content: `Struktur Organisasi Hadroh Khoirunnada:
+- Penanggung Jawab: Muhammad Abi Dzarin
+- Ketua: Anwarul Mu'arif
+- Bendahara: Restu
+- Sekretaris: Haniyah
+- Pendamping: Muhammad Ali Mutohar`,
     actions: [
       { label: '📜 Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
       { label: '👤 Profil Saya', href: '/app/profile' },
