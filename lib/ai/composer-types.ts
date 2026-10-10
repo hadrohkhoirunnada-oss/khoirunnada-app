@@ -43,6 +43,7 @@ export interface ExtractedCandidateFact {
 }
 
 export interface ExtractedFacts {
+  query?: string;
   status: ReasoningStatus;
   intent: string;
   entityName?: string;
@@ -52,6 +53,7 @@ export interface ExtractedFacts {
   jobs: ExtractedJobFact[];
   nearestJob?: ExtractedJobFact | null;
   count?: number;
+  requestedCount?: number;
   attributeName?: string;
   attributeValue?: string;
   staticContent?: string;

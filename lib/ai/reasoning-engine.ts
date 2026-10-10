@@ -77,7 +77,8 @@ export function executePlan(
       switch (op.type) {
         case 'FIND_QOSIDAH': {
           const qosidahs = context.qosidahs || [];
-          const matches = retrieveQosidahs(op.params.titleQuery, qosidahs, { limit: 5 });
+          const limit = typeof op.params.limit === 'number' ? Math.max(1, Math.min(50, op.params.limit)) : 5;
+          const matches = retrieveQosidahs(op.params.titleQuery, qosidahs, { limit });
           if (matches.length > 0) {
             data.qosidahs = matches.map((m) => m.item);
             targetEntity = {

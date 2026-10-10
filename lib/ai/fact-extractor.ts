@@ -130,6 +130,7 @@ export function extractFacts(
       : undefined;
 
   return {
+    query: result.plan?.query,
     status: result.status,
     intent: result.intent,
     entityName: result.targetEntity ? sanitizeText(result.targetEntity.name) : undefined,
@@ -139,6 +140,10 @@ export function extractFacts(
     jobs,
     nearestJob,
     count,
+    requestedCount: (() => {
+      const qosOp = result.plan?.operations?.find((o) => o.type === 'FIND_QOSIDAH');
+      return typeof qosOp?.params?.limit === 'number' ? qosOp.params.limit : undefined;
+    })(),
     attributeName: data.attributeName,
     attributeValue: sanitizeText(data.attributeValue),
     staticContent: sanitizeText(data.staticContent),

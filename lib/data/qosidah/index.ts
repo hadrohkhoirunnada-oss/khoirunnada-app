@@ -74,6 +74,31 @@ import { maulaYaSholli } from './maula-ya-sholli';
 import { atainakaBilfakhri } from './atainaka-bilfakhri';
 import { hadzaRasulullah } from './hadza-rasulullah';
 import { yaHanana } from './ya-hanana';
+import { robbahuBidzikrika } from './robbahu-bidzikrika';
+import { yaHadiyarRukhban } from './ya-hadiyar-rukhban';
+import { waqtiSahar } from './waqti-sahar';
+import { ajmalaDzikro } from './ajmala-dzikro';
+import { hannit } from './hannit';
+import { ilahanaAjzilLana } from './ilahana-ajzil-lana';
+import { hadzalQuran } from './hadzal-quran';
+import { huwaAhmadunWaMuhammad } from './huwa-ahmadun-wa-muhammad';
+import { waAsroBihiRobbi } from './wa-asro-bihi-robbi';
+import { gorridYaSyiblalIman } from './gorrid-ya-syiblal-iman';
+import { jinadDunya } from './jinad-dunya';
+import { asmaunNabi } from './asmaun-nabi';
+import { ghurobaa } from './ghurobaa';
+import { shollallohuAlaYasin } from './shollallohu-ala-yasin';
+import { assalamualaik } from './assalamualaik';
+import { alMadad } from './al-madad';
+import { ilalHabibiKhuzuni } from './ilal-habibi-khuzuni';
+import { sholatullohBilaTidad } from './sholatulloh-bila-tidad';
+import { muhammadIbniAbdillah } from './muhammad-ibni-abdillah';
+import { alaYaRosulallohKuntaRojauna } from './ala-ya-rosulalloh-kunta-rojauna';
+import { allohYaQosidBaitalloh } from './alloh-ya-qosid-baitalloh';
+import { mataharinyaDunia } from './mataharinya-dunia';
+import { suasanaDiKotaSantri } from './suasana-di-kota-santri';
+import { ibuAkuRindu } from './ibu-aku-rindu';
+import { duhaiSenangnyaPengantinBaru } from './duhai-senangnya-pengantin-baru';
 
 // ==============================================================================
 // 1. DAFTAR LIRIK QOSIDAH KHOIRUNNADA ('Arobiah & Jawa)
@@ -152,6 +177,31 @@ export const QOSIDAH_LIST: Qosidah[] = [
   atainakaBilfakhri,
   hadzaRasulullah,
   yaHanana,
+  robbahuBidzikrika,
+  yaHadiyarRukhban,
+  waqtiSahar,
+  ajmalaDzikro,
+  hannit,
+  ilahanaAjzilLana,
+  hadzalQuran,
+  huwaAhmadunWaMuhammad,
+  waAsroBihiRobbi,
+  gorridYaSyiblalIman,
+  jinadDunya,
+  asmaunNabi,
+  ghurobaa,
+  shollallohuAlaYasin,
+  assalamualaik,
+  alMadad,
+  ilalHabibiKhuzuni,
+  sholatullohBilaTidad,
+  muhammadIbniAbdillah,
+  alaYaRosulallohKuntaRojauna,
+  allohYaQosidBaitalloh,
+  mataharinyaDunia,
+  suasanaDiKotaSantri,
+  ibuAkuRindu,
+  duhaiSenangnyaPengantinBaru,
 ];
 
 // Re-export semua file & kategori agar modular dan mudah diakses
@@ -230,6 +280,31 @@ export {
   atainakaBilfakhri,
   hadzaRasulullah,
   yaHanana,
+  robbahuBidzikrika,
+  yaHadiyarRukhban,
+  waqtiSahar,
+  ajmalaDzikro,
+  hannit,
+  ilahanaAjzilLana,
+  hadzalQuran,
+  huwaAhmadunWaMuhammad,
+  waAsroBihiRobbi,
+  gorridYaSyiblalIman,
+  jinadDunya,
+  asmaunNabi,
+  ghurobaa,
+  shollallohuAlaYasin,
+  assalamualaik,
+  alMadad,
+  ilalHabibiKhuzuni,
+  sholatullohBilaTidad,
+  muhammadIbniAbdillah,
+  alaYaRosulallohKuntaRojauna,
+  allohYaQosidBaitalloh,
+  mataharinyaDunia,
+  suasanaDiKotaSantri,
+  ibuAkuRindu,
+  duhaiSenangnyaPengantinBaru,
 };
 
 // ==============================================================================

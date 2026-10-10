@@ -527,7 +527,7 @@ test('Evaluasi Kualitas Bahasa & Akurasi 205 Pertanyaan (V2 Brain Engine vs Lega
 
   if (failedV2Queries.length > 0) {
     console.log(`Catatan Kasus Belum Optimal di v2 (${failedV2Queries.length}):`);
-    failedV2Queries.slice(0, 10).forEach((f) => console.log(`- [${f.category}] "${f.query}" -> Target: ${f.target}`));
+    failedV2Queries.forEach((f) => console.log(`- [${f.category}] "${f.query}" -> Target: ${f.target}`));
   }
 
   // Assertions Mutlak

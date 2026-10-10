@@ -24,6 +24,20 @@ export const STATIC_KNOWLEDGE_ARTICLES: StaticKnowledgeArticle[] = [
       'kulo nuwun',
       'halo',
       'hai',
+      'bro',
+      'hay',
+      'hay ai',
+      'hei',
+      'oy',
+      'hi',
+      'hello',
+      'hallo',
+      'halo min',
+      'halo ai',
+      'halo bro',
+      'pagi bro',
+      'siang bro',
+      'malam bro',
       'pagi',
       'siang',
       'malam',
@@ -291,6 +305,36 @@ Rangkuman profil ini dihimpun secara objektif dari jejaring web publik di Google
       { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
     ],
   },
+  {
+    id: 'static-keuangan',
+    title: 'Informasi Kas & Keuangan Hadroh Khoirunnada',
+    category: 'organisasi',
+    keywords: [
+      'uang kas',
+      'kas hadroh',
+      'keuangan',
+      'saldo kas',
+      'catatan kas',
+      'laporan kas',
+      'laporan keuangan',
+      'transparansi keuangan',
+      'kas masuk',
+      'kas keluar',
+      'duit kas',
+      'keuangan hadroh',
+    ],
+    content: `Pengelolaan Kas & Keuangan Hadroh Khoirunnada:
+Tata kelola keuangan dan kas Hadroh Khoirunnada dikelola secara amanah, tertib, dan transparan oleh Bendahara Hadroh Khoirunnada.
+
+Pencatatan kas mencakup pemasukan (kas masuk) dari bisyaroh penampilan majelis, infaq, serta pengeluaran operasional (perawatan alat hadroh, perlengkapan, dan operasional majelis).
+
+Seluruh rekapitulasi transaksi kas dapat dipantau langsung melalui modul Keuangan pada aplikasi ini oleh personel dan pengurus yang berwenang.`,
+    actions: [
+      { label: '?? Modul Keuangan', href: '/app/finance' },
+      { label: '?? Struktur Pengurus', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
+      { label: '?? Cek Jadwal Job', href: '/app/jobs' },
+    ],
+  },
 ];
 
 /**
@@ -321,8 +365,12 @@ export function searchStaticKnowledge(
         break;
       }
 
-      // 2. Query mengandung keyword utuh
-      if (normQuery.includes(normKw)) {
+      // 2. Query mengandung keyword utuh (dengan batas kata jika keyword pendek)
+      const hasWord = normKw.length <= 3 
+        ? new RegExp(`(?:^|\\s)${normKw}(?:$|\\s)`, 'i').test(normQuery)
+        : normQuery.includes(normKw);
+
+      if (hasWord) {
         // Bobot ditingkatkan sesuai kepanjangan frasa spesifik
         const score = 0.85 + Math.min(0.14, normKw.length * 0.01);
         if (score > bestScore) {

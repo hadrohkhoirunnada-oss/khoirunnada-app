@@ -1,6 +1,6 @@
 import type { Qosidah, Job, Profile } from '@/lib/types';
 
-import type { AIConversationMemory } from "./ai/memory-types.ts";
+import type { AIConversationMemory, EntityReference } from "./ai/memory-types.ts";
 import { processWithSecurityGate } from "./ai/security-gateway.ts";
 
 export interface AIContext {
@@ -16,6 +16,7 @@ export interface ProcessAIOptions {
   enableV2Engine?: boolean;
   timeZone?: string;
   referenceDate?: Date;
+  seed?: number;
 }
 
 export interface AIAction {
@@ -36,6 +37,8 @@ export interface AIResponse {
   text: string;
   actions?: AIAction[];
   isDeepSearch?: boolean;
+  intent?: string;
+  targetEntity?: EntityReference;
 }
 
 // Basis Pengetahuan Internal Hadroh Khoirunnada (KNOWLEDGE BASE)
@@ -120,12 +123,20 @@ export function processKhoirunnadaAI(
       const gateResult = processWithSecurityGate(userInput, context, {
         timeZone: options?.timeZone,
         referenceDate: options?.referenceDate,
+        seed: options?.seed,
       });
 
       if (gateResult && gateResult.response && typeof gateResult.response.text === 'string') {
         // Jika keputusan keamanan menolak (DENY / UNAUTHORIZED),
         // kembalikan penolakan v2 langsung (dilarang fallback ke legacy agar tidak membypass security gateway)
-        return sanitize(gateResult.response);
+        const isAmbiguous = gateResult.decision === 'CLARIFY' || Boolean(gateResult.reasoningResult?.isAmbiguous);
+        const topEntity = isAmbiguous || gateResult.decision === 'DENY' ? undefined : gateResult.reasoningResult?.targetEntity;
+        const intent = gateResult.reasoningResult?.intent || gateResult.reasoningResult?.operationsExecuted?.[0]?.type;
+        return sanitize({
+          ...gateResult.response,
+          intent,
+          targetEntity: topEntity,
+        });
       }
     } catch {
       // Fallback aman jika terjadi anomali tak terduga pada v2

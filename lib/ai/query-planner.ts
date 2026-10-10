@@ -13,7 +13,7 @@ import {
   isContextDependentQuery,
   resolveConversationContext,
 } from './context-resolver.ts';
-import { normalizeText } from './normalizer.ts';
+import { normalizeText, detectNegation } from './normalizer.ts';
 import { searchStaticKnowledge } from './static-knowledge.ts';
 
 export interface PlannerOptions {
@@ -444,8 +444,147 @@ export function planQuery(
     normQuery.includes('hijrah') ||
     /[\u0600-\u06FF]/.test(query);
 
+  // 10a. Kueri Arti / Terjemahan / Makna / Lirik Spesifik Qosidah
+  const isAskingMeaning =
+    normQuery.includes('arti') ||
+    normQuery.includes('artinya') ||
+    normQuery.includes('terjemah') ||
+    normQuery.includes('terjemahan') ||
+    normQuery.includes('makna') ||
+    normQuery.includes('maknanya') ||
+    normQuery.includes('maksud');
+
+  const isAskingLyrics =
+    normQuery.includes('lirik') ||
+    normQuery.includes('syair') ||
+    normQuery.includes('teks arab') ||
+    normQuery.includes('lirik arab');
+
+  const PRONOUN_TERMS = new Set(['itu', 'ini', 'tadi', 'tersebut', 'lagu ini', 'qosidah ini', 'acara ini', 'job ini']);
+
+  if ((isAskingMeaning || isAskingLyrics) && (hasQosidahClues || normQuery.includes('padhang') || normQuery.includes('busyro') || normQuery.includes('mughrom') || normQuery.includes('sluku') || normQuery.includes('turi') || normQuery.includes('hijrotu'))) {
+    const candidateTitle = extractQosidahTitleFromAttributeQuery(query);
+    if (candidateTitle && candidateTitle.length >= 2 && !PRONOUN_TERMS.has(candidateTitle.toLowerCase())) {
+      const attr = isAskingMeaning ? 'translation' : 'lyrics';
+      return {
+        query,
+        intent: `get_${attr}`,
+        operations: [
+          {
+            id: 'op-find-attr-target',
+            type: 'FIND_QOSIDAH',
+            params: { titleQuery: candidateTitle, limit: 1 },
+            explanation: `Mencari qosidah "${candidateTitle}" untuk mengambil ${attr}`,
+          },
+          {
+            id: 'op-get-attr',
+            type: 'GET_ATTRIBUTE',
+            params: { attribute: attr },
+            dependsOn: 'op-find-attr-target',
+            explanation: `Mengambil ${attr} qosidah "${candidateTitle}"`,
+          },
+        ],
+        isMultiStep: true,
+        isFollowUp: false,
+        isSupported: true,
+      };
+    }
+  }
+
   if (hasQosidahClues) {
-    const cleaned = cleanQosidahQuery(query);
+    // Deteksi batasan jumlah qosidah (misal: "3 qosidah", "4 qosidah", "5 qosidah", "8 qosidah")
+    let targetLimit = 5;
+    const numMatch = normQuery.match(/\b(\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|dua belas|tiga belas|empat belas|lima belas|dua puluh)\b/);
+    if (numMatch) {
+      const wordMap: Record<string, number> = {
+        '1': 1, 'satu': 1,
+        '2': 2, 'dua': 2,
+        '3': 3, 'tiga': 3,
+        '4': 4, 'empat': 4,
+        '5': 5, 'lima': 5,
+        '6': 6, 'enam': 6,
+        '7': 7, 'tujuh': 7,
+        '8': 8, 'delapan': 8,
+        '9': 9, 'sembilan': 9,
+        '10': 10, 'sepuluh': 10,
+        '11': 11, 'sebelas': 11,
+        '12': 12, 'dua belas': 12,
+        '13': 13, 'tiga belas': 13,
+        '14': 14, 'empat belas': 14,
+        '15': 15, 'lima belas': 15,
+        '20': 20, 'dua puluh': 20,
+      };
+      const n = wordMap[numMatch[1].toLowerCase()] || parseInt(numMatch[1], 10);
+      if (n && !isNaN(n)) {
+        targetLimit = Math.max(1, Math.min(50, n));
+      }
+    }
+
+    let cleaned = cleanQosidahQuery(query);
+    cleaned = cleaned.replace(/^(\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|dua belas|tiga belas|empat belas|lima belas|dua puluh)\s*(qosidah|sholawat|lagu|syair|tembang)?/i, '').trim();
+
+    // Deteksi kategori spesifik (jawa / arobiah / indonesia)
+    const isArabicCatalogQuery = query.includes('قصيدة عربية') || normQuery.includes('qosidah arab') || normQuery.includes('qosidah arobiah');
+    const isJawaCatalogQuery = normQuery.includes('jawa') || normQuery.includes('jowo');
+    const isArobiahCatalogQuery = isArabicCatalogQuery || normQuery.includes('arobiah') || normQuery.includes('arab') || normQuery.includes('arob');
+    const isIndonesiaCatalogQuery = normQuery.includes('indonesia') || normQuery.includes('indo') || normQuery.includes('nasional');
+
+    const hasSpecificTitle =
+      normQuery.includes('busyro') ||
+      normQuery.includes('basyiro') ||
+      normQuery.includes('busro') ||
+      normQuery.includes('mughrom') ||
+      normQuery.includes('mugrom') ||
+      normQuery.includes('padhang') ||
+      normQuery.includes('padang') ||
+      normQuery.includes('sluku') ||
+      normQuery.includes('turi') ||
+      normQuery.includes('ilir') ||
+      normQuery.includes('hijrotu') ||
+      normQuery.includes('hijrah') ||
+      normQuery.includes('thoybah') ||
+      normQuery.includes('robbahu') ||
+      normQuery.includes('rukhban') ||
+      normQuery.includes('sahar') ||
+      normQuery.includes('dzikro') ||
+      normQuery.includes('hannit') ||
+      normQuery.includes('ajzil') ||
+      normQuery.includes('quran') ||
+      normQuery.includes('asro') ||
+      normQuery.includes('gorrid') ||
+      normQuery.includes('ghorrid') ||
+      normQuery.includes('syiblal') ||
+      normQuery.includes('dunya') ||
+      normQuery.includes('asmaun') ||
+      normQuery.includes('ghuroba') ||
+      normQuery.includes('yasin') ||
+      normQuery.includes('assalamu') ||
+      normQuery.includes('madad') ||
+      normQuery.includes('khuzuni') ||
+      normQuery.includes('tidad') ||
+      normQuery.includes('ibni') ||
+      normQuery.includes('rojauna') ||
+      normQuery.includes('sallimna') ||
+      normQuery.includes('baitalloh') ||
+      normQuery.includes('matahari') ||
+      normQuery.includes('santri') ||
+      normQuery.includes('rindu') ||
+      normQuery.includes('pengantin') ||
+      (/[؀-ۿ]/.test(query) && !isArabicCatalogQuery);
+
+    const negation = detectNegation(normQuery);
+    if (!hasSpecificTitle && !negation.hasNegation) {
+      if (isJawaCatalogQuery) {
+        cleaned = 'jawa';
+      } else if (isArobiahCatalogQuery) {
+        cleaned = 'arobiah';
+      } else if (isIndonesiaCatalogQuery) {
+        cleaned = 'indonesia';
+      } else if (!cleaned || /^\d+$/.test(cleaned) || cleaned === 'qosidah' || cleaned === 'sholawat') {
+        cleaned = 'qosidah';
+      }
+    }
+
     return {
       query,
       intent: 'find_qosidah',
@@ -453,8 +592,8 @@ export function planQuery(
         {
           id: 'op-find-single',
           type: 'FIND_QOSIDAH',
-          params: { titleQuery: cleaned || query },
-          explanation: `Mencari qosidah "${cleaned || query}"`,
+          params: { titleQuery: cleaned || query, limit: targetLimit },
+          explanation: `Mencari ${targetLimit} qosidah "${cleaned || query}"`,
         },
       ],
       isMultiStep: false,
@@ -484,10 +623,25 @@ export function planQuery(
 /**
  * Membersihkan awalan kueri pencarian qosidah agar hanya menyisakan judul/kata kunci.
  */
+/**
+ * Mengekstrak judul qosidah dari pertanyaan atribut spesifik (misal: "Apa arti qosidah Padhang Bulan?")
+ */
+function extractQosidahTitleFromAttributeQuery(raw: string): string {
+  let clean = raw.trim();
+  clean = clean.replace(/[?.,!]+$/, '').trim();
+  clean = clean.replace(/^(apa|bagaimana|tolong|coba|mohon)?\s*(sih|ya|dong)?\s*/i, '');
+  clean = clean.replace(/^(arti|artinya|terjemahan|terjemah|makna|maknanya|maksud|maksudnya)\s+(dari\s+|tentang\s+)?/i, '');
+  clean = clean.replace(/^(lirik|syair|bacaan|teks\s+arab|teks\s+latin|teks)\s+(dari\s+|tentang\s+)?/i, '');
+  clean = clean.replace(/^(qosidah|sholawat|lagu|tembang|kidung|syair)\s+/i, '');
+  clean = clean.replace(/\s+(itu\s+apa|apa\s+sih|apa\s+artinya|apa|artinya|dong|ya)$/i, '');
+  return clean.trim();
+}
+
 function cleanQosidahQuery(raw: string): string {
   let clean = raw.trim();
   clean = clean.replace(/^(jelaskan\s+(secara\s+detail\s+)?(tentang\s+)?)/i, '');
-  clean = clean.replace(/^(carikan|cariin|cari|buka|lihat|bacakan|golekno|padosaken)\s+(saya\s+|dong\s+|in\s+)?(qosidah\s+|sholawat\s+|lagu\s+|syair\s+|lirik\s+|tembang\s+)?/i, '');
+  clean = clean.replace(/^(suruh\s+)?(carikan|cariin|cari|buka|lihat|bacakan|golekno|padosaken)\s+(saya\s+|dong\s+|in\s+)?/i, '');
+  clean = clean.replace(/^(\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|sebelas|dua belas|tiga belas|empat belas|lima belas|dua puluh)\s+(qosidah\s+|sholawat\s+|lagu\s+|syair\s+|lirik\s+|tembang\s+)?/i, '');
   clean = clean.replace(/^(qosidah|sholawat|lagu|syair|lirik|tembang)\s+/i, '');
   return clean.trim();
 }

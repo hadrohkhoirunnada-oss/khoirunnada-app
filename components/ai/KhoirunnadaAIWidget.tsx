@@ -11,7 +11,14 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { processKhoirunnadaAI, AIMessage, AIAction } from '@/lib/ai-engine';
+import { processKhoirunnadaAI, AIMessage, AIAction, AIContext } from '@/lib/ai-engine';
+import {
+  createMemorySession,
+  isMemorySessionValid,
+  resetMemorySession,
+  recordSessionTurn,
+} from '@/lib/ai/memory-adapter';
+import type { AIConversationMemory } from '@/lib/ai/memory-types';
 
 export function KhoirunnadaAIWidget() {
   const router = useRouter();
@@ -39,9 +46,17 @@ export function KhoirunnadaAIWidget() {
     ],
   };
 
-  const [messages, setMessages] = useState<AIMessage[]>([initialGreeting]);
+  const [messages, setMessages] = useState<AIMessage[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Memori percakapan sesi lokal instance widget (tidak menggunakan singleton global)
+  const memoryRef = useRef<AIConversationMemory | null>(null);
+
+  // Bersihkan dan inisialisasi ulang memori saat terjadi pergantian akun atau logout
+  useEffect(() => {
+    memoryRef.current = createMemorySession(currentUser?.id);
+  }, [currentUser?.id]);
 
   // Bersihkan semua timer pencarian saat unmount
   useEffect(() => {
@@ -80,12 +95,47 @@ export function KhoirunnadaAIWidget() {
     setInputValue('');
     setIsTyping(true);
 
-    const response = processKhoirunnadaAI(text, {
+    // Aktivasi Brain Engine v2 HANYA di lingkungan development lokal
+    const isDev = process.env.NODE_ENV === 'development';
+
+    if (isDev) {
+      if (!isMemorySessionValid(memoryRef.current, currentUser?.id)) {
+        memoryRef.current = createMemorySession(currentUser?.id);
+      }
+    }
+
+    const aiContext: AIContext = {
       currentUser,
       qosidahs,
       jobs,
       favorites,
-    });
+      memory: isDev ? (memoryRef.current ?? undefined) : undefined,
+    };
+
+    let response;
+    try {
+      response = processKhoirunnadaAI(text, aiContext, {
+        enableV2Engine: isDev,
+        timeZone: 'Asia/Makassar',
+        seed: Date.now(),
+      });
+      if (isDev && memoryRef.current) {
+        memoryRef.current = recordSessionTurn(
+          memoryRef.current,
+          text,
+          response.intent,
+          response.targetEntity
+        );
+      }
+    } catch {
+      response = {
+        text: 'Afwan, terjadi kendala saat memproses pesan Anda. Silakan coba sesaat lagi.',
+        actions: [
+          { label: '📖 Cari Qosidah', promptText: 'Carikan saya qosidah' },
+          { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
+        ],
+      };
+    }
 
     // Fitur Khusus: Simulasi Penelusuran Google & Web secara natural (~10 Detik)
     if (response.isDeepSearch) {
@@ -162,8 +212,10 @@ export function KhoirunnadaAIWidget() {
     searchTimersRef.current = [];
     setIsTyping(false);
     setThinkingStatus('Khoirunnada AI sedang berpikir...');
-    setMessages([initialGreeting]);
+    setMessages([]);
     setInputValue('');
+    // Reset sesi memori percakapan
+    memoryRef.current = resetMemorySession(currentUser?.id);
   };
 
   // Render teks format rapi tanpa simbol * sama sekali
@@ -326,8 +378,26 @@ export function KhoirunnadaAIWidget() {
             </div>
 
             {/* Chat Thread Messages Area */}
-            <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3 bg-[#F9F7F2]">
-              {messages.map((msg) => (
+            <div
+              className={`flex-1 overflow-y-auto p-3.5 sm:p-4 bg-[#F9F7F2] ${
+                messages.length === 0 ? 'flex flex-col items-center justify-center' : 'space-y-3'
+              }`}
+            >
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center text-center p-4 max-w-xs animate-in fade-in zoom-in-95 duration-300 select-none">
+                  <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#70490E] via-[#996A19] to-[#D4A346] text-white flex items-center justify-center shadow-md shadow-[#996A19]/25 mb-3 border border-white/60">
+                    <Bot className="w-6 h-6 text-white" />
+                    <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white shadow-xs" />
+                  </div>
+                  <h3 className="text-base font-bold text-[#151917] tracking-tight">
+                    Assalamu'alaikum{currentUser?.name ? `, ${currentUser.name}` : ''}! 🙏
+                  </h3>
+                  <p className="text-xs text-[#70490E] mt-1 font-medium leading-relaxed">
+                    Ada yang bisa Khoirunnada AI bantu hari ini?
+                  </p>
+                </div>
+              ) : (
+                messages.map((msg) => (
                 <div
                   key={msg.id}
                   className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
@@ -387,7 +457,8 @@ export function KhoirunnadaAIWidget() {
                     </div>
                   )}
                 </div>
-              ))}
+              )))
+              }
 
               {/* Typing / Thinking Indicator (Sederhana & Dinamis seperti AI lainnya) */}
               {isTyping && (

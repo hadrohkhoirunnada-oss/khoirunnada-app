@@ -2,8 +2,8 @@ import type { Qosidah } from '@/lib/types';
 
 export const subhanamanDzikruhu: Qosidah = {
   id: "2b4f53ca-9a37-45b9-95ae-231816602c81",
-  title: "Subhanaman dzikruhu",
-  alternate_title: "Subhaana Man Dzikruhuu Syifaa",
+  title: "Subhana Man",
+  alternate_title: "Subhanaman Dzikruhu / Subhaana Man Dzikruhuu Syifaa",
   category_id: 'qosidah-arobiah',
   category_name: "Qosidah 'Arobiah",
   arabic_text: "سُبْحَانَ مَنْ ذِكْرُهُ شِفَاءُ الْقُلُوبِ\nوَحَمْدُهُ يُذْهِبُ عَنَّا الْكُرُوبَ\n\nيَا رَبَّنَا يَا وَاسِعَ الْإِحْسَانِ\nتُبْ وَاعْفُ عَنَّا وَاغْفِرِ الذُّنُوبَ",

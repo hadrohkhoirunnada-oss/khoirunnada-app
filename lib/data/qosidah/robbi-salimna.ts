@@ -2,8 +2,8 @@ import type { Qosidah } from '@/lib/types';
 
 export const robbiSalimna: Qosidah = {
   id: "18c22bbe-2802-4e38-bad8-faeb3d5e388b",
-  title: "Robbi salimna",
-  alternate_title: "Robbi Sallimnaa Warhamnaa",
+  title: "Ya Robbi Sallimna",
+  alternate_title: "Robbi Salimna / Robbi Sallimnaa Warhamnaa",
   category_id: 'qosidah-arobiah',
   category_name: "Qosidah 'Arobiah",
   arabic_text: "رَبِّ سَلِّمْنَا وَارْحَمْنَا يَا كَرِيمْ\nوَاهْدِنَا صِرَاطَكَ الْمُسْتَقِيمْ\n\nبِجَاهِ طَهَ الرَّسُولِ الْمُجْتَبَى\nنَجِّنَا مِنْ عَذَابِ الْجَحِيمْ",

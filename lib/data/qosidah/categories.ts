@@ -15,4 +15,11 @@ export const QOSIDAH_CATEGORIES: QosidahCategory[] = [
     sort_order: 2,
     is_active: true,
   },
+  {
+    id: 'qosidah-indonesia',
+    name: 'Qosidah Indonesia',
+    slug: 'qosidah-indonesia',
+    sort_order: 3,
+    is_active: true,
+  },
 ];

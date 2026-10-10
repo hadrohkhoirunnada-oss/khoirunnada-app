@@ -23,72 +23,15 @@ function pickVariation<T>(list: T[], seed?: number, salt: number = 0): T {
 /**
  * Menyusun kalimat pembuka percakapan berdasarkan gaya dan intent.
  */
-function buildOpener(facts: ExtractedFacts, style: ResponseStyle, seed?: number): string {
-  if (style === 'concise') {
-    return '';
-  }
-
-  // Jika data kosong pada jadwal atau atribut tidak tersedia, jangan gunakan pembuka "Alhamdulillah"
-  if (
-    (facts.intent.includes('job') && facts.jobs.length === 0 && !facts.nearestJob) ||
-    (facts.attributeName && !facts.attributeValue)
-  ) {
-    return '';
-  }
-
-  const informativeOpeners = [
-    'Alhamdulillah,',
-    'Insya Allah,',
-    'Baik, berikut informasi yang Anda butuhkan:',
-    'Berdasarkan data Hadroh Khoirunnada,',
-  ];
-
-  const detailedOpeners = [
-    'Berdasarkan penelusuran arsip resmi Hadroh Khoirunnada,',
-    'Berikut adalah rincian data lengkap yang tercatat di sistem Hadroh Khoirunnada:',
-    'Alhamdulillah, data resmi telah dihimpun sebagai berikut:',
-  ];
-
-  if (style === 'detailed') {
-    return pickVariation(detailedOpeners, seed, 1);
-  }
-
-  return pickVariation(informativeOpeners, seed, 2);
+function buildOpener(_facts: ExtractedFacts, _style: ResponseStyle, _seed?: number): string {
+  return '';
 }
 
 /**
  * Menyusun kalimat penutup percakapan yang santun.
  */
-function buildCloser(facts: ExtractedFacts, style: ResponseStyle, seed?: number): string {
-  if (style === 'concise') {
-    return '';
-  }
-
-  // Jika data kosong, jangan tampilkan tawaran tindakan detail
-  if (
-    (facts.intent.includes('job') && facts.jobs.length === 0 && !facts.nearestJob) ||
-    (facts.attributeName && !facts.attributeValue)
-  ) {
-    return '';
-  }
-
-  const informativeClosers = [
-    'Silakan ketuk tombol di bawah untuk langsung membuka detailnya:',
-    'Semoga informasi ini bermanfaat untuk syiar sholawat kita.',
-    'Ada yang ingin Anda tanyakan lagi seputar Hadroh Khoirunnada?',
-  ];
-
-  const detailedClosers = [
-    'Untuk informasi selengkapnya atau penugasan personel, silakan buka menu terkait di aplikasi.',
-    'Data ini diperbarui secara berkala sesuai koordinasi pengurus Hadroh Khoirunnada.',
-    'Semoga mempermudah persiapan dan penampilan majelis sholawat.',
-  ];
-
-  if (style === 'detailed') {
-    return pickVariation(detailedClosers, seed, 5);
-  }
-
-  return pickVariation(informativeClosers, seed, 7);
+function buildCloser(_facts: ExtractedFacts, _style: ResponseStyle, _seed?: number): string {
+  return '';
 }
 
 /**
@@ -120,8 +63,10 @@ function formatQosidahBody(facts: ExtractedFacts, style: ResponseStyle): string 
     }
 
     // Informative (default)
-    const preview = q.snippet ? `\n\nBait awalan syair:\n"${q.snippet}..."` : '';
-    return `Saya menemukan qosidah ${q.title}${cat}.${preview}`;
+    const arabicSnippet = q.arabic ? `\n\nTeks Arab:\n${q.arabic.split('\n').slice(0, 2).join('\n')}` : '';
+    const preview = q.snippet ? `\n\nBait Awalan Latin:\n"${q.snippet}..."` : '';
+    const transPart = q.translation ? `\n\nArti Singkat:\n"${q.translation}"` : '';
+    return `Berikut qosidah ${q.title}${cat}:${arabicSnippet}${preview}${transPart}`;
   }
 
   // Multi-match (2 atau lebih qosidah)
@@ -131,19 +76,25 @@ function formatQosidahBody(facts: ExtractedFacts, style: ResponseStyle): string 
   }
 
   const listText = qosidahs
-    .slice(0, 3)
     .map((q, idx) => {
       const cat = q.category ? ` (${q.category})` : '';
+      const firstArabicLine = q.arabic ? q.arabic.split('\n').filter(Boolean)[0] : '';
+      const arabicSnippet = firstArabicLine ? `\n   Arab: ${firstArabicLine}` : '';
       const preview = q.snippet ? `\n   Bait awalan: "${q.snippet}..."` : '';
-      return `${idx + 1}. ${q.title}${cat}${preview}`;
+      return `${idx + 1}. ${q.title}${cat}${arabicSnippet}${preview}`;
     })
     .join('\n\n');
 
+  const countHeader =
+    facts.requestedCount && qosidahs.length < facts.requestedCount
+      ? `Dalam arsip Hadroh Khoirunnada saat ini tersedia ${qosidahs.length} qosidah yang cocok:`
+      : `Ditemukan ${qosidahs.length} qosidah sholawat yang cocok:`;
+
   if (style === 'detailed') {
-    return `Ditemukan ${qosidahs.length} qosidah yang relevan dalam katalog resmi:\n\n${listText}\n\nAnda dapat memilih salah satu qosidah untuk membaca teks lengkap dan terjemahan.`;
+    return `${countHeader}\n\n${listText}\n\nAnda dapat memilih salah satu qosidah untuk membaca teks lengkap dan terjemahan.`;
   }
 
-  return `Alhamdulillah, saya menemukan ${qosidahs.length} qosidah yang cocok:\n\n${listText}`;
+  return `${countHeader}\n\n${listText}`;
 }
 
 /**
@@ -216,20 +167,29 @@ function formatAttributeBody(facts: ExtractedFacts, style: ResponseStyle): strin
   }
 
   if (attr === 'translation') {
+    const q = facts.qosidahs.find((item) => item.title.toLowerCase() === entity.toLowerCase()) || facts.qosidahs[0];
+    const cat = q?.category ? ` (${q.category})` : '';
+    const arabicPart = q?.arabic ? `Teks Arab:\n${q.arabic}\n\n` : '';
+    const latinPart = q?.snippet ? `Bait Latin:\n"${q.snippet}..."\n\n` : '';
+
     if (style === 'concise') {
       return `Terjemahan ${entity}:\n"${val}"`;
     }
     if (style === 'detailed') {
-      return `Berikut adalah terjemahan resmi bahasa Indonesia untuk qosidah ${entity}:\n\n"${val}"\n\nTerjemahan ini selaras dengan makna syair dalam literatur qosidah sholawat.`;
+      return `Berikut adalah rincian teks dan makna qosidah ${entity}${cat}:\n\n${arabicPart}${latinPart}Artinya:\n"${val}"`;
     }
-    return `Berikut terjemahan qosidah ${entity}:\n\n"${val}"`;
+    return `Berikut arti dan terjemahan qosidah ${entity}${cat}:\n\n${arabicPart}${latinPart}Artinya:\n"${val}"`;
   }
 
   if (attr === 'lyrics') {
+    const q = facts.qosidahs.find((item) => item.title.toLowerCase() === entity.toLowerCase()) || facts.qosidahs[0];
+    const cat = q?.category ? ` (${q.category})` : '';
+    const arabicPart = q?.arabic ? `Teks Arab:\n${q.arabic}\n\n` : '';
+
     if (style === 'concise') {
-      return `Syair ${entity}:\n"${val}"`;
+      return `Syair ${entity}:\n${val}`;
     }
-    return `Berikut cuplikan syair untuk ${entity}:\n\n"${val}"`;
+    return `Berikut syair qosidah ${entity}${cat}:\n\n${arabicPart}Syair Latin:\n"${val}"`;
   }
 
   if (attr === 'location') {
