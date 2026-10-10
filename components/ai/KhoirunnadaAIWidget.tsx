@@ -95,13 +95,9 @@ export function KhoirunnadaAIWidget() {
     setInputValue('');
     setIsTyping(true);
 
-    // Aktivasi Brain Engine v2 HANYA di lingkungan development lokal
-    const isDev = process.env.NODE_ENV === 'development';
-
-    if (isDev) {
-      if (!isMemorySessionValid(memoryRef.current, currentUser?.id)) {
-        memoryRef.current = createMemorySession(currentUser?.id);
-      }
+    // Aktivasi Brain Engine v2 dan Memori Percakapan secara penuh di semua lingkungan (Local & Live)
+    if (!isMemorySessionValid(memoryRef.current, currentUser?.id)) {
+      memoryRef.current = createMemorySession(currentUser?.id);
     }
 
     const aiContext: AIContext = {
@@ -109,17 +105,17 @@ export function KhoirunnadaAIWidget() {
       qosidahs,
       jobs,
       favorites,
-      memory: isDev ? (memoryRef.current ?? undefined) : undefined,
+      memory: memoryRef.current ?? undefined,
     };
 
     let response;
     try {
       response = processKhoirunnadaAI(text, aiContext, {
-        enableV2Engine: isDev,
+        enableV2Engine: true,
         timeZone: 'Asia/Makassar',
         seed: Date.now(),
       });
-      if (isDev && memoryRef.current) {
+      if (memoryRef.current) {
         memoryRef.current = recordSessionTurn(
           memoryRef.current,
           text,
