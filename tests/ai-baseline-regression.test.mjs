@@ -106,14 +106,14 @@ test('2. Profil Khusus: Siapa Dzarin (Deep Search Mode ~10 Detik)', () => {
   assert.ok(res.text.includes('Muhammad Abi Dzarin'));
   assert.ok(res.text.includes('Nexarin By-Rins'));
   assert.ok(res.text.includes('Kotanagaya, 15 September 2006'));
-  assert.ok(res.text.includes('Ketua Umum Hadroh Khoirunnada'));
+  assert.ok(res.text.includes('Penanggung Jawab Khoirunnada') || res.text.includes('Penanggung Jawab'));
   assertNoAsterisks(res.text);
 });
 
 test('3. Pembuat / Pengembang Aplikasi (Memiliki Opsi Siapa Dzarin?)', () => {
   const res = processKhoirunnadaAI('Siapa yang membuat dan mengembangkan aplikasi ini?', baseContext);
   assert.ok(res.text.includes('Muhammad Abi Dzarin'));
-  assert.ok(res.text.includes('Ketua Umum Hadroh Khoirunnada'));
+  assert.ok(res.text.includes('Penanggung Jawab Khoirunnada') || res.text.includes('Penanggung Jawab'));
   const hasDzarinAction = res.actions?.some((a) => a.promptText === 'Siapa Dzarin?');
   assert.ok(hasDzarinAction, 'Harus menyediakan opsi tindak lanjut Siapa Dzarin?');
   assertNoAsterisks(res.text);

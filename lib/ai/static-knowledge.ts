@@ -129,6 +129,9 @@ Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muha
       'ketua',
       'ketua umum',
       'ketum',
+      'penanggung jawab',
+      'penanggung jawab khoirunnada',
+      'pj',
       'siapa ketua',
       'pengurus',
       'bendahara',
@@ -145,7 +148,7 @@ Berangkat dari kebersamaan dan kecintaan para pemuda terhadap sholawat Nabi Muha
       'booking job',
     ],
     content: `Struktur Kepengurusan Hadroh Khoirunnada:
-- Ketua Umum: Muhammad Abi Dzarin (Penanggung jawab umum, arah kebijakan grup, dan pengembangan digital)
+- Penanggung Jawab: Muhammad Abi Dzarin (Penanggung jawab utama Hadroh Khoirunnada, arah kebijakan grup, dan pengembangan digital)
 - Pengurus Admin: Bertanggung jawab atas administrasi, manajemen jadwal booking acara, dan koordinasi personel
 - Bendahara: Mengatur tata kelola kas hadroh, transparansi keuangan, dan operasional perlengkapan
 - Personel Resmi: Tim vokal, penabuh terbang, bass, tam, dan darbuka yang berdedikasi menjaga harmoni setiap penampilan.`,
@@ -249,7 +252,7 @@ Aplikasi web resmi Hadroh Khoirunnada dirancang, dibangun, dan dikembangkan seca
 
 Muhammad Abi Dzarin merupakan Co-Founder Nexarin By-Rins yang berdedikasi dalam pengembangan inovasi teknologi digital dan solusi perangkat lunak.
 
-Di dalam Hadroh Khoirunnada, beliau mengemban amanah sebagai Ketua Umum Hadroh Khoirunnada yang bertanggung jawab penuh atas kepemimpinan grup, arah kebijakan organisasi, serta transformasi inovasi digital demi kemudahan seluruh personel dan pecinta sholawat.`,
+Di dalam Hadroh Khoirunnada, beliau mengemban amanah sebagai Penanggung Jawab Khoirunnada yang bertanggung jawab penuh atas kepemimpinan grup, arah kebijakan organisasi, serta transformasi inovasi digital demi kemudahan seluruh personel dan pecinta sholawat.`,
     actions: [
       { label: '👤 Siapa Dzarin?', promptText: 'Siapa Dzarin?' },
       { label: '🏛️ Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
@@ -291,7 +294,7 @@ Biodata Pribadi:
 
 Kiprah Profesional & Rekam Jejak:
 - Co-Founder Nexarin By-Rins: Berperan aktif dalam merancang dan mengembangkan inovasi produk teknologi digital, perancangan perangkat lunak, serta solusi kreatif berbasis web.
-- Ketua Umum Hadroh Khoirunnada: Memegang amanah kepemimpinan tertinggi dalam membina grup seni hadroh, tata kelola manajemen personel, sekaligus arsitek utama (lead engineer) di balik sistem digital Khoirunnada.
+- Penanggung Jawab Khoirunnada: Memegang amanah kepemimpinan tertinggi dan penanggung jawab utama dalam membina grup seni hadroh, tata kelola manajemen personel, sekaligus arsitek utama di balik sistem digital Khoirunnada.
 
 Bidang Keahlian & Fokus:
 - Fullstack Web & Application Engineering
