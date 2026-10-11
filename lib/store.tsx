@@ -65,6 +65,8 @@ interface AppStoreContextType {
   refreshPublicFinanceTransactions: () => Promise<void>;
   financeCategories: FinanceCategory[];
   addTransaction: (transaction: Omit<FinanceTransaction, 'id' | 'created_at' | 'created_by' | 'created_by_name'>) => Promise<FinanceTransaction>;
+  updateTransaction: (transaction: Pick<FinanceTransaction, 'id' | 'type' | 'category_id' | 'category_name' | 'amount' | 'transaction_date' | 'description' | 'job_id'>) => Promise<void>;
+  deleteTransaction: (id: string) => Promise<void>;
   uploadReceipt: (file: File) => Promise<string>;
   balance: number;
   incomeThisMonth: number;
@@ -654,6 +656,37 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     return created;
   };
 
+  const updateTransaction: AppStoreContextType['updateTransaction'] = async (transaction) => {
+    const client = ensureClient(supabase);
+    const { id, category_name: _categoryName, ...databaseInput } = transaction;
+    const { data, error } = await client
+      .from('finance_transactions')
+      .update(databaseInput)
+      .eq('id', id)
+      .select('id')
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error('Transaksi tidak ditemukan atau tidak dapat diubah.');
+
+    await loadData(currentUser);
+  };
+
+  const deleteTransaction: AppStoreContextType['deleteTransaction'] = async (id) => {
+    const client = ensureClient(supabase);
+    const { data, error } = await client
+      .from('finance_transactions')
+      .delete()
+      .eq('id', id)
+      .select('id')
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error('Transaksi tidak ditemukan atau tidak dapat dihapus.');
+
+    await loadData(currentUser);
+  };
+
   const uploadReceipt = async (file: File) => {
     const client = ensureClient(supabase);
     if (file.size > 5 * 1024 * 1024) throw new Error('Ukuran bukti maksimal 5 MB.');
@@ -873,6 +906,8 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
         refreshPublicFinanceTransactions,
         financeCategories,
         addTransaction,
+        updateTransaction,
+        deleteTransaction,
         uploadReceipt,
         balance: financeSummary.balance,
         incomeThisMonth: financeSummary.incomeThisMonth,

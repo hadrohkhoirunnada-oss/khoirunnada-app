@@ -21,6 +21,15 @@ import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GlassButton } from '@/components/ui/GlassButton';
+import type { FinanceCategory } from '@/lib/types';
+
+const PERSONNEL_SALARY_CATEGORY: FinanceCategory = {
+  id: 'fcat-gaji-personel',
+  name: 'Gaji Personel',
+  type: 'expense',
+  is_active: true,
+  created_at: '',
+};
 
 export default function AdminNewTransactionPage() {
   const router = useRouter();
@@ -39,6 +48,12 @@ export default function AdminNewTransactionPage() {
   const [error, setError] = useState('');
 
   const availableCategories = financeCategories.filter((c) => c.type === type);
+  if (
+    type === 'expense' &&
+    !availableCategories.some((category) => category.name === PERSONNEL_SALARY_CATEGORY.name)
+  ) {
+    availableCategories.push(PERSONNEL_SALARY_CATEGORY);
+  }
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, '');
@@ -75,10 +90,24 @@ export default function AdminNewTransactionPage() {
 
     try {
       const attachmentPath = receiptFile ? await uploadReceipt(receiptFile) : undefined;
+      let selectedCategory = cat;
+      if (cat.id === PERSONNEL_SALARY_CATEGORY.id) {
+        const categoryResponse = await fetch('/api/finance/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: cat.name, type: cat.type }),
+        });
+        const categoryResult = await categoryResponse.json().catch(() => ({}));
+        if (!categoryResponse.ok || !categoryResult.category) {
+          throw new Error(categoryResult.error || 'Kategori Gaji Personel gagal disiapkan.');
+        }
+        selectedCategory = categoryResult.category as FinanceCategory;
+      }
+
       await addTransaction({
         type,
-        category_id: cat.id,
-        category_name: cat.name,
+        category_id: selectedCategory.id,
+        category_name: selectedCategory.name,
         amount: numericAmount,
         transaction_date: transactionDate,
         description: description.trim(),

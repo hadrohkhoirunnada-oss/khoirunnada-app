@@ -139,7 +139,7 @@ export function AddJobBottomSheet({
   if (!isOpen && !isMounted) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-auto">
+    <div className="admin-job-sheet-overlay fixed inset-0 z-50 flex items-end justify-center pointer-events-auto">
       {/* Backdrop Scrim with Blur */}
       <div
         onClick={handleSmoothClose}
@@ -150,17 +150,17 @@ export function AddJobBottomSheet({
 
       {/* Bottom Sheet Container (Tidak Full Layar, Rounded Top, Smooth Slide) */}
       <div
-        className={`relative w-full max-w-[440px] bg-white text-[#151917] rounded-t-[32px] border-t border-[#B58228]/40 shadow-[0_-12px_45px_rgba(0,0,0,0.7)] z-10 max-h-[85vh] flex flex-col overflow-hidden ${
+        className={`admin-job-sheet relative w-full max-w-[440px] bg-white text-[#151917] rounded-t-[32px] border-t border-[#B58228]/40 shadow-[0_-12px_45px_rgba(0,0,0,0.7)] z-10 max-h-[85vh] flex flex-col overflow-hidden ${
           isClosing ? 'animate-slide-down-sheet' : 'animate-slide-up-sheet'
         }`}
       >
         {/* Top Drag Indicator Pill */}
-        <div className="pt-3 pb-1 flex justify-center cursor-pointer" onClick={handleSmoothClose}>
+        <div className="admin-job-sheet-drag pt-3 pb-1 flex justify-center cursor-pointer" onClick={handleSmoothClose}>
           <div className="w-12 h-1.5 rounded-full bg-black/15 hover:bg-black/25 transition-colors" />
         </div>
 
         {/* Header Sheet */}
-        <div className="px-5 py-3 flex items-center justify-between border-b border-black/5 shrink-0 bg-white/90 backdrop-blur-md">
+        <div className="admin-job-sheet-header px-5 py-3 flex items-center justify-between border-b border-black/5 shrink-0 bg-white/90 backdrop-blur-md">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#996A19] to-[#996A19] text-white flex items-center justify-center shadow-xs">
               <Calendar className="w-5 h-5 stroke-[2.2px]" />
@@ -189,7 +189,7 @@ export function AddJobBottomSheet({
 
         {/* Success Banner */}
         {isSuccess ? (
-          <div className="p-8 flex flex-col items-center justify-center text-center space-y-3 my-auto">
+          <div className="admin-job-sheet-success p-8 flex flex-col items-center justify-center text-center space-y-3 my-auto">
             <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-700 border border-emerald-500/40 flex items-center justify-center animate-bounce">
               <CheckCircle2 className="w-9 h-9" />
             </div>
@@ -200,16 +200,16 @@ export function AddJobBottomSheet({
           </div>
         ) : (
           /* Form Content (Scrollable) */
-          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+          <form onSubmit={handleSubmit} className="admin-job-sheet-form flex-1 overflow-y-auto px-5 py-4 space-y-4">
             {errorMsg && (
-              <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-800 text-xs flex items-center gap-2">
+              <div className="admin-job-field-error p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-800 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 text-rose-700" />
                 <span>{errorMsg}</span>
               </div>
             )}
 
             {/* 1. Nama / Judul Acara */}
-            <div>
+            <div className="admin-job-field-title">
               <label className="block text-xs font-bold text-[#151917] mb-1.5">
                 Nama / Judul Acara <span className="text-[#70490E]">*</span>
               </label>
@@ -224,7 +224,7 @@ export function AddJobBottomSheet({
             </div>
 
             {/* 2. Jenis / Kategori Acara (Chips Selector) */}
-            <div>
+            <div className="admin-job-field-category">
               <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
                 <Tag className="w-3.5 h-3.5 text-[#70490E]" />
                 <span>Kategori Acara</span>
@@ -251,7 +251,7 @@ export function AddJobBottomSheet({
             </div>
 
             {/* 3. Tanggal & Jam */}
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="admin-job-field-datetime grid grid-cols-2 gap-2.5">
               <div>
                 <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
                   <Calendar className="w-3.5 h-3.5 text-[#70490E]" />
@@ -281,7 +281,7 @@ export function AddJobBottomSheet({
               </div>
             </div>
 
-            <div>
+            <div className="admin-job-field-start-time">
               <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5 text-emerald-700" />
                 <span>Jam Mulai Acara</span>
@@ -296,7 +296,7 @@ export function AddJobBottomSheet({
             </div>
 
             {/* 4. Lokasi Acara */}
-            <div>
+            <div className="admin-job-field-location">
               <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5 text-[#70490E]" />
                 <span>Lokasi Acara <span className="text-[#70490E]">*</span></span>
@@ -312,7 +312,7 @@ export function AddJobBottomSheet({
             </div>
 
             {/* 5. Tuan Rumah / Kontak Pemesan (Opsional) */}
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="admin-job-field-customer grid grid-cols-2 gap-2.5">
               <div>
                 <label className="block text-xs font-bold text-[#151917] mb-1.5">
                   Nama Tuan Rumah
@@ -342,7 +342,7 @@ export function AddJobBottomSheet({
             </div>
 
             {/* 6. Seragam & Transportasi */}
-            <div>
+            <div className="admin-job-field-dress-code">
               <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
                 <Shirt className="w-3.5 h-3.5 text-[#70490E]" />
                 <span>Dress Code Seragam</span>
@@ -356,7 +356,7 @@ export function AddJobBottomSheet({
               />
             </div>
 
-            <div>
+            <div className="admin-job-field-transport">
               <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
                 <Users className="w-3.5 h-3.5 text-[#70490E]" />
                 <span>Info Titik Kumpul / Transport</span>
@@ -371,7 +371,7 @@ export function AddJobBottomSheet({
             </div>
 
             {/* 7. Catatan Tambahan */}
-            <div>
+            <div className="admin-job-field-notes">
               <label className="block text-xs font-bold text-[#151917] mb-1.5">
                 Catatan Tambahan
               </label>
@@ -385,7 +385,7 @@ export function AddJobBottomSheet({
             </div>
 
             {/* Submit Action */}
-            <div className="pt-2 pb-6">
+            <div className="admin-job-field-submit pt-2 pb-6">
               <button
                 type="submit"
                 disabled={isSubmitting}

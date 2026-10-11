@@ -526,6 +526,7 @@ export const initialFinanceCategories: FinanceCategory[] = [
   { id: 'fcat-transport', name: 'Transportasi Job', type: 'expense', is_active: true, created_at: '2026-01-01T00:00:00Z' },
   { id: 'fcat-konsumsi', name: 'Konsumsi Latihan & Tampil', type: 'expense', is_active: true, created_at: '2026-01-01T00:00:00Z' },
   { id: 'fcat-seragam', name: 'Pengadaan Seragam', type: 'expense', is_active: true, created_at: '2026-01-01T00:00:00Z' },
+  { id: 'fcat-gaji-personel', name: 'Gaji Personel', type: 'expense', is_active: true, created_at: '2026-01-01T00:00:00Z' },
 ];
 
 export const initialTransactions: FinanceTransaction[] = [

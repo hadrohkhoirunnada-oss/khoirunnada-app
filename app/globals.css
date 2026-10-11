@@ -861,3 +861,182 @@ body.admin-theme {
     gap: 12px;
   }
 }
+
+@keyframes adminJobDialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes adminJobDialogOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-desktop-root .admin-job-sheet-overlay {
+    align-items: center;
+    padding: 36px;
+    box-sizing: border-box;
+  }
+
+  .admin-desktop-root .admin-job-sheet {
+    width: min(1120px, calc(100vw - 96px));
+    max-width: 1120px;
+    max-height: min(90dvh, 920px);
+    border: 1px solid rgba(181, 130, 40, 0.35);
+    border-radius: 26px;
+    background: #FBFAF7;
+    box-shadow: 0 28px 90px rgba(18, 22, 20, 0.28);
+    transform-origin: center;
+  }
+
+  .admin-desktop-root .admin-job-sheet.animate-slide-up-sheet {
+    animation: adminJobDialogIn 260ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  }
+
+  .admin-desktop-root .admin-job-sheet.animate-slide-down-sheet {
+    animation: adminJobDialogOut 220ms ease-in both;
+  }
+
+  .admin-desktop-root .admin-job-sheet-drag {
+    display: none;
+  }
+
+  .admin-desktop-root .admin-job-sheet-header {
+    min-height: 88px;
+    padding: 20px 30px;
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom-color: rgba(21, 25, 23, 0.09);
+  }
+
+  .admin-desktop-root .admin-job-sheet-header h3 {
+    margin-top: 4px;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+  }
+
+  .admin-desktop-root .admin-job-sheet-header button {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(21, 25, 23, 0.08);
+  }
+
+  .admin-desktop-root .admin-job-sheet-form {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-content: start;
+    align-items: start;
+    gap: 19px 24px;
+    padding: 28px 34px 30px;
+    overscroll-behavior: contain;
+  }
+
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-error,
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-notes,
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-submit {
+    grid-column: 1 / -1;
+  }
+
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-title,
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-datetime,
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-location {
+    grid-column: span 7;
+    width: 100%;
+  }
+
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-category,
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-start-time,
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-customer {
+    grid-column: span 5;
+    width: 100%;
+  }
+
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-dress-code,
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-transport {
+    grid-column: span 6;
+    width: 100%;
+  }
+
+  .admin-desktop-root .admin-job-sheet-form label {
+    margin-bottom: 8px;
+    color: #29271f;
+    font-size: 12px;
+  }
+
+  .admin-desktop-root .admin-job-sheet-form input,
+  .admin-desktop-root .admin-job-sheet-form textarea {
+    border-color: rgba(116, 91, 43, 0.24);
+    border-radius: 11px;
+    font-size: 13px;
+  }
+
+  .admin-desktop-root .admin-job-sheet-form input {
+    min-height: 44px;
+    padding: 10px 13px;
+  }
+
+  .admin-desktop-root .admin-job-sheet-form input:focus,
+  .admin-desktop-root .admin-job-sheet-form textarea:focus {
+    border-color: #996A19;
+    box-shadow: 0 0 0 3px rgba(181, 130, 40, 0.12);
+  }
+
+  .admin-desktop-root .admin-job-field-category > div:last-child {
+    gap: 7px;
+  }
+
+  .admin-desktop-root .admin-job-field-category button {
+    min-height: 34px;
+    padding: 7px 10px;
+    border-color: rgba(21, 25, 23, 0.1);
+    border-radius: 9px;
+    font-size: 11px;
+  }
+
+  .admin-desktop-root .admin-job-field-datetime {
+    gap: 16px;
+  }
+
+  .admin-desktop-root .admin-job-field-customer {
+    gap: 12px;
+  }
+
+  .admin-desktop-root .admin-job-field-notes textarea {
+    min-height: 84px;
+    padding: 11px 13px;
+    resize: vertical;
+  }
+
+  .admin-desktop-root .admin-job-sheet-form > .admin-job-field-submit {
+    display: flex;
+    justify-content: flex-end;
+    padding: 2px 0 0;
+    border-top: 1px solid rgba(21, 25, 23, 0.08);
+  }
+
+  .admin-desktop-root .admin-job-field-submit button {
+    width: auto;
+    min-width: 300px;
+    min-height: 48px;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 11px;
+    box-shadow: 0 7px 18px rgba(112, 73, 14, 0.2);
+  }
+
+  .admin-desktop-root .admin-job-sheet-success {
+    min-height: 440px;
+  }
+}

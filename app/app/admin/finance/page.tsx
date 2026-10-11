@@ -17,18 +17,22 @@ import {
   Tag,
   User,
   ShieldCheck,
+  Pencil,
+  Trash2,
+  Save,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { GlassModal } from '@/components/ui/GlassModal';
-import { FinanceTransaction } from '@/lib/types';
+import type { FinanceTransaction, FinanceType } from '@/lib/types';
 
 type PeriodType = 'all' | 'week' | 'month' | 'year' | 'custom';
+type TransactionEditForm = Pick<FinanceTransaction, 'type' | 'category_id' | 'amount' | 'transaction_date' | 'description'>;
 
 export default function AdminFinancePage() {
-  const { balance, transactions, profiles } = useAppStore();
+  const { balance, transactions, profiles, financeCategories, updateTransaction, deleteTransaction } = useAppStore();
 
   // Filters State
   const [period, setPeriod] = useState<PeriodType>('all');
@@ -38,6 +42,28 @@ export default function AdminFinancePage() {
   const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expense'>('all');
   const [search, setSearch] = useState('');
   const [selectedTrx, setSelectedTrx] = useState<FinanceTransaction | null>(null);
+  const [transactionEditForm, setTransactionEditForm] = useState<TransactionEditForm | null>(null);
+  const [isEditingTransaction, setIsEditingTransaction] = useState(false);
+  const [isSavingTransaction, setIsSavingTransaction] = useState(false);
+  const [isDeletingTransaction, setIsDeletingTransaction] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [transactionActionError, setTransactionActionError] = useState('');
+  const editCategoryOptions = transactionEditForm
+    ? financeCategories.filter((category) => category.type === transactionEditForm.type)
+    : [];
+  if (
+    selectedTrx &&
+    transactionEditForm?.type === selectedTrx.type &&
+    !editCategoryOptions.some((category) => category.id === selectedTrx.category_id)
+  ) {
+    editCategoryOptions.push({
+      id: selectedTrx.category_id,
+      name: selectedTrx.category_name,
+      type: selectedTrx.type,
+      is_active: true,
+      created_at: selectedTrx.created_at,
+    });
+  }
   const selectedRecorderName = selectedTrx
     ? profiles.find((profile) => profile.id === selectedTrx.created_by)?.name ?? 'Username tidak tersedia'
     : '';
@@ -109,6 +135,88 @@ export default function AdminFinancePage() {
     setEndDate('');
     setPeriod('all');
     setShowCalendarPicker(false);
+  };
+
+  const openTransactionEditor = () => {
+    if (!selectedTrx) return;
+    setTransactionEditForm({
+      type: selectedTrx.type,
+      category_id: selectedTrx.category_id,
+      amount: selectedTrx.amount,
+      transaction_date: selectedTrx.transaction_date,
+      description: selectedTrx.description,
+    });
+    setTransactionActionError('');
+    setShowDeleteConfirmation(false);
+    setIsEditingTransaction(true);
+  };
+
+  const handleSaveTransaction = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!selectedTrx || !transactionEditForm) return;
+    setTransactionActionError('');
+
+    const category = editCategoryOptions.find((item) => item.id === transactionEditForm.category_id);
+    if (!category) {
+      setTransactionActionError('Pilih kategori transaksi yang valid.');
+      return;
+    }
+    if (!Number.isInteger(transactionEditForm.amount) || transactionEditForm.amount <= 0) {
+      setTransactionActionError('Nominal harus lebih besar dari 0.');
+      return;
+    }
+    if (transactionEditForm.description.trim().length < 2) {
+      setTransactionActionError('Keterangan transaksi minimal 2 karakter.');
+      return;
+    }
+
+    setIsSavingTransaction(true);
+    try {
+      await updateTransaction({
+        id: selectedTrx.id,
+        ...transactionEditForm,
+        category_name: category.name,
+        description: transactionEditForm.description.trim(),
+        job_id: selectedTrx.job_id,
+      });
+      setSelectedTrx({
+        ...selectedTrx,
+        ...transactionEditForm,
+        category_name: category.name,
+        description: transactionEditForm.description.trim(),
+      });
+      setIsEditingTransaction(false);
+      setTransactionEditForm(null);
+    } catch (error) {
+      setTransactionActionError(error instanceof Error ? error.message : 'Transaksi gagal diperbarui.');
+    } finally {
+      setIsSavingTransaction(false);
+    }
+  };
+
+  const handleDeleteTransaction = async () => {
+    if (!selectedTrx) return;
+    setIsDeletingTransaction(true);
+    setTransactionActionError('');
+    try {
+      await deleteTransaction(selectedTrx.id);
+      setSelectedTrx(null);
+      setTransactionEditForm(null);
+      setIsEditingTransaction(false);
+      setShowDeleteConfirmation(false);
+    } catch (error) {
+      setTransactionActionError(error instanceof Error ? error.message : 'Transaksi gagal dihapus.');
+    } finally {
+      setIsDeletingTransaction(false);
+    }
+  };
+
+  const closeTransactionDetail = () => {
+    setSelectedTrx(null);
+    setTransactionEditForm(null);
+    setIsEditingTransaction(false);
+    setShowDeleteConfirmation(false);
+    setTransactionActionError('');
   };
 
   return (
@@ -416,11 +524,109 @@ export default function AdminFinancePage() {
       {selectedTrx && (
         <GlassModal
           isOpen={!!selectedTrx}
-          onClose={() => setSelectedTrx(null)}
+          onClose={closeTransactionDetail}
           title="Rincian Transaksi Kas"
           subtitle={selectedTrx.category_name}
         >
           <div className="space-y-4">
+            {transactionActionError && (
+              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-800" role="alert">
+                {transactionActionError}
+              </div>
+            )}
+
+            {isEditingTransaction && transactionEditForm ? (
+              <form onSubmit={handleSaveTransaction} className="space-y-3">
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-[#151917]">Jenis Transaksi</label>
+                  <select
+                    value={transactionEditForm.type}
+                    onChange={(event) => setTransactionEditForm({
+                      ...transactionEditForm,
+                      type: event.target.value as FinanceType,
+                      category_id: '',
+                    })}
+                    className="w-full rounded-xl border border-[#B58228]/30 bg-[#F5EBD7] px-3 py-2.5 text-xs text-[#151917]"
+                  >
+                    <option value="income">Pemasukan</option>
+                    <option value="expense">Pengeluaran</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-[#151917]">Kategori</label>
+                  <select
+                    value={transactionEditForm.category_id}
+                    onChange={(event) => setTransactionEditForm({ ...transactionEditForm, category_id: event.target.value })}
+                    className="w-full rounded-xl border border-[#B58228]/30 bg-[#F5EBD7] px-3 py-2.5 text-xs text-[#151917]"
+                    required
+                  >
+                    <option value="">Pilih Kategori...</option>
+                    {editCategoryOptions.map((category) => (
+                      <option key={category.id} value={category.id}>{category.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-[#151917]">Nominal (Rp)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={transactionEditForm.amount}
+                    onChange={(event) => setTransactionEditForm({ ...transactionEditForm, amount: Number(event.target.value) })}
+                    className="w-full rounded-xl border border-[#B58228]/30 bg-[#F5EBD7] px-3 py-2.5 text-xs text-[#151917]"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-[#151917]">Tanggal Transaksi</label>
+                  <input
+                    type="date"
+                    value={transactionEditForm.transaction_date}
+                    onChange={(event) => setTransactionEditForm({ ...transactionEditForm, transaction_date: event.target.value })}
+                    className="w-full rounded-xl border border-[#B58228]/30 bg-[#F5EBD7] px-3 py-2.5 text-xs text-[#151917]"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs font-bold text-[#151917]">Keterangan</label>
+                  <textarea
+                    value={transactionEditForm.description}
+                    onChange={(event) => setTransactionEditForm({ ...transactionEditForm, description: event.target.value })}
+                    rows={3}
+                    minLength={2}
+                    maxLength={1000}
+                    className="w-full resize-y rounded-xl border border-[#B58228]/30 bg-[#F5EBD7] px-3 py-2.5 text-xs text-[#151917]"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <GlassButton
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    fullWidth
+                    disabled={isSavingTransaction}
+                    onClick={() => {
+                      setIsEditingTransaction(false);
+                      setTransactionEditForm(null);
+                      setTransactionActionError('');
+                    }}
+                  >
+                    Batal
+                  </GlassButton>
+                  <GlassButton type="submit" size="sm" fullWidth isLoading={isSavingTransaction} icon={<Save className="h-4 w-4" />}>
+                    Simpan
+                  </GlassButton>
+                </div>
+              </form>
+            ) : (
+              <>
             <div className="text-center p-4 rounded-2xl bg-black/10">
               <span className="text-xs text-[#585145] block mb-1">
                 {selectedTrx.type === 'income' ? 'Pemasukan Kas' : 'Pengeluaran Kas'}
@@ -492,13 +698,73 @@ export default function AdminFinancePage() {
               </div>
             )}
 
+            {showDeleteConfirmation ? (
+              <div className="space-y-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3">
+                <div>
+                  <p className="text-xs font-bold text-rose-900">Hapus transaksi ini?</p>
+                  <p className="mt-1 text-[11px] leading-relaxed text-rose-800">Data transaksi akan dihapus dari database dan tidak dapat dipulihkan.</p>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <GlassButton
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    fullWidth
+                    disabled={isDeletingTransaction}
+                    onClick={() => setShowDeleteConfirmation(false)}
+                  >
+                    Batal
+                  </GlassButton>
+                  <GlassButton
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    fullWidth
+                    isLoading={isDeletingTransaction}
+                    icon={<Trash2 className="h-4 w-4" />}
+                    onClick={handleDeleteTransaction}
+                  >
+                    Hapus
+                  </GlassButton>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <GlassButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  fullWidth
+                  icon={<Pencil className="h-4 w-4" />}
+                  onClick={openTransactionEditor}
+                >
+                  Edit
+                </GlassButton>
+                <GlassButton
+                  type="button"
+                  variant="danger"
+                  size="sm"
+                  fullWidth
+                  icon={<Trash2 className="h-4 w-4" />}
+                  onClick={() => {
+                    setShowDeleteConfirmation(true);
+                    setTransactionActionError('');
+                  }}
+                >
+                  Hapus
+                </GlassButton>
+              </div>
+            )}
+
             <GlassButton
               variant="secondary"
               fullWidth
-              onClick={() => setSelectedTrx(null)}
+              onClick={closeTransactionDetail}
             >
               Tutup Rincian
             </GlassButton>
+              </>
+            )}
           </div>
         </GlassModal>
       )}
