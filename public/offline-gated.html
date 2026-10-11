@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Memerlukan Koneksi Internet — Khoirunnada</title>
+    <style>
+      body { font-family: system-ui, sans-serif; background: #f8f6f0; color: #151917; min-height: 100vh; margin: 0; display: grid; place-items: center; text-align: center; }
+      main { padding: 24px; max-width: 360px; border: 1px solid #e8dcc1; border-radius: 24px; background: #ffffffd9; box-shadow: 0 8px 30px #0000000a; }
+      h1 { font-size: 20px; }
+      p { color: #525d58; line-height: 1.5; }
+      a { display: inline-block; border-radius: 12px; padding: 12px 20px; background: #996a19; color: white; text-decoration: none; font-weight: 600; }
+      button { border: 1px solid #996a19; border-radius: 12px; padding: 12px 20px; background: white; color: #996a19; font: inherit; font-weight: 600; cursor: pointer; }
+      [hidden] { display: none !important; }
+      .overlay { position: fixed; inset: 0; background: #15191799; display: grid; place-items: center; padding: 16px; backdrop-filter: blur(8px); }
+      .overlay main { background: #f8f6f0; }
+      .actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+      .actions button:first-child { background: #996a19; color: white; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Memerlukan Koneksi Internet</h1>
+      <p>Data biodata, jadwal job, dan riwayat tersimpan aman di database online. Silakan sambungkan internet untuk mengakses fitur ini.</p>
+      <a href="/app/qosidah">Kembali ke Qosidah</a>
+    </main>
+    <div id="recovery" class="overlay" hidden>
+      <main role="dialog" aria-modal="true" aria-labelledby="recovery-title">
+        <h1 id="recovery-title">Internet Kembali Terhubung!</h1>
+        <p>Koneksi jaringan telah aktif. Mulai ulang aplikasi untuk masuk ke akun dan menyinkronkan data.</p>
+        <div class="actions">
+          <button id="restart" type="button">Mulai Ulang / Masuk Akun</button>
+          <button id="stay" type="button">Tetap di Mode Offline</button>
+        </div>
+      </main>
+    </div>
+    <script>
+      const recovery = document.getElementById('recovery');
+      let dismissed = false;
+      window.addEventListener('offline', () => { dismissed = false; recovery.hidden = true; });
+      window.addEventListener('online', async () => {
+        if (dismissed) return;
+        try {
+          const response = await fetch('/connectivity.txt', { cache: 'no-store' });
+          if (response.ok) recovery.hidden = false;
+        } catch {}
+      });
+      document.getElementById('stay').addEventListener('click', () => { dismissed = true; recovery.hidden = true; });
+      document.getElementById('restart').addEventListener('click', () => {
+        try { localStorage.removeItem('khoirunnada_offline_guest'); } catch {}
+        document.cookie = 'khoirunnada_offline_guest=; Path=/; Max-Age=0; SameSite=Lax';
+        location.replace('/auth/login');
+      });
+    </script>
+  </body>
+</html>

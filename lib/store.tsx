@@ -12,6 +12,7 @@ import { QOSIDAH_LIST, QOSIDAH_CATEGORIES } from './data/qosidah';
 import type { User } from '@supabase/supabase-js';
 import { createClient } from './supabase/client';
 import { isSupabaseConfigured } from './supabase/config';
+import { getIsOfflineGuest, useOfflineGuest } from './offline-guest';
 import type {
   Profile,
   Booking,
@@ -145,6 +146,7 @@ function destinationFor(profile: Profile, portal: PortalType) {
 }
 
 export function AppStoreProvider({ children }: { children: React.ReactNode }) {
+  const isOfflineGuest = useOfflineGuest();
   const configured = isSupabaseConfigured();
   const supabase = useMemo(() => createClient(), []);
   const [isLoading, setIsLoading] = useState(true);
@@ -193,6 +195,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   }, [supabase]);
 
   const loadData = useCallback(async (profile: Profile) => {
+    if (getIsOfflineGuest()) return;
     const client = ensureClient(supabase);
     if (profile.status !== 'active') return;
 
@@ -370,6 +373,12 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   }, [supabase]);
 
   const refreshData = useCallback(async () => {
+    if (getIsOfflineGuest()) {
+      resetPrivateData();
+      setDataError('');
+      setIsLoading(false);
+      return null;
+    }
     if (!supabase) {
       setIsLoading(false);
       setDataError('Supabase belum dikonfigurasi.');
@@ -378,6 +387,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
+      if (getIsOfflineGuest()) return null;
       if (error || !user) {
         resetPrivateData();
         return null;
@@ -410,9 +420,19 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     };
   }, [refreshData, resetPrivateData, supabase]);
 
+  useEffect(() => {
+    if (!isOfflineGuest) return;
+    const timer = window.setTimeout(() => {
+      resetPrivateData();
+      setDataError('');
+      setIsLoading(false);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [isOfflineGuest, resetPrivateData]);
+
   // Realtime Subscriptions & Polling Sync
   useEffect(() => {
-    if (!supabase || !currentUser.id) return;
+    if (isOfflineGuest || !supabase || !currentUser.id) return;
 
     // 1. Channel Realtime Supabase
     const channel = supabase
@@ -447,7 +467,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleVisibilityChange);
     };
-  }, [currentUser, loadData, supabase]);
+  }, [currentUser, isOfflineGuest, loadData, supabase]);
 
   const signInWithPassword = async (email: string, password: string, portal: PortalType) => {
     const client = ensureClient(supabase);
@@ -586,6 +606,8 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     const isFav = favorites.includes(qosidahId);
     const updated = isFav ? favorites.filter((id) => id !== qosidahId) : [...favorites, qosidahId];
     setFavorites(updated);
+
+    if (getIsOfflineGuest()) return;
 
     try {
       const res = await fetch('/api/qosidah/favorites', {

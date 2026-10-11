@@ -24,6 +24,7 @@ import {
   recordSessionTurn,
 } from '@/lib/ai/memory-adapter';
 import type { AIConversationMemory } from '@/lib/ai/memory-types';
+import { OFFLINE_QOSIDAH_EVENT, OFFLINE_SECTION_EVENT, useOfflineGuest } from '@/lib/offline-guest';
 
 function OrganizationChart() {
   return (
@@ -126,6 +127,7 @@ function OrganizationChart() {
 
 export function KhoirunnadaAIWidget() {
   const router = useRouter();
+  const isOfflineGuest = useOfflineGuest();
   const { currentUser, qosidahs, categories, jobs, favorites } = useAppStore();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -134,21 +136,7 @@ export function KhoirunnadaAIWidget() {
   const [thinkingStatus, setThinkingStatus] = useState('Khoirunnada AI sedang berpikir...');
 
   const searchTimersRef = useRef<NodeJS.Timeout[]>([]);
-
-  const initialGreeting: AIMessage = {
-    id: 'welcome',
-    sender: 'ai',
-    text: `Assalamu'alaikum${currentUser?.name ? ` ${currentUser.name}` : ''}! 🙏\n\nSaya Khoirunnada AI, asisten cerdas resmi Hadroh Khoirunnada.\n\nSaya siap membantu Anda seputar syair qosidah, jadwal job, panduan aplikasi, sejarah, hingga struktur organisasi. Silakan tanyakan apa saja!`,
-    timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-    actions: [
-      { label: '💡 Cara Pakai Aplikasi', promptText: 'Bagaimana cara menggunakan aplikasi ini?' },
-      { label: '📖 Cari Qosidah Busyro Lana', promptText: 'Carikan saya qosidah Busyro Lana' },
-      { label: '📅 Cek Jadwal Job', promptText: 'Ada jadwal job apa saja?' },
-      { label: '📜 Sejarah Khoirunnada', promptText: 'Bagaimana sejarah Khoirunnada?' },
-      { label: '👥 Struktur Organisasi', promptText: 'Bagaimana struktur organisasi Khoirunnada?' },
-      { label: '👨‍💻 Pembuat Aplikasi', promptText: 'Siapa yang membuat dan mengembangkan aplikasi ini?' },
-    ],
-  };
+  const messageSequenceRef = useRef(0);
 
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -189,7 +177,7 @@ export function KhoirunnadaAIWidget() {
     if (!text || isTyping) return;
 
     const userMessage: AIMessage = {
-      id: `user-${Date.now()}`,
+      id: `user-${++messageSequenceRef.current}`,
       sender: 'user',
       text,
       timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
@@ -218,7 +206,7 @@ export function KhoirunnadaAIWidget() {
       response = processKhoirunnadaAI(text, aiContext, {
         enableV2Engine: true,
         timeZone: 'Asia/Makassar',
-        seed: Date.now(),
+        seed: messageSequenceRef.current,
       });
       if (memoryRef.current) {
         memoryRef.current = recordSessionTurn(
@@ -301,6 +289,16 @@ export function KhoirunnadaAIWidget() {
   const handleActionClick = (action: AIAction) => {
     if (action.href) {
       setIsOpen(false);
+      if (isOfflineGuest) {
+        const detailMatch = action.href.match(/^\/app\/qosidah\/([^/]+)$/);
+        const section = action.href.startsWith('/app/qosidah') ? 'qosidah'
+          : action.href.startsWith('/app/profile') ? 'profile'
+          : action.href.startsWith('/app/finance') ? 'finance'
+          : action.href.startsWith('/app/admin') ? 'admin' : 'jobs';
+        window.dispatchEvent(new CustomEvent(OFFLINE_SECTION_EVENT, { detail: section }));
+        if (detailMatch) window.dispatchEvent(new CustomEvent(OFFLINE_QOSIDAH_EVENT, { detail: detailMatch[1] }));
+        return;
+      }
       router.push(action.href);
       return;
     }
@@ -493,7 +491,7 @@ export function KhoirunnadaAIWidget() {
                     <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white shadow-xs" />
                   </div>
                   <h3 className="text-base font-bold text-[#151917] tracking-tight">
-                    Assalamu'alaikum{currentUser?.name ? `, ${currentUser.name}` : ''}! 🙏
+                    Assalamu&apos;alaikum{currentUser?.name ? `, ${currentUser.name}` : ''}! 🙏
                   </h3>
                   <p className="text-xs text-[#70490E] mt-1 font-medium leading-relaxed">
                     Ada yang bisa Khoirunnada AI bantu hari ini?

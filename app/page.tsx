@@ -6,6 +6,8 @@ import { Mail, Lock, Eye, EyeOff, Loader2, User, Shield } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GlassButton } from '@/components/ui/GlassButton';
+import { OfflineLoginModal } from '@/components/offline/OfflineLoginModal';
+import { checkIsOnline, setIsOfflineGuest, verifyOnlineConnection } from '@/lib/offline-guest';
 
 function GoogleGLogo({ className = 'w-5 h-5' }: { className?: string }) {
   return (
@@ -32,7 +34,7 @@ function GoogleGLogo({ className = 'w-5 h-5' }: { className?: string }) {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { signInWithPassword, signInWithGoogle, isConfigured } = useAppStore();
+  const { signInWithPassword, signInWithGoogle, isConfigured, currentUser } = useAppStore();
   const [roleType, setRoleType] = useState<'pemain' | 'admin'>('pemain');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -40,6 +42,38 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showOfflineModal, setShowOfflineModal] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  const [retryError, setRetryError] = useState('');
+
+  useEffect(() => {
+    if (currentUser.id) return;
+    const handleOffline = () => setShowOfflineModal(true);
+    window.addEventListener('offline', handleOffline);
+    const timer = !checkIsOnline() ? window.setTimeout(handleOffline, 0) : undefined;
+    return () => {
+      if (timer !== undefined) window.clearTimeout(timer);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [currentUser.id]);
+
+  const handleRetryConnection = async () => {
+    setRetrying(true);
+    const connected = await verifyOnlineConnection();
+    setRetrying(false);
+    if (connected) {
+      setRetryError('');
+      setShowOfflineModal(false);
+    } else {
+      setRetryError('Koneksi belum tersedia. Periksa jaringan perangkat lalu coba lagi.');
+    }
+  };
+
+  const handleOfflineMode = () => {
+    setIsOfflineGuest(true);
+    // Muat dokumen dari cache service worker agar navigasi tetap berhasil tanpa RSC online.
+    window.location.replace('/app/qosidah');
+  };
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get('error');
@@ -62,6 +96,11 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
 
+    if (!checkIsOnline()) {
+      setShowOfflineModal(true);
+      return;
+    }
+
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
       setError('Silakan masukkan email.');
@@ -83,6 +122,10 @@ export default function LoginPage() {
       router.push(destination);
       router.refresh();
     } catch (authError) {
+      if (!checkIsOnline() || authError instanceof TypeError || (authError instanceof Error && /failed to fetch|networkerror|network request failed/i.test(authError.message))) {
+        setShowOfflineModal(true);
+        return;
+      }
       setError(authError instanceof Error ? authError.message : 'Login gagal.');
     } finally {
       setIsLoading(false);
@@ -91,10 +134,19 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setError('');
+    if (!checkIsOnline()) {
+      setShowOfflineModal(true);
+      return;
+    }
     setIsGoogleLoading(true);
     try {
       await signInWithGoogle(roleType);
     } catch (authError) {
+      if (!checkIsOnline() || authError instanceof TypeError) {
+        setShowOfflineModal(true);
+        setIsGoogleLoading(false);
+        return;
+      }
       setError(authError instanceof Error ? authError.message : 'Login Google gagal.');
       setIsGoogleLoading(false);
     }
@@ -102,6 +154,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F6F0] flex flex-col items-center justify-center p-4 antialiased text-[#151917]">
+      <OfflineLoginModal open={showOfflineModal} onOffline={handleOfflineMode} onRetry={handleRetryConnection} retrying={retrying} retryError={retryError} />
       <div className="w-full max-w-[380px] flex flex-col items-center">
         {/* Single Card Login with Logo inside */}
         <GlassCard className="w-full p-6 sm:p-7 text-center" variant="elevated">

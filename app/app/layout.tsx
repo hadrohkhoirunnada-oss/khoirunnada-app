@@ -1,12 +1,25 @@
 import { redirect } from 'next/navigation';
+import { cookies, headers } from 'next/headers';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { createClient } from '@/lib/supabase/server';
+import { AppOfflineRouteGate } from '@/components/offline/AppOfflineRouteGate';
+import { OfflineGuestServerGate } from '@/components/offline/OfflineGuestServerGate';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ProtectedAppLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const pathname = (await headers()).get('x-khoirunnada-pathname') ?? '';
+  const isQosidah = pathname === '/app/qosidah' || pathname.startsWith('/app/qosidah/');
+
+  // Lirik qosidah berasal dari kode lokal dan aman dibuka tanpa sesi akun.
+  if (isQosidah) return <AppOfflineRouteGate>{children}</AppOfflineRouteGate>;
+
+  if ((await cookies()).get('khoirunnada_offline_guest')?.value === 'true') {
+    return <OfflineGuestServerGate />;
+  }
+
   if (!isSupabaseConfigured()) redirect('/login?error=config');
 
   const supabase = await createClient();
@@ -29,5 +42,5 @@ export default async function ProtectedAppLayout({
     redirect('/pending');
   }
 
-  return children;
+  return <AppOfflineRouteGate>{children}</AppOfflineRouteGate>;
 }

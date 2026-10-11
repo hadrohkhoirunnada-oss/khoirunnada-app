@@ -2,8 +2,10 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { isSupabaseConfigured, getPublicSupabaseConfig } from './config';
 
-export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request });
+export async function updateSession(request: NextRequest, pathname: string) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-khoirunnada-pathname', pathname);
+  let response = NextResponse.next({ request: { headers: requestHeaders } });
 
   if (!isSupabaseConfigured()) return response;
 
@@ -15,7 +17,10 @@ export async function updateSession(request: NextRequest) {
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
+        const cookieHeader = request.headers.get('cookie');
+        if (cookieHeader) requestHeaders.set('cookie', cookieHeader);
+        else requestHeaders.delete('cookie');
+        response = NextResponse.next({ request: { headers: requestHeaders } });
         cookiesToSet.forEach(({ name, value, options }) => {
           response.cookies.set(name, value, options);
         });

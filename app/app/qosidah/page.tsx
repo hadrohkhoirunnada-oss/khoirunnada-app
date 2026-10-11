@@ -1,17 +1,32 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, Heart, BookOpen, Clock, ChevronRight, X } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { GlassEmptyState } from '@/components/ui/GlassEmptyState';
+import { OfflineQosidahReader } from '@/components/offline/OfflineQosidahReader';
+import { OFFLINE_QOSIDAH_EVENT, useOfflineGuest } from '@/lib/offline-guest';
+import type { Qosidah } from '@/lib/types';
 
 export default function QosidahLibraryPage() {
   const { qosidahs, categories, favorites, recentIds, toggleFavorite } = useAppStore();
+  const isOfflineGuest = useOfflineGuest();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedOfflineQosidah, setSelectedOfflineQosidah] = useState<Qosidah | null>(null);
+
+  useEffect(() => {
+    const openQosidah = (event: Event) => {
+      const id = (event as CustomEvent<string>).detail;
+      const match = qosidahs.find((qosidah) => qosidah.id === id);
+      if (match) setSelectedOfflineQosidah(match);
+    };
+    window.addEventListener(OFFLINE_QOSIDAH_EVENT, openQosidah);
+    return () => window.removeEventListener(OFFLINE_QOSIDAH_EVENT, openQosidah);
+  }, [qosidahs]);
 
   // Filtered list
   const filteredQosidahs = useMemo(() => {
@@ -46,6 +61,10 @@ export default function QosidahLibraryPage() {
       .filter((q): q is typeof qosidahs[0] => !!q)
       .slice(0, 4);
   }, [recentIds, qosidahs]);
+
+  if (isOfflineGuest && selectedOfflineQosidah) {
+    return <OfflineQosidahReader qosidah={selectedOfflineQosidah} allQosidahs={qosidahs} onBack={() => setSelectedOfflineQosidah(null)} onSelect={setSelectedOfflineQosidah} />;
+  }
 
   return (
     <MobileAppShell title="Qosidah" subtitle="Hadroh Khoirunnada">
@@ -141,6 +160,13 @@ export default function QosidahLibraryPage() {
               <Link
                 key={`recent-${q.id}`}
                 href={`/app/qosidah/${q.id}`}
+                prefetch={!isOfflineGuest}
+                onClick={(event) => {
+                  if (isOfflineGuest) {
+                    event.preventDefault();
+                    setSelectedOfflineQosidah(q);
+                  }
+                }}
                 className="shrink-0 w-44 p-3 rounded-2xl bg-white/90 hover:bg-white border border-[#996A19]/20 hover:border-[#996A19]/45 shadow-[0_2px_10px_rgba(153,106,25,0.04)] transition-all active:scale-[0.98] group"
               >
                 <div className="flex items-center justify-between mb-1.5">
@@ -218,7 +244,12 @@ export default function QosidahLibraryPage() {
                 </div>
 
                 {/* Middle & Bottom Link */}
-                <Link href={`/app/qosidah/${q.id}`} className="block mt-2.5">
+                <Link href={`/app/qosidah/${q.id}`} prefetch={!isOfflineGuest} onClick={(event) => {
+                  if (isOfflineGuest) {
+                    event.preventDefault();
+                    setSelectedOfflineQosidah(q);
+                  }
+                }} className="block mt-2.5">
                   <h3 className="text-sm sm:text-base font-bold text-[#151917] group-hover:text-[#996A19] transition-colors tracking-tight">
                     {q.title}
                   </h3>

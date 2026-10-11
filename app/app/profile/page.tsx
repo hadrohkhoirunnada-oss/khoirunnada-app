@@ -25,13 +25,16 @@ import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GlassButton } from '@/components/ui/GlassButton';
+import { usePwaInstall } from '@/components/pwa/PwaInstallProvider';
 
 export default function ProfilePage() {
   const router = useRouter();
   const { currentUser, logout, updateAvatar, removeAvatar, updateUsername, favorites } = useAppStore();
+  const { isInstalled, install } = usePwaInstall();
 
   const [notificationEnabled, setNotificationEnabled] = useState(true);
   const [installPromptShown, setInstallPromptShown] = useState(false);
+  const [isInstalling, setIsInstalling] = useState(false);
 
   // State untuk Popup Pengaturan Profil
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -60,6 +63,23 @@ export default function ProfilePage() {
     await logout();
     router.push('/');
     router.refresh();
+  };
+
+  const handleInstall = async () => {
+    if (isInstalled || isInstalling) return;
+
+    setInstallPromptShown(false);
+    setIsInstalling(true);
+    const result = await install();
+    setIsInstalling(false);
+
+    if (result === 'accepted') {
+      setPageMessage({ text: 'Instalasi dimulai. Tunggu hingga ikon aplikasi muncul di perangkat.', type: 'success' });
+    } else if (result === 'dismissed') {
+      setPageMessage({ text: 'Instalasi dibatalkan. Anda dapat mencoba lagi melalui menu browser.', type: 'error' });
+    } else {
+      setInstallPromptShown(true);
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -312,31 +332,32 @@ export default function ProfilePage() {
           <ChevronRight className="w-4 h-4 text-gray-400" />
         </Link>
 
-        {/* PWA Install Info */}
-        <div
-          onClick={() => setInstallPromptShown(true)}
-          className="flex items-center justify-between p-3 rounded-xl hover:bg-black/5 transition-colors cursor-pointer"
+        {/* PWA Install */}
+        <button
+          type="button"
+          onClick={handleInstall}
+          disabled={isInstalled || isInstalling}
+          className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-black/5 transition-colors cursor-pointer text-left disabled:cursor-default disabled:opacity-65"
         >
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-[#B58228]/15 flex items-center justify-center text-[#8C6821]">
               <Smartphone className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-xs font-bold text-[#151917]">Pasang Aplikasi (PWA)</p>
-              <p className="text-[10px] text-[#525D58]">Simpan ke Layar Utama Smartphone</p>
+              <p className="text-xs font-bold text-[#151917]">{isInstalled ? 'Aplikasi Terpasang' : 'Install Aplikasi'}</p>
+              <p className="text-[10px] text-[#525D58]">{isInstalled ? 'Aplikasi sudah terpasang di perangkat ini' : 'Pasang aplikasi di perangkat ini'}</p>
             </div>
           </div>
-          <ChevronRight className="w-4 h-4 text-gray-400" />
-        </div>
+          {isInstalling ? <Loader2 className="w-4 h-4 text-[#996A19] animate-spin" /> : isInstalled ? <CheckCircle2 className="w-4 h-4 text-[#2E7D32]" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+        </button>
       </GlassCard>
 
-      {/* PWA Info Card if clicked */}
+      {/* Panduan jika browser tidak menyediakan prompt instalasi */}
       {installPromptShown && (
         <GlassCard className="p-4 mb-4 bg-[#F5EBD7]/50 border-[#996A19]/30">
-          <h4 className="text-xs font-bold text-[#70490E] mb-1">Cara Pasang ke Layar Utama:</h4>
+          <h4 className="text-xs font-bold text-[#70490E] mb-1">Instalasi langsung belum tersedia di browser ini</h4>
           <ol className="text-[11px] text-[#585145] list-decimal pl-4 space-y-1 leading-relaxed">
-            <li>Buka browser smartphone (Chrome di Android atau Safari di iPhone).</li>
-            <li>Ketuk tombol menu (titik tiga di kanan atas) atau tombol Bagikan di Safari.</li>
+            <li>Buka menu browser. Di iPhone, ketuk tombol Bagikan.</li>
             <li>Pilih <strong>&ldquo;Tambahkan ke Layar Utama&rdquo; / &ldquo;Install App&rdquo;</strong>.</li>
           </ol>
           <button

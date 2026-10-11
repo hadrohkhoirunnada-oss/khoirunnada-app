@@ -25,11 +25,13 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { GlassModal } from '@/components/ui/GlassModal';
 import type { FinancePublicTransaction, FinanceTransaction } from '@/lib/types';
+import { useOfflineGuest } from '@/lib/offline-guest';
 
 type PeriodType = 'all' | 'week' | 'month' | 'year' | 'custom';
 
 export default function FinanceDashboardPage() {
   const router = useRouter();
+  const isOfflineGuest = useOfflineGuest();
   const {
     currentUser,
     profiles,
@@ -42,7 +44,7 @@ export default function FinanceDashboardPage() {
   const isTreasurerOrAdmin = currentUser.is_treasurer || currentUser.is_admin;
 
   useEffect(() => {
-    if (isTreasurerOrAdmin) return;
+    if (isTreasurerOrAdmin || isOfflineGuest) return;
 
     void refreshPublicFinanceTransactions();
     const refreshWhenVisible = () => {
@@ -55,7 +57,7 @@ export default function FinanceDashboardPage() {
       window.removeEventListener('focus', refreshWhenVisible);
       document.removeEventListener('visibilitychange', refreshWhenVisible);
     };
-  }, [isTreasurerOrAdmin, refreshPublicFinanceTransactions]);
+  }, [isTreasurerOrAdmin, isOfflineGuest, refreshPublicFinanceTransactions]);
 
   // Filters State
   const [period, setPeriod] = useState<PeriodType>('all');
