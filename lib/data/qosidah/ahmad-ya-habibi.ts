@@ -3,12 +3,31 @@ import type { Qosidah } from '@/lib/types';
 export const ahmadYaHabibi: Qosidah = {
   id: "0cb806a0-b48c-4751-8691-b581119e86b0",
   title: "Ahmad Ya Habibi",
-  alternate_title: "Ahmad Yaa Habiibii Salaamun ‘Alaik",
+  alternate_title: "Ahmad Ya Habibi Habibi",
   category_id: 'qosidah-arobiah',
   category_name: "Qosidah 'Arobiah",
-  arabic_text: "أَحْمَدْ يَا حَبِيبِي يَا حَبِيبِي\nسَلَامٌ عَلَيْكَ يَا عَوْنَ الْغَرِيبِ\n\nسَلَامٌ عَلَيْكَ يَا مِسْكِي وَطِيبِي\nسَلَامٌ عَلَيْكَ يَا خَيْرَ حَبِيبِ",
-  latin_text: "Ahmad yaa habiibii yaa habiibii\nSalaamun 'alaika yaa 'awnal ghoriibi\n\nSalaamun 'alaika yaa miskii wa thiibii\nSalaamun 'alaika yaa khoiro habiib",
-  translation: "Wahai Ahmad kekasihku, salam bagimu pelindung orang-orang terasing. Salam bagimu wahai aroma kesturi dan sebaik-baik kekasih.",
+  arabic_text: `أَحْمَدْ يَا حَبِيْبِيْ حَبِيْبِيْ
+حَبِيْبِيْ سَلَامْ حَبِيْبِيْ
+سَلَامْ عَلَيْكَ حَبِيْبِيْ
+أَحْمَدْ يَا حَبِيْبِيْ حَبِيْبِيْ
+حَبِيْبِيْ سَلَامْ حَبِيْبِيْ
+سَلَامْ عَلَيْكَ حَبِيْبِيْ
+يَا عَوْنَ الْغَرِيْبِ سَلَامْ عَلَيْكَ
+أَمْنٌ وَسَلَامْ سَلَامْ عَلَيْكَ
+يَا عَوْنَ الْغَرِيْبِ سَلَامْ عَلَيْكَ
+أَمْنٌ وَسَلَامْ سَلَامْ عَلَيْكَ
+دِيْنُكَ الْإِسْلَامْ سَلَامْ عَلَيْكَ
+جِئْتَ بِالْقُرْآنْ سَلَامْ عَلَيْكَ
+دِيْنُكَ الْإِسْلَامْ سَلَامْ عَلَيْكَ
+جِئْتَ بِالْقُرْآنْ سَلَامْ عَلَيْكَ
+أَحْمَدْ يَا حَبِيْبِيْ حَبِيْبِيْ
+حَبِيْبِيْ سَلَامْ حَبِيْبِيْ
+سَلَامْ عَلَيْكَ حَبِيْبِيْ
+أَحْمَدْ يَا حَبِيْبِيْ حَبِيْبِيْ
+حَبِيْبِيْ سَلَامْ حَبِيْبِيْ
+سَلَامْ عَلَيْكَ حَبِيْبِيْ`,
+  latin_text: "",
+  translation: "",
   tags: ["Sholawat","Arobiah","Klasik"],
   notes: "Qosidah 'Arobiah Hadroh Khoirunnada.",
   is_active: true,

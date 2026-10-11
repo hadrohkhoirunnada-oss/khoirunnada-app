@@ -2,13 +2,18 @@ import type { Qosidah } from '@/lib/types';
 
 export const ahbabRasulullah: Qosidah = {
   id: "b512d464-97b1-423d-a140-57d517b90f5b",
-  title: "Ahbab rasulullah",
-  alternate_title: "Nahnu Ahbaabu Rasulillaah",
+  title: "Ahbab Rosulillah",
+  alternate_title: "Ahbab Rasulullah",
   category_id: 'qosidah-arobiah',
   category_name: "Qosidah 'Arobiah",
-  arabic_text: "نَحْنُ أَحْبَابُ رَسُولِ اللهِ\nصَادِقُو الْوُدِّ لِوَجْهِ اللهِ\n\nنَقْتَفِي آثَارَهُ فِي كُلِّ أَمْرٍ\nرَاجِينَ قُرْبَهُ فِي جَنَّةِ اللهِ",
-  latin_text: "Nahnu ahbaabu Rasuulillaahi\nShaadiquul wuddi liwajhillaah\n\nNaqtafii aatsaarahuu fii kulli amrin\nRaajiina qurbahuu fii jannatillaah",
-  translation: "Kami adalah para pecinta Rasulullah, tulus dalam cinta demi ridha Allah, mengharap dekat bersamanya di surga.",
+  arabic_text: `اَحْبَاب رَسُوْلِ الله .. خُدُوْنِي وَيَاكُمْ
+اَحَجِّ بَيْتَ الله .. واَزُوْر النَّبِيْ مَعَاكُمْ
+مُشْتَاق اَنَا مُشْتَاق .. لَمْتَمِّمَ الاَخْلَاق
+مُنَايَا يَاطَهَ .. اَوْقَفْ عَلَي الاَبْوَاب
+يَا عُشَّاقَ الهَادِي .. مِنْ قَلْبِي بُشْرَاكُمْ
+قَدْ لَاحَ نُوْرُ الزَّيْن .. وَأَضَاءَ عَيْنَاكُمْ`,
+  latin_text: "",
+  translation: "",
   tags: ["Pecinta Nabi","Arobiah","Ukhuwah"],
   notes: "Qosidah 'Arobiah Hadroh Khoirunnada.",
   is_active: true,

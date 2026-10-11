@@ -2,14 +2,29 @@ import type { Qosidah } from '@/lib/types';
 
 export const alKaunuAdoa: Qosidah = {
   id: "18eca171-706c-4bfd-8d00-825bcf0289ec",
-  title: "Al kaunu Ado'a",
-  alternate_title: "Al-Kaunu Adhaa-a Bi Maulidih",
+  title: "Al-Kaunu",
+  alternate_title: "Al-Kaunu Ado'a",
   category_id: 'qosidah-arobiah',
   category_name: "Qosidah 'Arobiah",
-  arabic_text: "الْكَوْنُ أَضَاءَ بِمَوْلِدِهِ * وَالسَّعْدُ أَتَى مَعَ مَقْدَمِهِ\nفَرِحَتْ أَرْضٌ وَسَمَاءٌ بِهِ * وَالنُّورُ تَلَأْلَأَ فِي أُفُقِهِ",
-  latin_text: "Al-kaunu adhaa-a bimaulidihii, was-sa'du ataa ma'a maqdamihii.\nFarihat ardhun wa samaa-un bihii, wan-nuuru tala'la-a fii ufuqihii.",
-  translation: "Alam semesta benderang dengan kelahirannya, kebahagiaan tiba bersama kedatangannya. Bumi dan langit bersukacita, dan cahaya bergemerlap di cakrawala.",
-  tags: ["Maulid","Arobiah","Cahaya"],
+  arabic_text: `الْكَوْنُ أَضَاءَ مِنْكِ مَكَّةْ شَرِيْفَةْ
+هَيَّا بِنَا نَسْعَى وَنُقَبِّلْ كَعْبَةَ الْمَحْرُوسَةْ
+الْكَوْنُ أَضَاءَ مِنْكِ مَكَّةْ شَرِيْفَةْ
+هَيَّا بِنَا نَسْعَى وَنُقَبِّلْ كَعْبَةَ الْمَحْرُوسَةْ
+طَلَعُوا عَرَفَاتٍ وَلَبُّوا نَالُوا مُنَاهُمْ
+صَلُّوا بِمِنَى يَا عَيْنِي ضَحُّوا ضَحَايَاهُمْ
+طَلَعُوا عَرَفَاتٍ وَلَبُّوا نَالُوا مُنَاهُمْ
+صَلُّوا بِمِنَى يَا عَيْنِي ضَحُّوا ضَحَايَاهُمْ
+شَرِبُوا مِنْ زَمْزَمَ كَأْسًا أَيَا هَنَاهُمْ
+تَرَكُوا الذُّنُوبَ جَمِيعًا رَحَلُوا بِلَاهُمْ
+شَرِبُوا مِنْ زَمْزَمَ كَأْسًا أَيَا هَنَاهُمْ
+تَرَكُوا الذُّنُوبَ جَمِيعًا رَحَلُوا بِلَاهُمْ
+الْكَوْنُ أَضَاءَ مِنْكِ مَكَّةْ شَرِيْفَةْ
+هَيَّا بِنَا نَسْعَى وَنُقَبِّلْ كَعْبَةَ الْمَحْرُوسَةْ
+الْكَوْنُ أَضَاءَ مِنْكِ مَكَّةْ شَرِيْفَةْ
+هَيَّا بِنَا نَسْعَى وَنُقَبِّلْ كَعْبَةَ الْمَحْرُوسَةْ`,
+  latin_text: "",
+  translation: "",
+  tags: ["Haji", "Makkah", "Arobiah"],
   notes: "Qosidah 'Arobiah Hadroh Khoirunnada.",
   is_active: true,
   sort_order: 62,

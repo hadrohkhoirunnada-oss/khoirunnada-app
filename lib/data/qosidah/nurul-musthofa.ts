@@ -6,9 +6,22 @@ export const nurulMusthofa: Qosidah = {
   alternate_title: "Nuurul Mushthafaa Mala-al Akwaan",
   category_id: 'qosidah-arobiah',
   category_name: "Qosidah 'Arobiah",
-  arabic_text: "نُورُ الْمُصْطَفَى مَلَأَ الْأَكْوَانْ\nحَبِيبِي مُحَمَّدْ خَيْرُ إِنْسَانْ\n\nشَمْسُ الْهُدَى بَدْرُ الدُّجَى\nمَنْ جَاءَ بِالْحَقِّ وَالْإِحْسَانْ",
-  latin_text: "Nuurul Mushthafaa mala-al akwaan\nHabiibii Muhammad khoiru insaan\n\nSyamsul hudaa badrud-dujaa\nMan jaa-a bil haqqi wal ihsaan",
-  translation: "Cahaya Nabi terpilih menyinari alam semesta, kekasihku Muhammad sebaik-baik insan, matahari hidayah penerang gulita.",
+  arabic_text: `نُورُ المُصْطَفَى مَلَأَ الْاَ كْوَانْ
+حَبِيبِىْ مُحَمَّدْ مُحَمَّدْ مُحَمَّدْ خَيْرُ الْمُرْسَلِيْنْ
+اَللهُ الْجَلَالْ اَعْطَاكَ الْجَمَالْ
+يَا شَمْسَ الْكَمَالْ يَا نُوْرَ الْعَيْنْ
+نُورُ المُصْطَفَى مَلَأَ الْاَ كْوَانْ
+حَبِيبِىْ مُحَمَّدْ مُحَمَّدْ مُحَمَّدْ خَيْرُ الْمُرْسَلِيْنْ
+كَفَاكَ فَضْلًا فِى الْعُلَى الْأَعْلَى
+دَنَا فَتَدَلَّى خَطْبَ الْحُسَيْنْ
+نُورُ المُصْطَفَى مَلَأَ الْاَ كْوَانْ
+حَبِيبِىْ مُحَمَّدْ مُحَمَّدْ مُحَمَّدْ خَيْرُ الْمُرْسَلِيْنْ
+يَا اللهُ يَا بَدِيْعْ بَلِّغْنَا جَمِيْعْ
+حَضْرَةَ الشَّافِى خَيْرَ الثَّقَلَيْنْ
+نُورُ المُصْطَفَى مَلَأَ الْاَ كْوَانْ
+حَبِيبِىْ مُحَمَّدْ مُحَمَّدْ مُحَمَّدْ خَيْرُ الْمُرْسَلِيْنْ`,
+  latin_text: "",
+  translation: "",
   tags: ["Pujian","Arobiah","Maulid"],
   notes: "Qosidah 'Arobiah Hadroh Khoirunnada.",
   is_active: true,

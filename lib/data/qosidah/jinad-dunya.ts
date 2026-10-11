@@ -2,13 +2,22 @@ import type { Qosidah } from '@/lib/types';
 
 export const jinadDunya: Qosidah = {
   id: "901f6b72-37c1-4804-82b6-c5d045dff846",
-  title: "Ji'nad Dunya",
-  alternate_title: "Ji'nad-Dunyaa Linansyuro Dziina",
+  title: "Ji'na Dunya",
+  alternate_title: "Ji'nad Dunya",
   category_id: "qosidah-arobiah",
   category_name: "Qosidah 'Arobiah",
-  arabic_text: "جِئْنَا الدُّنْيَا لِنَنْشُرَ فِيهَا\nنُورَ الْحَقِّ وَهَدْيَ نَبِيهَا\n\nنَبْنِي صَرْحَ الْمَجْدِ بِعِزٍّ\nوَالْأُمَّةُ نَحْنُ نُحْيِيهَا",
-  latin_text: "Ji'nad-dunyaa linansyuro fiihaa\nNuurol-haqqi wa hadya nabiihaa\n\nNabnii shorhal-majdi bi'izzin\nWal-ummatu nahnu nuhyiihaa",
-  translation: "Kita hadir di dunia ini untuk menyebarkan cahaya kebenaran dan ajaran luhur sang Nabi. Kita tegakkan tonggak kemuliaan dengan penuh kehormatan dan membangkitkan kembali kejayaan umat.",
+  arabic_text: `جِئْنَا الدُّنْيَا نَعْلَمُ أَنَّا * لِنُضِيءَ جَوَانِبْهَا جِئْنَا
+وَعَرَفْنَا اللهَ لَنَا رَبًّا * يَهْدِينَا الدَّرْبَ إِذَا تِهْنَا
+وَمَشَيْنَا فِيهَا أَيَّاماً وَمَشَيْنَا * وَرَسَمْنَا فِيهَا أَحْلَاماً وَرَسَمْنَا
+قَلْبٌ يَهْوِي أَوْ يَتَسَامَى * فَيَعِيشُ الوَهْمُ أَوِ الأَمْنا
+مَا فِي الدُّنْيَا عَبَثٌ أَبَداً أَبَداً * مَا جِئْنَاهَا لِنَضِيعَ سُدًى
+مَنْ آمَنَ مِنَّا أَوْ جَحَدَا * مَنْ يُولَدُ مِنَّا أَوْ يَفْنَى
+كَمْ رُوحٍ تَبِحَثُ عَنْ مَرْفَعْ * كَمْ رُوحٍ تَبْحَثُ عَنْ مَلْجَأ
+وَالمَنْجَى فِي كِلْمَةِ اقْرَأ * بِسْمِ الله وَخَلَّي الظَّنَّ
+وَاللهُ عَلِيمٌ بِمُرَادِه * وَالله لَطِيفٌ بِعِبَادِه
+وَالحُرُّ المُؤْمِنُ بِفُؤَادِه * قَدْ لَمَسَ الحِكْمَةَ وَالمَعْنَى`,
+  latin_text: "",
+  translation: "",
   tags: ["Perjuangan", "Arobiah", "Dakwah", "Kebangkitan"],
   notes: "Qosidah Hadroh Khoirunnada.",
   is_active: true,

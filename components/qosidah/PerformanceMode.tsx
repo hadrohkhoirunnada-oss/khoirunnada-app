@@ -126,12 +126,14 @@ export function PerformanceMode({
         </div>
 
         {/* Latin Transliteration for assistance */}
-        <div className="mt-12 pt-6 border-t border-current border-opacity-15 opacity-80 text-sm whitespace-pre-line leading-relaxed font-sans text-center">
-          <p className="font-semibold text-xs tracking-wider uppercase mb-2 opacity-60">
-            Panduan Lafadz Latin
-          </p>
-          {qosidah.latin_text}
-        </div>
+        {qosidah.latin_text && (
+          <div className="mt-12 pt-6 border-t border-current border-opacity-15 opacity-80 text-sm whitespace-pre-line leading-relaxed font-sans text-center">
+            <p className="font-semibold text-xs tracking-wider uppercase mb-2 opacity-60">
+              Panduan Lafadz Latin
+            </p>
+            {qosidah.latin_text}
+          </div>
+        )}
       </main>
 
       {/* Bottom Floating Nav between Qosidahs */}

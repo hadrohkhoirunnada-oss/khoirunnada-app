@@ -60,7 +60,7 @@ import { sholliwasalim } from './sholliwasalim';
 import { addinulana } from './addinulana';
 import { yaKitabalGuyub } from './ya-kitabal-guyub';
 import { atainaka } from './atainaka';
-import { burikiti } from './burikiti';
+import { burikti } from './burikti';
 import { habibiYaRobbi } from './habibi-ya-robbi';
 import { sholatun } from './sholatun';
 import { alHijrotu } from './al-hijrotu';
@@ -163,7 +163,7 @@ export const QOSIDAH_LIST: Qosidah[] = [
   addinulana,
   yaKitabalGuyub,
   atainaka,
-  burikiti,
+  burikti,
   habibiYaRobbi,
   sholatun,
   alHijrotu,
@@ -266,7 +266,7 @@ export {
   addinulana,
   yaKitabalGuyub,
   atainaka,
-  burikiti,
+  burikti,
   habibiYaRobbi,
   sholatun,
   alHijrotu,

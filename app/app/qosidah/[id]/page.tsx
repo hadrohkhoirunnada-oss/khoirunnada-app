@@ -128,25 +128,29 @@ export default function QosidahDetailPage() {
 
       {/* 3. Latin Transliteration & Indonesian Translation */}
       <section className="space-y-4 mb-6">
-        <GlassCard className="p-5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#996A19] mb-2 flex items-center gap-1.5">
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Lafadz Latin</span>
-          </h3>
-          <p className="text-xs sm:text-sm text-[#151917] whitespace-pre-line leading-relaxed font-sans">
-            {qosidah.latin_text}
-          </p>
-        </GlassCard>
+        {qosidah.latin_text && (
+          <GlassCard className="p-5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#996A19] mb-2 flex items-center gap-1.5">
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Lafadz Latin</span>
+            </h3>
+            <p className="text-xs sm:text-sm text-[#151917] whitespace-pre-line leading-relaxed font-sans">
+              {qosidah.latin_text}
+            </p>
+          </GlassCard>
+        )}
 
-        <GlassCard className="p-5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#525D58] mb-2 flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5" />
-            <span>Arti / Terjemahan Bahasa Indonesia</span>
-          </h3>
-          <p className="text-xs sm:text-sm text-[#525D58] whitespace-pre-line leading-relaxed italic">
-            {qosidah.translation}
-          </p>
-        </GlassCard>
+        {qosidah.translation && (
+          <GlassCard className="p-5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#525D58] mb-2 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5" />
+              <span>Arti / Terjemahan Bahasa Indonesia</span>
+            </h3>
+            <p className="text-xs sm:text-sm text-[#525D58] whitespace-pre-line leading-relaxed italic">
+              {qosidah.translation}
+            </p>
+          </GlassCard>
+        )}
 
         {qosidah.notes && (
           <GlassCard className="p-4 bg-[#B58A3A]/10 border-[#B58A3A]/30">

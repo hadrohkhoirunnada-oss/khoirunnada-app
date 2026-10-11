@@ -2,13 +2,24 @@ import type { Qosidah } from '@/lib/types';
 
 export const robbahuBidzikrika: Qosidah = {
   id: "94340714-e516-4b9e-abf1-59be91915135",
-  title: "Robbahu Bidzikrika",
-  alternate_title: "Robbahu Bidzikrika Qod Haliyal-Lisaan",
+  title: "Robbahu",
+  alternate_title: "Robbahu Bidzikrika",
   category_id: "qosidah-arobiah",
   category_name: "Qosidah 'Arobiah",
-  arabic_text: "رَبَّاهُ بِذِكْرِكَ قَدْ حَلِيَ اللِّسَانُ\nوَطَابَتِ الْأَوْقَاتُ وَالْأَزْمَانُ\n\nيَا مَنْ لَهُ الْمُلْكُ وَالْعِزُّ وَالثَّنَاءُ\nأَنْتَ الرَّجَاءُ وَأَنْتَ الْمُسْتَعَانُ",
-  latin_text: "Robbahu bidzikrika qod haliyal-lisaan\nWa thoobatil-awqootu wal-azmaan\n\nYaa man lahul-mulku wal-'izzu wats-tsanaa\nAntar-rojaa-u wa antal-musta'aan",
-  translation: "Wahai Tuhanku, dengan berdzikir mengingat-Mu lisan menjadi manis indah, dan waktu serta zaman menjadi penuh ketenteraman. Wahai Dzat Pemilik kerajaan dan kemuliaan, Engkaulah tempat berharap dan tempat memohon pertolongan.",
+  arabic_text: `رَبَّاهُ بِذِكْرِكَ أَعْرِفُ ذَاتِيْ
+حِيْنَ أُنَادِيْ يَا مَوْلَايَا
+هَبْ لِيْ هُدَايَا أَنْتَ رَجَايَا
+هَبْ لِيْ هُدَايَا أَنْتَ رَجَايَا
+اَلنُّوْرُ يُدَاعِبُ أَجْفَانِيْ
+فِي اللَّيْلِ فَأَعْزِفُ أَلْحَانِيْ
+وَأُرَتِّلُ آيَ الْقُرْآنِ
+وَأَطِيْرُ إِلَى دُنْيَا الْأُنْسِ
+هَبْ لِيْ هُدَايَا أَنْتَ رَجَايَا
+دُنْيَا الْإِيْمَانِ آيَا حُلُمًا  ⎈ فِيْ وَصْفِكَ أعْنَيْتُ الْقَلَمَ
+اَحْيَاكِيْ سَعِيْدًا مُبْتَسِمًا  ⎈ بِقَلْبِيْ وَارْضَ اُمَّتُكِ
+هَبْ لِي هُدَايَا أَنْتَ رَجَايَا  ⎈ هَبْ لِي هُدَايَا أَنْتَ رَجَايَا`,
+  latin_text: "",
+  translation: "",
   tags: ["Dzikir", "Munajat", "Arobiah", "Doa"],
   notes: "Qosidah Hadroh Khoirunnada.",
   is_active: true,

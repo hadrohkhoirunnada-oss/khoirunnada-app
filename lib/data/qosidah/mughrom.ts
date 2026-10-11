@@ -3,12 +3,42 @@ import type { Qosidah } from '@/lib/types';
 export const mughrom: Qosidah = {
   id: "da23f7b7-e011-4f3c-aedb-517f2d62f237",
   title: "Mughrom",
-  alternate_title: "Mughrom Qolbi Bihubbika Mughrom",
+  alternate_title: "Mughrom Qolbi Bihubbak Mughrom",
   category_id: 'qosidah-arobiah',
   category_name: "Qosidah 'Arobiah",
-  arabic_text: "مُغْرَمْ قَلْبِي بِحُبِّكَ مُغْرَمْ\nيَا سَيِّدِي يَا رَسُولَ الله\n\nأَنْتَ حَبِيبِي وَأَنْتَ طَبِيبِي\nفِي كُلِّ حِينٍ يَا نَبِيَّ الله",
-  latin_text: "Mughrom qalbii bihubbika mughrom\nYaa Sayyidii yaa Rasulallah\n\nAnta habiibii wa anta thabiibii\nFii kulli hiinin yaa Nabiyyallaah",
-  translation: "Terpikat hatiku oleh cintamu wahai junjunganku wahai Rasulullah. Engkaulah kekasih dan penawar jiwaku setiap saat wahai nabi Allah.",
+  arabic_text: `مُغْرَمْ… قَلْبِيْ بِحُبَّكْ مُغْرَمْ
+يَا مُصْطَفَانَا الْمُكَرَّمْ
+يَا رَسُوْلَ اللهْ
+مُغْرَمْ… قَلْبِيْ بِحُبَّكْ مُغْرَمْ
+يَا مُصْطَفَانَا الْمُكَرَّمْ
+يَا رَسُوْلَ اللهْ
+
+جَمَالَكْ مَا فِي اثْنَيْنْ
+مَا شَافِتْ مِثْلُهْ عَيْنْ
+أَسَرَ فُؤَادِي
+وَزَادْ وِدَادِي
+بَدْرُ الدُّجَى يَا زَيْنْ
+أَبْيَضْ حُلْوُ الْخَدَّيْنْ
+يَا وَاسِعَ الْعَيْنَيْنْ
+أَحْلَى بْتِسَامَةْ
+بِأَبْهَى عَلَامَةْ
+يَا سَيِّدَ الْكَوْنَيْنْ
+إِمْتَى حَبِيْبِيْ أَرَاكْ
+وَالْقَاكْ وَافْرَحْ بِنَدَاكْ؟
+طَهْ جُدْ بِنَظْرَةْ إِلَيَّ
+طَهْ يَا عَظِيْمَ الْجَاهْ
+طَهْ جُدْ بِنَظْرَةْ إِلَيَّ
+طَهْ يَا عَظِيْمَ الْجَاهْ
+قَلْبِيْ يَا حِبِّيْ عَلِيْلْ
+وَلَيْلِيْ عَلَيَّ طَوِيْلْ
+إِسْمَكْ يَا غَالِيْ دَايْماً فِي بَالِيْ
+مِنْ شَوْقِيْ لَكْ يَا جَمِيْلْ
+بُصَلِّيْ عَلَيْكْ وَارْتَاحْ
+وَالْقَى أُنْسِ وَأَفْرَاحْ
+تِشْفَى جُرُوْحِيْ وَتِتْهَنَّى رُوْحِيْ
+مِنْ بَعْدِ لَيْلِيْ صَبَاحْ`,
+  latin_text: "",
+  translation: "",
   tags: ["Mahabbah","Arobiah","Populer"],
   notes: "Qosidah 'Arobiah Hadroh Khoirunnada.",
   is_active: true,
