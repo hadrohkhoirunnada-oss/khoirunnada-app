@@ -471,3 +471,393 @@ body.admin-theme {
   color: #151917 !important;
   overscroll-behavior: none !important;
 }
+
+/* Wide-screen Admin workspace. These rules only apply to Admin at desktop widths. */
+@media (min-width: 1024px) {
+  .admin-desktop-root {
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    background: #F3F1EA !important;
+  }
+
+  [data-admin-mode="true"] {
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: #F3F1EA !important;
+  }
+
+  [data-admin-mode="true"] .admin-desktop-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: 76px;
+    background: #FFFFFF;
+    border-bottom: 1px solid rgba(21, 25, 23, 0.08);
+    box-shadow: 0 3px 14px rgba(21, 25, 23, 0.04);
+  }
+
+  [data-admin-mode="true"] .admin-desktop-main {
+    box-sizing: border-box;
+    width: calc(100% - 264px);
+    margin-left: 264px;
+    padding: 30px clamp(28px, 3.2vw, 56px) 48px;
+    overflow-x: hidden;
+    background: #F3F1EA;
+  }
+
+  [data-admin-mode="true"] .admin-desktop-curtain {
+    display: none;
+  }
+
+  [data-admin-mode="true"] .admin-desktop-nav {
+    top: 76px;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: 264px;
+    padding: 22px 14px 24px;
+    box-sizing: border-box;
+    background: #FBFAF7;
+    border-right: 1px solid rgba(21, 25, 23, 0.08);
+    pointer-events: auto;
+  }
+
+  [data-admin-mode="true"] .admin-desktop-nav-panel {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 7px;
+    padding: 10px;
+    border: 0;
+    border-radius: 18px;
+    background: #FFFFFF;
+    box-shadow: 0 8px 24px rgba(21, 25, 23, 0.06);
+  }
+
+  [data-admin-mode="true"] .admin-desktop-nav-heading {
+    display: block !important;
+    margin: 4px 10px 10px;
+    color: #777164;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  [data-admin-mode="true"] .admin-desktop-nav-item {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 0 13px;
+    border-radius: 12px;
+    text-align: left;
+  }
+
+  [data-admin-mode="true"] .admin-desktop-nav-item > svg,
+  [data-admin-mode="true"] .admin-desktop-nav-item > div > svg:first-child {
+    width: 19px;
+    height: 19px;
+    flex: 0 0 auto;
+  }
+
+  [data-admin-mode="true"] .admin-desktop-nav-item > span {
+    margin-top: 0;
+    font-size: 13px;
+    letter-spacing: 0;
+  }
+
+  [data-admin-mode="true"] .admin-desktop-nav-item > div {
+    width: 19px;
+    flex: 0 0 19px;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-admin-mode="true"] .admin-desktop-main > * {
+    max-width: 1600px;
+    width: 100%;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin"] .admin-desktop-main {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-content: start;
+    gap: 22px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin"] .admin-desktop-main > .admin-desktop-dashboard-greeting {
+    grid-column: span 7;
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin"] .admin-desktop-main > .admin-desktop-dashboard-metrics {
+    grid-column: span 5;
+    margin-bottom: 0;
+    align-self: stretch;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin"] .admin-desktop-dashboard-metrics > div {
+    height: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: stretch;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin"] .admin-desktop-main > .admin-desktop-dashboard-modules {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 18px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin"] .admin-desktop-dashboard-modules > div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin"] .admin-desktop-dashboard-modules > a > div {
+    min-height: 82px;
+    padding: 18px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/bookings"] .admin-desktop-main,
+  [data-admin-mode="true"][data-admin-route^="/app/admin/bookings/"] .admin-desktop-main {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-content: start;
+    gap: 18px 22px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/bookings"] .admin-desktop-bookings-search {
+    grid-column: span 7;
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/bookings"] .admin-desktop-bookings-filters {
+    grid-column: span 5;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/bookings"] .admin-desktop-bookings-list {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/bookings"] .admin-desktop-bookings-list > * {
+    height: 100%;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/bookings"] .admin-desktop-bookings-list > :only-child {
+    grid-column: 1 / -1;
+  }
+
+  [data-admin-mode="true"][data-admin-route^="/app/admin/bookings/"] .admin-desktop-booking-alert {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route^="/app/admin/bookings/"] .admin-desktop-booking-summary {
+    grid-column: span 5;
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route^="/app/admin/bookings/"] .admin-desktop-booking-details {
+    grid-column: span 7;
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route^="/app/admin/bookings/"] .admin-desktop-booking-notes {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance"] .admin-desktop-main {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-content: start;
+    gap: 20px 24px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance"] .admin-desktop-finance-summary {
+    grid-column: span 4;
+    align-self: start;
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance"] .admin-desktop-finance-filters {
+    grid-column: span 8;
+    align-self: start;
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance"] .admin-desktop-finance-history {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 4px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance"] .admin-desktop-finance-history > div:first-of-type {
+    grid-column: 1 / -1;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance"] .admin-desktop-transaction-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+    gap: 12px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance/transactions/new"] .admin-desktop-main > .admin-desktop-finance-form {
+    display: grid;
+    width: min(100%, 1180px);
+    grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+    align-items: start;
+    gap: 18px 22px;
+    margin: 0 auto;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance/transactions/new"] .admin-desktop-form-error,
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance/transactions/new"] .admin-desktop-finance-type,
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance/transactions/new"] .admin-desktop-form-submit {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance/transactions/new"] .admin-desktop-finance-type {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance/transactions/new"] .admin-desktop-finance-amount,
+  [data-admin-mode="true"][data-admin-route="/app/admin/finance/transactions/new"] .admin-desktop-finance-fields {
+    width: 100%;
+    margin: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/jobs"] .admin-desktop-jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 18px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/jobs"] .admin-desktop-jobs-grid > .glass-card {
+    height: 100%;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/members"] .admin-members-content {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-content: start;
+    align-items: start;
+    gap: 22px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/members"] .admin-members-content > .mb-4,
+  [data-admin-mode="true"][data-admin-route="/app/admin/members"] .admin-desktop-active-members > h3 {
+    grid-column: 1 / -1;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/members"] .admin-desktop-pending-members,
+  [data-admin-mode="true"][data-admin-route="/app/admin/members"] .admin-desktop-active-members {
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/members"] .admin-desktop-active-members > div {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 14px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/notifications"] .admin-desktop-main {
+    display: grid;
+    grid-template-columns: minmax(360px, 0.85fr) minmax(0, 1.15fr);
+    align-content: start;
+    align-items: start;
+    gap: 24px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/notifications"] .admin-desktop-announcement-form,
+  [data-admin-mode="true"][data-admin-route="/app/admin/notifications"] .admin-desktop-announcement-history {
+    margin-bottom: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/notifications"] .admin-desktop-announcement-history > div:last-child {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 12px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/qosidah"] .admin-desktop-qosidah-page {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-content: start;
+    gap: 18px 22px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/qosidah"] .admin-desktop-qosidah-info,
+  [data-admin-mode="true"][data-admin-route="/app/admin/qosidah"] .admin-desktop-qosidah-search,
+  [data-admin-mode="true"][data-admin-route="/app/admin/qosidah"] .admin-desktop-qosidah-grid {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/qosidah"] .admin-desktop-qosidah-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 18px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/settings"] .admin-desktop-main {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-content: start;
+    align-items: start;
+    gap: 20px 24px;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/settings"] .admin-desktop-settings-alert {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/settings"] .admin-desktop-settings-profile,
+  [data-admin-mode="true"][data-admin-route="/app/admin/settings"] .admin-desktop-settings-system {
+    grid-column: span 5;
+    width: 100%;
+    margin: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/settings"] .admin-desktop-settings-nav,
+  [data-admin-mode="true"][data-admin-route="/app/admin/settings"] .admin-desktop-settings-audit {
+    grid-column: span 7;
+    margin: 0;
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/settings"] .admin-desktop-settings-nav > div:last-child {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  [data-admin-mode="true"][data-admin-route="/app/admin/settings"] .admin-desktop-settings-audit > div:last-child {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 12px;
+  }
+}

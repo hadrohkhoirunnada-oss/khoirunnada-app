@@ -56,7 +56,7 @@ export default function AdminCenterPage() {
       subtitle="Hadroh Khoirunnada"
     >
       {/* 1. Greeting and admin profile */}
-      <section className="mb-4">
+      <section className="admin-desktop-dashboard-greeting mb-4">
         <div className="p-4 rounded-2xl bg-gradient-to-br from-[#F5EBD7] via-[#FFFFFF] to-[#FFFFFF] border border-[#B58228]/40 shadow-lg relative overflow-hidden">
           <div className="absolute top-0 right-0 w-44 h-44 bg-[#996A19]/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -109,7 +109,7 @@ export default function AdminCenterPage() {
       </section>
 
       {/* 2. Key Attention Metrics */}
-      <section className="mb-5">
+      <section className="admin-desktop-dashboard-metrics mb-5">
         <div className="grid grid-cols-2 gap-2.5">
           {/* New Bookings Attention Card */}
           <Link href="/app/admin/bookings" className="block">
@@ -166,7 +166,7 @@ export default function AdminCenterPage() {
       </section>
 
       {/* 3. Admin Modules Grid */}
-      <section className="space-y-2.5">
+      <section className="admin-desktop-dashboard-modules space-y-2.5">
         <div className="flex items-center justify-between px-1">
           <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145]">
             Modul Manajemen Admin

@@ -37,9 +37,9 @@ export default function AdminQosidahCMSPage() {
       showBack
       backHref="/app/admin"
     >
-      <div className="space-y-3">
+      <div className="admin-desktop-qosidah-page space-y-3">
         {/* Banner Info Penyimpanan */}
-        <GlassCard className="p-3.5 !bg-[#FFFFFF]/95 !border-[#B58228]/30 shadow-md">
+        <GlassCard className="admin-desktop-qosidah-info p-3.5 !bg-[#FFFFFF]/95 !border-[#B58228]/30 shadow-md">
           <div className="flex items-start gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#B58228]/15 border border-[#B58228]/30 flex items-center justify-center shrink-0 text-[#70490E]">
               <FileCode className="w-4 h-4" />
@@ -59,7 +59,7 @@ export default function AdminQosidahCMSPage() {
         </GlassCard>
 
         {/* Search input */}
-        <div className="relative">
+        <div className="admin-desktop-qosidah-search relative">
           <input
             type="text"
             value={searchQuery}
@@ -70,7 +70,7 @@ export default function AdminQosidahCMSPage() {
         </div>
 
         {/* List of Qosidahs */}
-        <div className="space-y-3">
+        <div className="admin-desktop-qosidah-grid space-y-3">
           {filteredQosidahs.map((qos) => {
             const isFav = favorites.includes(qos.id);
             return (

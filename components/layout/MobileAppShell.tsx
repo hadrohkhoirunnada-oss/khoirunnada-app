@@ -107,7 +107,7 @@ export function MobileAppShell({
     <div
       className={`h-screen h-[100dvh] w-full flex flex-col items-center justify-start overflow-hidden antialiased selection:bg-[#996A19]/30 transition-colors bg-[#F8F6F0] text-[#151917] ${
         isAdmin ? 'selection:text-[#151917]' : 'selection:text-[#F3E6C8]'
-      }`}
+      } ${isAdmin ? 'admin-desktop-root' : ''}`}
     >
       {/* Ambient Radial Lighting on Canvas (Statis fixed di background) */}
       <div className="ambient-lighting" />
@@ -115,10 +115,11 @@ export function MobileAppShell({
       {/* Container simulating smartphone app frame: Fixed viewport, header fixed di atas, konten scroll mulus */}
       <div
         data-admin-mode={isAdmin ? "true" : undefined}
+        data-admin-route={isAdmin ? pathname : undefined}
         className="w-full max-w-[440px] h-full flex flex-col relative overflow-hidden transition-colors bg-[#F8F6F0] text-[#151917] sm:border-x sm:border-black/5 shadow-[0_0_50px_rgba(0,0,0,0.08)]"
       >
         {!hideHeader && (
-          <div className="shrink-0 z-30">
+          <div className={`shrink-0 z-30 ${isAdmin ? 'admin-desktop-header' : ''}`}>
             <GlassAppHeader
               title={title}
               subtitle={subtitle}
@@ -129,14 +130,14 @@ export function MobileAppShell({
           </div>
         )}
 
-        <main className={`flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-4 ${hideNav ? 'pb-6' : 'pb-32'}`}>
+        <main className={`flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-4 ${hideNav ? 'pb-6' : 'pb-32'} ${isAdmin ? 'admin-desktop-main' : ''}`}>
           {children}
         </main>
 
         {/* Soft protective gradient curtain so scrolled cards don't visually collide with bottom navigation */}
         {!hideNav && (
           <div
-            className="pointer-events-none absolute bottom-0 left-0 right-0 h-28 z-30 transition-colors bg-gradient-to-t from-[#F8F6F0] via-[#F8F6F0]/85 to-transparent"
+            className={`pointer-events-none absolute bottom-0 left-0 right-0 h-28 z-30 transition-colors bg-gradient-to-t from-[#F8F6F0] via-[#F8F6F0]/85 to-transparent ${isAdmin ? 'admin-desktop-curtain' : ''}`}
           />
         )}
 

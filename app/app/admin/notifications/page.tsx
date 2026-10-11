@@ -51,7 +51,7 @@ export default function AdminBroadcastAnnouncementPage() {
       showBack
       backHref="/app/admin"
     >
-      <GlassCard className="p-5 sm:p-6 mb-5 !bg-[#FFFFFF]/95 !border-[#B58228]/30 shadow-[0_4px_24px_rgba(0,0,0,0.6)]" variant="elevated">
+      <GlassCard className="admin-desktop-announcement-form p-5 sm:p-6 mb-5 !bg-[#FFFFFF]/95 !border-[#B58228]/30 shadow-[0_4px_24px_rgba(0,0,0,0.6)]" variant="elevated">
         {sentSuccess && (
           <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 text-xs text-emerald-800 flex items-center gap-2 mb-4 animate-in fade-in duration-200">
             <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
@@ -119,7 +119,7 @@ export default function AdminBroadcastAnnouncementPage() {
       </GlassCard>
 
       {/* History Broadcasts */}
-      <section className="space-y-2.5">
+      <section className="admin-desktop-announcement-history space-y-2.5">
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145] px-1 flex items-center gap-1.5">
           <Bell className="w-3.5 h-3.5 text-[#70490E]" />
           <span>Histori Pengumuman Terakhir</span>

@@ -88,7 +88,7 @@ export default function AdminMembersManagementPage() {
         </div>
       )}
       {/* 1. Pending Approvals Queue */}
-      <section className="mb-6">
+      <section className="admin-desktop-pending-members mb-6">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-[#70490E]" />
@@ -168,7 +168,7 @@ export default function AdminMembersManagementPage() {
       </section>
 
       {/* 2. Active Members & Roles Management */}
-      <section className="space-y-3 mb-6">
+      <section className="admin-desktop-active-members space-y-3 mb-6">
         <h3 className="admin-members-section-title text-sm font-bold uppercase tracking-wider text-[#151917]">
           Daftar Anggota Aktif ({activeMembers.length})
         </h3>

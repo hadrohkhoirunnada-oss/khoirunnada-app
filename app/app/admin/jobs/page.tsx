@@ -68,7 +68,7 @@ export default function AdminJobsManagementPage() {
         </button>
       }
     >
-      <div className="space-y-3">
+      <div className="admin-desktop-jobs-grid space-y-3">
         {jobs.map((job) => {
           const jobAssignments = assignments.filter((a) => a.job_id === job.id);
 

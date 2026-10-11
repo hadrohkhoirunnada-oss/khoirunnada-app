@@ -23,6 +23,7 @@ import type {
   Qosidah,
   QosidahCategory,
   FinanceTransaction,
+  FinancePublicTransaction,
   FinanceCategory,
   AppNotification,
   AuditLog,
@@ -60,6 +61,8 @@ interface AppStoreContextType {
   createQosidah: (data: Omit<Qosidah, 'id' | 'created_at' | 'is_active'>) => Promise<Qosidah>;
   updateQosidah: (qosidah: Qosidah) => Promise<void>;
   transactions: FinanceTransaction[];
+  publicFinanceTransactions: FinancePublicTransaction[];
+  refreshPublicFinanceTransactions: () => Promise<void>;
   financeCategories: FinanceCategory[];
   addTransaction: (transaction: Omit<FinanceTransaction, 'id' | 'created_at' | 'created_by' | 'created_by_name'>) => Promise<FinanceTransaction>;
   uploadReceipt: (file: File) => Promise<string>;
@@ -155,6 +158,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const [transactions, setTransactions] = useState<FinanceTransaction[]>([]);
+  const [publicFinanceTransactions, setPublicFinanceTransactions] = useState<FinancePublicTransaction[]>([]);
   const [financeCategories, setFinanceCategories] = useState<FinanceCategory[]>([]);
   const [financeSummary, setFinanceSummary] = useState({ balance: 0, incomeThisMonth: 0, expenseThisMonth: 0 });
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
@@ -172,6 +176,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     setFavorites([]);
     setRecentIds([]);
     setTransactions([]);
+    setPublicFinanceTransactions([]);
     setFinanceCategories([]);
     setFinanceSummary({ balance: 0, incomeThisMonth: 0, expenseThisMonth: 0 });
     setNotifications([]);
@@ -221,6 +226,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       apiBookings,
       apiMembers,
       apiFavs,
+      publicFinanceTransactionsResponse,
     ] = await Promise.all([
       (profile.is_admin ? client.from('jobs').select('*') : client.from('jobs').select('id,title,event_type,customer_name,event_date,gather_time,start_time,location,maps_url,dress_code,transport_info,notes,status,created_by,created_at,updated_at')).order('event_date', { ascending: true }),
       client.from('job_attendance').select('*').order('updated_at', { ascending: false }),
@@ -232,7 +238,16 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       fetchBookingsPromise,
       fetchMembersPromise,
       fetchFavsPromise,
+      fetch('/api/finance/transactions', { cache: 'no-store' }).then((res) => (res.ok ? res.json() : null)).catch(() => null),
     ]);
+
+    setPublicFinanceTransactions(
+      Array.isArray(publicFinanceTransactionsResponse?.transactions)
+        ? publicFinanceTransactionsResponse.transactions.filter((transaction: unknown): transaction is FinancePublicTransaction =>
+            Boolean(transaction && typeof transaction === 'object' && 'id' in transaction && 'description' in transaction)
+          )
+        : []
+    );
 
     // Set Jobs, Attendance, Assignments
     setJobs((jobsResult.data ?? []) as unknown as Job[]);
@@ -803,6 +818,23 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     return newName;
   };
 
+  const refreshPublicFinanceTransactions = useCallback(async () => {
+    try {
+      const response = await fetch('/api/finance/transactions', { cache: 'no-store' });
+      if (!response.ok) return;
+      const result = await response.json();
+      if (Array.isArray(result?.transactions)) {
+        setPublicFinanceTransactions(
+          result.transactions.filter((transaction: unknown): transaction is FinancePublicTransaction =>
+            Boolean(transaction && typeof transaction === 'object' && 'id' in transaction && 'description' in transaction)
+          )
+        );
+      }
+    } catch {
+      // Keep the most recently loaded transactions if a refresh is temporarily unavailable.
+    }
+  }, []);
+
   const unreadNotificationCount = notifications.filter((item) => !item.is_read).length;
 
   return (
@@ -837,6 +869,8 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
         createQosidah,
         updateQosidah,
         transactions,
+        publicFinanceTransactions,
+        refreshPublicFinanceTransactions,
         financeCategories,
         addTransaction,
         uploadReceipt,

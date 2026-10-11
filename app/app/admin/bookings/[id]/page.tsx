@@ -121,12 +121,12 @@ Terima kasih.`;
       backHref="/app/admin/bookings"
     >
       {actionError && (
-        <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-800">
+        <div className="admin-desktop-booking-alert mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-800">
           {actionError}
         </div>
       )}
       {/* 1. Header Information */}
-      <GlassCard className="p-5 mb-4 !bg-[#FFFFFF]/95 !border-[#B58228]/30 shadow-[0_4px_24px_rgba(0,0,0,0.6)]" variant="elevated">
+      <GlassCard className="admin-desktop-booking-summary p-5 mb-4 !bg-[#FFFFFF]/95 !border-[#B58228]/30 shadow-[0_4px_24px_rgba(0,0,0,0.6)]" variant="elevated">
         <div className="flex items-center justify-between gap-2 mb-2">
           <GlassStatusBadge status={booking.status} />
           <span className="font-mono text-xs font-bold text-[#70490E]">
@@ -182,7 +182,7 @@ Terima kasih.`;
       </GlassCard>
 
       {/* 2. Event & Customer Details */}
-      <GlassCard className="p-5 mb-4 space-y-3 !bg-[#FFFFFF]/90 !border-[#B58228]/25" variant="elevated">
+      <GlassCard className="admin-desktop-booking-details p-5 mb-4 space-y-3 !bg-[#FFFFFF]/90 !border-[#B58228]/25" variant="elevated">
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145] mb-1">
           Rincian Permintaan Acara
         </h3>
@@ -218,7 +218,7 @@ Terima kasih.`;
       </GlassCard>
 
       {/* 3. Status Management & Admin Notes */}
-      <GlassCard className="p-5 mb-4 space-y-3 !bg-[#FFFFFF]/90 !border-[#B58228]/25" variant="elevated">
+      <GlassCard className="admin-desktop-booking-notes p-5 mb-4 space-y-3 !bg-[#FFFFFF]/90 !border-[#B58228]/25" variant="elevated">
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145]">
           Status & Catatan Internal Admin
         </h3>

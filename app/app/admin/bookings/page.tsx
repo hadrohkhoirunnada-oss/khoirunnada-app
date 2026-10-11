@@ -49,7 +49,7 @@ export default function AdminBookingsPage() {
       backHref="/app/admin"
     >
       {/* Search bar */}
-      <div className="relative mb-3">
+      <div className="admin-desktop-bookings-search relative mb-3">
         <input
           type="text"
           value={search}
@@ -61,7 +61,7 @@ export default function AdminBookingsPage() {
       </div>
 
       {/* Status filters */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-none">
+      <div className="admin-desktop-bookings-filters flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-none">
         <button
           onClick={() => setStatusFilter('all')}
           className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
@@ -105,11 +105,11 @@ export default function AdminBookingsPage() {
       </div>
 
       {/* Bookings List */}
-      <div className="space-y-3">
+      <div className="admin-desktop-bookings-list space-y-3">
         {filtered.length > 0 ? (
           filtered.map((b) => (
             <Link key={b.id} href={`/app/admin/bookings/${b.id}`} className="block">
-              <div className="p-4 rounded-2xl bg-[#FFFFFF]/90 border border-[#B58228]/25 hover:border-[#B58228]/50 active:scale-[0.99] transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+              <div className="admin-desktop-booking-card p-4 rounded-2xl bg-[#FFFFFF]/90 border border-[#B58228]/25 hover:border-[#B58228]/50 active:scale-[0.99] transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
                     <GlassStatusBadge status={b.status} />

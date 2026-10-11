@@ -28,7 +28,7 @@ import { FinanceTransaction } from '@/lib/types';
 type PeriodType = 'all' | 'week' | 'month' | 'year' | 'custom';
 
 export default function AdminFinancePage() {
-  const { balance, transactions } = useAppStore();
+  const { balance, transactions, profiles } = useAppStore();
 
   // Filters State
   const [period, setPeriod] = useState<PeriodType>('all');
@@ -38,6 +38,9 @@ export default function AdminFinancePage() {
   const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expense'>('all');
   const [search, setSearch] = useState('');
   const [selectedTrx, setSelectedTrx] = useState<FinanceTransaction | null>(null);
+  const selectedRecorderName = selectedTrx
+    ? profiles.find((profile) => profile.id === selectedTrx.created_by)?.name ?? 'Username tidak tersedia'
+    : '';
 
   // Filtered transactions logic
   const filteredTransactions = useMemo(() => {
@@ -124,7 +127,7 @@ export default function AdminFinancePage() {
       }
     >
       {/* 1. Saldo Kas & Rincian Transparansi */}
-      <div className="p-5 mb-4 rounded-2xl bg-gradient-to-br from-[#F5EBD7] via-[#FFFFFF] to-[#FFFFFF] border border-[#B58228]/40 shadow-lg text-center relative overflow-hidden">
+      <div className="admin-desktop-finance-summary p-5 mb-4 rounded-2xl bg-gradient-to-br from-[#F5EBD7] via-[#FFFFFF] to-[#FFFFFF] border border-[#B58228]/40 shadow-lg text-center relative overflow-hidden">
         <div className="flex items-center justify-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-wider text-[#70490E]">
           <ShieldCheck className="w-3.5 h-3.5" />
           <span>Kas Pengurus Hadroh Khoirunnada</span>
@@ -161,7 +164,7 @@ export default function AdminFinancePage() {
       </div>
 
       {/* 2. Filter Periode & Kalender */}
-      <section className="mb-4">
+      <section className="admin-desktop-finance-filters mb-4">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-bold uppercase tracking-wider text-[#585145]">
             Periode Transaksi
@@ -328,7 +331,7 @@ export default function AdminFinancePage() {
       </section>
 
       {/* 3. Daftar Riwayat Transaksi Kas */}
-      <section className="space-y-2.5">
+      <section className="admin-desktop-finance-history space-y-2.5">
         <div className="flex items-center justify-between px-0.5">
           <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145]">
             Riwayat Pembukuan Kas Hadroh
@@ -339,7 +342,7 @@ export default function AdminFinancePage() {
         </div>
 
         {/* List Transaksi */}
-        <div className="space-y-2">
+        <div className="admin-desktop-transaction-grid space-y-2">
           {filteredTransactions.map((trx) => {
             const isIncome = trx.type === 'income';
 
@@ -451,7 +454,7 @@ export default function AdminFinancePage() {
                   <User className="w-3.5 h-3.5 text-[#70490E]" />
                   <span>Dicatat Oleh</span>
                 </span>
-                <span className="font-bold text-[#151917]">{selectedTrx.created_by_name}</span>
+                <span className="font-bold text-[#151917]">{selectedRecorderName}</span>
               </div>
             </div>
 

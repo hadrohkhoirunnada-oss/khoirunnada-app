@@ -19,12 +19,13 @@ export function AdminBottomNavigation() {
 
   return (
     <>
-      <nav className="absolute bottom-0 left-0 right-0 z-40 px-4 pb-3 pt-2 pointer-events-none">
-        <div className="pointer-events-auto rounded-2xl px-2 py-1.5 flex items-center justify-around bg-white/95 backdrop-blur-2xl border border-[#996A19]/20 shadow-[0_4px_24px_rgba(153,106,25,0.12)]">
+      <nav className="admin-desktop-nav absolute bottom-0 left-0 right-0 z-40 px-4 pb-3 pt-2 pointer-events-none">
+        <div className="admin-desktop-nav-panel pointer-events-auto rounded-2xl px-2 py-1.5 flex items-center justify-around bg-white/95 backdrop-blur-2xl border border-[#996A19]/20 shadow-[0_4px_24px_rgba(153,106,25,0.12)]">
+          <span className="admin-desktop-nav-heading hidden">Navigasi Admin</span>
           {/* 1. Beranda Admin */}
           <Link
             href="/app/admin"
-            className={`relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer ${
+            className={`admin-desktop-nav-item relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer ${
               pathname === '/app/admin'
                 ? 'bg-[#996A19]/12 text-[#70490E] font-semibold'
                 : 'text-[#585145] hover:text-[#151917]'
@@ -47,7 +48,7 @@ export function AdminBottomNavigation() {
           {/* 2. Kelola Booking */}
           <Link
             href="/app/admin/bookings"
-            className={`relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer ${
+            className={`admin-desktop-nav-item relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer ${
               pathname.startsWith('/app/admin/bookings')
                 ? 'bg-[#996A19]/12 text-[#70490E] font-semibold'
                 : 'text-[#585145] hover:text-[#151917]'
@@ -74,7 +75,7 @@ export function AdminBottomNavigation() {
           {/* 3. TAMBAH JOB (Membuka Popup Bottom-Sheet Non-Full Layar Khusus Admin) */}
           <button
             onClick={() => setIsAddJobOpen(true)}
-            className="relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl text-[#585145] hover:text-[#151917] font-medium active:scale-95 transition-all cursor-pointer"
+            className="admin-desktop-nav-item relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl text-[#585145] hover:text-[#151917] font-medium active:scale-95 transition-all cursor-pointer"
             aria-label="Tambah Job Baru"
           >
             <div className="flex items-center gap-0.5">
@@ -89,7 +90,7 @@ export function AdminBottomNavigation() {
           {/* 4. Keuangan Kas Hadroh (Khusus Admin/Bendahara) */}
           <Link
             href="/app/admin/finance"
-            className={`relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer ${
+            className={`admin-desktop-nav-item relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer ${
               pathname.startsWith('/app/admin/finance')
                 ? 'bg-[#996A19]/12 text-[#70490E] font-semibold'
                 : 'text-[#585145] hover:text-[#151917]'
@@ -116,7 +117,7 @@ export function AdminBottomNavigation() {
           {/* 5. Pengaturan & Akun Admin */}
           <Link
             href="/app/admin/settings"
-            className={`relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer ${
+            className={`admin-desktop-nav-item relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 px-2 rounded-xl transition-all duration-150 active:scale-95 cursor-pointer ${
               pathname.startsWith('/app/admin/settings')
                 ? 'bg-[#996A19]/12 text-[#70490E] font-semibold'
                 : 'text-[#585145] hover:text-[#151917]'

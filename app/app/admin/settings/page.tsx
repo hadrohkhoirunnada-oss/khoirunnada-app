@@ -57,14 +57,14 @@ export default function AdminSettingsPage() {
       backHref="/app/admin"
     >
       {resetSuccess && (
-        <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 text-xs text-emerald-800 flex items-center gap-2 mb-4 shadow-lg backdrop-blur-md">
+        <div className="admin-desktop-settings-alert p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 text-xs text-emerald-800 flex items-center gap-2 mb-4 shadow-lg backdrop-blur-md">
           <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
           <span>Data terbaru berhasil disinkronkan dari Supabase.</span>
         </div>
       )}
 
       {/* 1. Dedicated Admin & Bendahara Account Profile Card */}
-      <GlassCard className="p-5 mb-4 !bg-[#FFFFFF]/95 !border-[#B58228]/30 shadow-[0_4px_24px_rgba(0,0,0,0.6)]" variant="elevated">
+      <GlassCard className="admin-desktop-settings-profile p-5 mb-4 !bg-[#FFFFFF]/95 !border-[#B58228]/30 shadow-[0_4px_24px_rgba(0,0,0,0.6)]" variant="elevated">
         <div className="flex items-start gap-3.5 mb-4">
           <div className="w-14 h-14 rounded-2xl p-1 bg-gradient-to-br from-[#70490E]/20 via-[#70490E]/10 to-transparent border border-[#B58228]/40 shrink-0 flex items-center justify-center shadow-inner overflow-hidden">
             <img
@@ -136,7 +136,7 @@ export default function AdminSettingsPage() {
       </GlassCard>
 
       {/* 2. Fast Navigation to Admin Modules */}
-      <section className="mb-4 space-y-2">
+      <section className="admin-desktop-settings-nav mb-4 space-y-2">
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145] px-1 flex items-center gap-1.5">
           <Sparkles className="w-3.5 h-3.5 text-[#70490E]" />
           <span>Menu Manajemen Pengurus</span>
@@ -206,7 +206,7 @@ export default function AdminSettingsPage() {
       </section>
 
       {/* 3. System Config Information */}
-      <GlassCard className="p-5 mb-4 space-y-3 !bg-[#FFFFFF]/90 !border-[#B58228]/25" variant="elevated">
+      <GlassCard className="admin-desktop-settings-system p-5 mb-4 space-y-3 !bg-[#FFFFFF]/90 !border-[#B58228]/25" variant="elevated">
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145] flex items-center gap-1.5">
           <Database className="w-4 h-4 text-[#70490E]" />
           <span>Arsitektur & Konfigurasi Sistem</span>
@@ -246,7 +246,7 @@ export default function AdminSettingsPage() {
       </GlassCard>
 
       {/* 4. Audit Logs Viewer */}
-      <section className="space-y-2.5">
+      <section className="admin-desktop-settings-audit space-y-2.5">
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145] flex items-center justify-between px-1">
           <span className="flex items-center gap-1.5">
             <History className="w-4 h-4 text-[#70490E]" />

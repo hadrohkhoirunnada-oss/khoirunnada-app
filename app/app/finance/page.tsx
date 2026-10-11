@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -24,15 +24,40 @@ import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { GlassModal } from '@/components/ui/GlassModal';
-import { FinanceTransaction } from '@/lib/types';
+import type { FinancePublicTransaction, FinanceTransaction } from '@/lib/types';
 
 type PeriodType = 'all' | 'week' | 'month' | 'year' | 'custom';
 
 export default function FinanceDashboardPage() {
   const router = useRouter();
-  const { currentUser, balance, transactions, incomeThisMonth, expenseThisMonth } = useAppStore();
+  const {
+    currentUser,
+    profiles,
+    balance,
+    transactions,
+    publicFinanceTransactions,
+    refreshPublicFinanceTransactions,
+    incomeThisMonth,
+    expenseThisMonth,
+  } = useAppStore();
 
   const isTreasurerOrAdmin = currentUser.is_treasurer || currentUser.is_admin;
+
+  useEffect(() => {
+    if (isTreasurerOrAdmin) return;
+
+    void refreshPublicFinanceTransactions();
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === 'visible') void refreshPublicFinanceTransactions();
+    };
+
+    window.addEventListener('focus', refreshWhenVisible);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+    return () => {
+      window.removeEventListener('focus', refreshWhenVisible);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, [isTreasurerOrAdmin, refreshPublicFinanceTransactions]);
 
   // Filters State
   const [period, setPeriod] = useState<PeriodType>('all');
@@ -41,7 +66,12 @@ export default function FinanceDashboardPage() {
   const [endDate, setEndDate] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expense'>('all');
   const [search, setSearch] = useState('');
-  const [selectedTrx, setSelectedTrx] = useState<FinanceTransaction | null>(null);
+  const [selectedTrx, setSelectedTrx] = useState<FinanceTransaction | FinancePublicTransaction | null>(null);
+  const selectedRecorderName = selectedTrx
+    ? 'created_by' in selectedTrx
+      ? profiles.find((profile) => profile.id === selectedTrx.created_by)?.name ?? 'Username tidak tersedia'
+      : selectedTrx.created_by_name
+    : '';
 
   // Filtered transactions logic
   const filteredTransactions = useMemo(() => {
@@ -160,6 +190,74 @@ export default function FinanceDashboardPage() {
           </div>
         </div>
       </GlassCard>
+
+      {!isTreasurerOrAdmin && (
+        <section aria-label="Riwayat transaksi kas" className="mb-4 space-y-2.5">
+          <div className="flex items-center justify-between px-0.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145]">
+              Riwayat Transaksi Kas
+            </h3>
+            <span className="text-[11px] font-bold text-[#996A19]">
+              {publicFinanceTransactions.length} Transaksi
+            </span>
+          </div>
+          {publicFinanceTransactions.length > 0 ? (
+            <div className="space-y-2">
+              {publicFinanceTransactions.map((trx) => {
+                const isIncome = trx.type === 'income';
+
+                return (
+                  <button
+                    key={trx.id}
+                    type="button"
+                    onClick={() => setSelectedTrx(trx)}
+                    className="flex w-full items-center justify-between rounded-2xl border border-black/5 bg-white/90 p-3.5 text-left shadow-sm transition-all hover:border-[#B58228]/50 active:scale-[0.99]"
+                    aria-label={`Detail transaksi ${trx.category_name}: ${trx.description}`}
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${
+                          isIncome
+                            ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-700'
+                            : 'border-rose-500/30 bg-rose-500/15 text-rose-700'
+                        }`}
+                      >
+                        {isIncome ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="line-clamp-1 text-xs font-bold text-[#151917]">
+                          {trx.category_name}
+                        </h4>
+                        <p className="line-clamp-1 text-[11px] text-[#585145]">{trx.description}</p>
+                        <span className="text-[10px] text-gray-600">{trx.transaction_date}</span>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0 pl-2 text-right">
+                      <span className={`text-xs font-extrabold sm:text-sm ${isIncome ? 'text-emerald-700' : 'text-rose-700'}`}>
+                        {isIncome ? '+' : '-'} Rp {trx.amount.toLocaleString('id-ID')}
+                      </span>
+                      {trx.attachment_url && (
+                        <span className="mt-0.5 block text-[9px] font-semibold text-[#70490E]">
+                          Ada Bukti
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-black/5 bg-white/80 p-8 text-center">
+              <Calendar className="mx-auto mb-2 h-8 w-8 text-gray-500" />
+              <p className="text-xs font-bold text-[#151917]">Tidak Ada Transaksi</p>
+              <p className="mt-0.5 text-[11px] text-[#585145]">
+                Belum ada riwayat transaksi kas.
+              </p>
+            </div>
+          )}
+        </section>
+      )}
 
       {isTreasurerOrAdmin ? (
         <>
@@ -479,7 +577,7 @@ export default function FinanceDashboardPage() {
                   <User className="w-3.5 h-3.5 text-[#996A19]" />
                   <span>Dicatat Oleh</span>
                 </span>
-                <span className="font-bold text-[#151917]">{selectedTrx.created_by_name}</span>
+                <span className="font-bold text-[#151917]">{selectedRecorderName}</span>
               </div>
             </div>
 
@@ -530,11 +628,96 @@ export default function FinanceDashboardPage() {
         </>
       ) : (
         <GlassCard className="p-4 text-center" variant="elevated">
-          <p className="text-xs font-bold text-[#151917]">Transparansi Ringkasan Kas</p>
+          <p className="text-xs font-bold text-[#151917]">Transparansi Kas</p>
           <p className="mt-1 text-[11px] leading-relaxed text-[#585145]">
-            Pemain dapat melihat saldo serta arus kas ringkas. Detail transaksi dan bukti nota hanya dapat dibuka oleh Bendahara dan Admin.
+            Ketuk transaksi untuk melihat rincian dan bukti nota yang tersedia.
           </p>
         </GlassCard>
+      )}
+
+      {!isTreasurerOrAdmin && selectedTrx && (
+        <GlassModal
+          isOpen={!!selectedTrx}
+          onClose={() => setSelectedTrx(null)}
+          title="Rincian Transaksi Kas"
+          subtitle={selectedTrx.category_name}
+        >
+          <div className="space-y-4">
+            <div className="rounded-2xl bg-black/10 p-4 text-center">
+              <span className="mb-1 block text-xs text-[#585145]">
+                {selectedTrx.type === 'income' ? 'Pemasukan Kas' : 'Pengeluaran Kas'}
+              </span>
+              <p
+                className={`font-serif text-2xl font-black ${
+                  selectedTrx.type === 'income' ? 'text-emerald-700' : 'text-rose-700'
+                }`}
+              >
+                {selectedTrx.type === 'income' ? '+' : '-'} Rp {selectedTrx.amount.toLocaleString('id-ID')}
+              </p>
+            </div>
+
+            <div className="space-y-2 border-y border-black/5 py-3 text-xs text-[#585145]">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-gray-600">
+                  <Calendar className="h-3.5 w-3.5 text-[#70490E]" />
+                  <span>Tanggal Transaksi</span>
+                </span>
+                <span className="font-bold text-[#151917]">{selectedTrx.transaction_date}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-gray-600">
+                  <Tag className="h-3.5 w-3.5 text-[#70490E]" />
+                  <span>Kategori</span>
+                </span>
+                <span className="font-bold text-[#151917]">{selectedTrx.category_name}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-gray-600">
+                  <User className="h-3.5 w-3.5 text-[#70490E]" />
+                  <span>Dicatat Oleh</span>
+                </span>
+                <span className="font-bold text-[#151917]">{selectedRecorderName}</span>
+              </div>
+            </div>
+
+            <div>
+              <span className="mb-1 block text-xs font-bold text-[#151917]">Keterangan:</span>
+              <p className="whitespace-pre-wrap break-words rounded-xl border border-black/5 bg-black/5 p-3 text-xs leading-relaxed text-[#585145]">
+                {selectedTrx.description}
+              </p>
+            </div>
+
+            {selectedTrx.attachment_url && (
+              <div>
+                <span className="mb-1 block text-xs font-bold text-[#151917]">
+                  Bukti Nota / Kwitansi:
+                </span>
+                {selectedTrx.attachment_url.toLowerCase().includes('.pdf?') ? (
+                  <a
+                    href={selectedTrx.attachment_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block rounded-xl border border-[#B58228]/30 bg-white p-3 text-center text-xs font-bold text-[#70490E]"
+                  >
+                    Buka Bukti PDF
+                  </a>
+                ) : (
+                  <div className="max-h-56 overflow-hidden rounded-xl border border-black/10 shadow-sm">
+                    <img
+                      src={selectedTrx.attachment_url}
+                      alt="Bukti Transaksi"
+                      className="h-auto w-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            <GlassButton variant="secondary" fullWidth onClick={() => setSelectedTrx(null)}>
+              Tutup Rincian
+            </GlassButton>
+          </div>
+        </GlassModal>
       )}
     </MobileAppShell>
   );

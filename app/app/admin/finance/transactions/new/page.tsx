@@ -100,16 +100,16 @@ export default function AdminNewTransactionPage() {
       showBack
       backHref="/app/admin/finance"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="admin-desktop-finance-form space-y-4">
         {/* Error Alert */}
         {error && (
-          <div className="p-3.5 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-800 text-xs">
+          <div className="admin-desktop-form-error p-3.5 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-800 text-xs">
             {error}
           </div>
         )}
 
         {/* 1. Type Selector (Income vs Expense) */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="admin-desktop-finance-type grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => {
@@ -150,7 +150,7 @@ export default function AdminNewTransactionPage() {
         </div>
 
         {/* 2. Amount Input Card */}
-        <div className="p-4 rounded-2xl bg-[#FFFFFF] border border-[#B58228]/40 shadow-sm space-y-2">
+        <div className="admin-desktop-finance-amount p-4 rounded-2xl bg-[#FFFFFF] border border-[#B58228]/40 shadow-sm space-y-2">
           <label className="block text-xs font-bold text-[#151917]">
             Nominal Transaksi (Rp) <span className="text-[#70490E]">*</span>
           </label>
@@ -169,7 +169,7 @@ export default function AdminNewTransactionPage() {
         </div>
 
         {/* 3. Category & Date Details */}
-        <div className="p-4 rounded-2xl bg-[#FFFFFF] border border-black/5 shadow-sm space-y-3 text-xs">
+        <div className="admin-desktop-finance-fields p-4 rounded-2xl bg-[#FFFFFF] border border-black/5 shadow-sm space-y-3 text-xs">
           <div>
             <label className="block font-bold text-[#151917] mb-1">Kategori Transaksi *</label>
             <select
@@ -247,7 +247,7 @@ export default function AdminNewTransactionPage() {
         </div>
 
         {/* Submit Button */}
-        <div className="pt-2">
+        <div className="admin-desktop-form-submit pt-2">
           <button
             type="submit"
             disabled={isSubmitting}

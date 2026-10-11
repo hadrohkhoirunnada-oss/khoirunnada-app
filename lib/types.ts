@@ -153,6 +153,11 @@ export interface FinanceTransaction {
   updated_at?: string;
 }
 
+export type FinancePublicTransaction = Pick<
+  FinanceTransaction,
+  'id' | 'type' | 'category_name' | 'amount' | 'transaction_date' | 'description' | 'attachment_url' | 'created_by_name'
+>;
+
 export type NotificationType =
   | 'job_new'
   | 'job_update'
