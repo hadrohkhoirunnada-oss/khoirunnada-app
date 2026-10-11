@@ -51,23 +51,23 @@ export default function AdminBroadcastAnnouncementPage() {
       showBack
       backHref="/app/admin"
     >
-      <GlassCard className="p-5 sm:p-6 mb-5 !bg-[#141B18]/95 !border-[#B58228]/30 shadow-[0_4px_24px_rgba(0,0,0,0.6)]" variant="elevated">
+      <GlassCard className="p-5 sm:p-6 mb-5 !bg-[#FFFFFF]/95 !border-[#B58228]/30 shadow-[0_4px_24px_rgba(0,0,0,0.6)]" variant="elevated">
         {sentSuccess && (
-          <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 text-xs text-emerald-200 flex items-center gap-2 mb-4 animate-in fade-in duration-200">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/40 text-xs text-emerald-800 flex items-center gap-2 mb-4 animate-in fade-in duration-200">
+            <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
             <span>Pengumuman berhasil disiarkan ke seluruh perangkat pemain & pengurus!</span>
           </div>
         )}
 
         {sendError && (
-          <div className="p-3.5 rounded-2xl bg-red-950/80 border border-red-500/40 text-xs text-red-200 mb-4">
+          <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/40 text-xs text-red-800 mb-4">
             {sendError}
           </div>
         )}
 
         <form onSubmit={handleSend} className="space-y-4 text-xs">
           <div>
-            <label className="block font-bold text-[#F8F6F0] mb-1.5">
+            <label className="block font-bold text-[#151917] mb-1.5">
               Judul Pengumuman *
             </label>
             <input
@@ -76,25 +76,25 @@ export default function AdminBroadcastAnnouncementPage() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Contoh: Latihan Rutin Malam Jumat"
               required
-              className="w-full px-3 py-2.5 rounded-xl bg-[#0D1210] border border-[#B58228]/30 text-xs text-[#F8F6F0] placeholder:text-[#807A6B] focus:outline-none focus:border-[#D4A346]"
+              className="w-full px-3 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B58228]/30 text-xs text-[#151917] placeholder:text-[#585145] focus:outline-none focus:border-[#996A19]"
             />
           </div>
 
           {/* Target Siaran: Khusus Semua Anggota */}
-          <div className="p-3 rounded-xl bg-[#0D1210] border border-[#B58228]/35 text-xs">
+          <div className="p-3 rounded-xl bg-[#FFFFFF] border border-[#B58228]/35 text-xs">
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-5 h-5 rounded-lg bg-[#B58228]/20 flex items-center justify-center text-[#D4A346]">
+              <div className="w-5 h-5 rounded-lg bg-[#B58228]/20 flex items-center justify-center text-[#70490E]">
                 <Users className="w-3.5 h-3.5" />
               </div>
-              <span className="font-bold text-[#F8F6F0]">Penerima: Khusus Semua Anggota</span>
+              <span className="font-bold text-[#151917]">Penerima: Khusus Semua Anggota</span>
             </div>
-            <p className="text-[11px] text-[#9E9885] leading-relaxed">
+            <p className="text-[11px] text-[#585145] leading-relaxed">
               Pengumuman akan langsung disiarkan ke seluruh akun anggota (pemain & pengurus), memunculkan badge notifikasi merah di icon lonceng portal Pemain.
             </p>
           </div>
 
           <div>
-            <label className="block font-bold text-[#F8F6F0] mb-1.5">
+            <label className="block font-bold text-[#151917] mb-1.5">
               Isi Pesan Siaran *
             </label>
             <textarea
@@ -103,16 +103,16 @@ export default function AdminBroadcastAnnouncementPage() {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Tuliskan pesan lengkap mengenai jadwal, perlengkapan seragam, atau arahan majelis..."
               required
-              className="w-full px-3 py-2.5 rounded-xl bg-[#0D1210] border border-[#B58228]/30 text-xs text-[#F8F6F0] placeholder:text-[#807A6B] focus:outline-none focus:border-[#D4A346]"
+              className="w-full px-3 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B58228]/30 text-xs text-[#151917] placeholder:text-[#585145] focus:outline-none focus:border-[#996A19]"
             />
           </div>
 
           <button
             type="submit"
             disabled={isSending}
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#B58228] to-[#996A19] hover:from-[#C89230] hover:to-[#B58228] text-[#070908] font-bold text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.99] transition-all cursor-pointer"
+            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#996A19] to-[#70490E] hover:from-[#70490E] hover:to-[#996A19] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg active:scale-[0.99] transition-all cursor-pointer"
           >
-            <Send className="w-4 h-4 text-[#070908]" />
+            <Send className="w-4 h-4 text-white" />
             <span>{isSending ? 'Mengirim Siaran...' : 'Siarkan Sekarang ke Semua Anggota'}</span>
           </button>
         </form>
@@ -120,8 +120,8 @@ export default function AdminBroadcastAnnouncementPage() {
 
       {/* History Broadcasts */}
       <section className="space-y-2.5">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-[#9E9885] px-1 flex items-center gap-1.5">
-          <Bell className="w-3.5 h-3.5 text-[#D4A346]" />
+        <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145] px-1 flex items-center gap-1.5">
+          <Bell className="w-3.5 h-3.5 text-[#70490E]" />
           <span>Histori Pengumuman Terakhir</span>
         </h3>
 
@@ -131,15 +131,15 @@ export default function AdminBroadcastAnnouncementPage() {
             .map((notif) => (
               <div
                 key={notif.id}
-                className="p-3.5 rounded-2xl bg-[#141B18]/90 border border-[#B58228]/20 text-xs space-y-1 shadow-[0_2px_12px_rgba(0,0,0,0.4)]"
+                className="p-3.5 rounded-2xl bg-[#FFFFFF]/90 border border-[#B58228]/20 text-xs space-y-1 shadow-[0_2px_12px_rgba(0,0,0,0.4)]"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#E6C687] text-xs">{notif.title}</span>
-                  <span className="text-[10px] text-[#807A6B]">
+                  <span className="font-bold text-[#70490E] text-xs">{notif.title}</span>
+                  <span className="text-[10px] text-[#585145]">
                     {new Date(notif.created_at).toLocaleDateString('id-ID')}
                   </span>
                 </div>
-                <p className="text-[#9E9885] text-xs leading-relaxed">{notif.message}</p>
+                <p className="text-[#585145] text-xs leading-relaxed">{notif.message}</p>
               </div>
             ))}
         </div>

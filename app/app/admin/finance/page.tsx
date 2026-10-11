@@ -116,7 +116,7 @@ export default function AdminFinancePage() {
       backHref="/app/admin"
       rightAction={
         <Link href="/app/admin/finance/transactions/new">
-          <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#996A19] to-[#D4A346] text-white text-xs font-semibold shadow-xs active:scale-95 transition-all cursor-pointer">
+          <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-[#996A19] to-[#996A19] text-white text-xs font-semibold shadow-xs active:scale-95 transition-all cursor-pointer">
             <Plus className="w-3.5 h-3.5 stroke-[2.5px]" />
             <span>Catat Kas</span>
           </button>
@@ -124,36 +124,36 @@ export default function AdminFinancePage() {
       }
     >
       {/* 1. Saldo Kas & Rincian Transparansi */}
-      <div className="p-5 mb-4 rounded-2xl bg-gradient-to-br from-[#1C2521] via-[#141B18] to-[#0E1311] border border-[#B58228]/40 shadow-lg text-center relative overflow-hidden">
-        <div className="flex items-center justify-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-wider text-[#D4A346]">
+      <div className="p-5 mb-4 rounded-2xl bg-gradient-to-br from-[#F5EBD7] via-[#FFFFFF] to-[#FFFFFF] border border-[#B58228]/40 shadow-lg text-center relative overflow-hidden">
+        <div className="flex items-center justify-center gap-1.5 mb-1 text-[11px] font-extrabold uppercase tracking-wider text-[#70490E]">
           <ShieldCheck className="w-3.5 h-3.5" />
           <span>Kas Pengurus Hadroh Khoirunnada</span>
         </div>
-        <h2 className="text-3xl font-extrabold text-[#F8F6F0] tracking-tight mt-1 font-serif">
+        <h2 className="text-3xl font-extrabold text-[#151917] tracking-tight mt-1 font-serif">
           Rp {balance.toLocaleString('id-ID')}
         </h2>
-        <p className="text-[11px] text-[#A69E8F] mt-0.5">
+        <p className="text-[11px] text-[#585145] mt-0.5">
           Saldo riil kas aktif perkumpulan Hadroh Khoirunnada
         </p>
 
         {/* Uang Masuk & Uang Keluar Breakdown */}
-        <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/10 text-left">
+        <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-black/5 text-left">
           <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30">
-            <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 mb-0.5">
-              <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 mb-0.5">
+              <ArrowUpRight className="w-3.5 h-3.5 text-emerald-700" />
               <span>Pemasukan</span>
             </div>
-            <p className="text-sm font-extrabold text-emerald-300">
+            <p className="text-sm font-extrabold text-emerald-800">
               +Rp {periodIncome.toLocaleString('id-ID')}
             </p>
           </div>
 
           <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30">
-            <div className="flex items-center gap-1 text-[11px] font-bold text-rose-400 mb-0.5">
-              <ArrowDownRight className="w-3.5 h-3.5 text-rose-400" />
+            <div className="flex items-center gap-1 text-[11px] font-bold text-rose-700 mb-0.5">
+              <ArrowDownRight className="w-3.5 h-3.5 text-rose-700" />
               <span>Pengeluaran</span>
             </div>
-            <p className="text-sm font-extrabold text-rose-300">
+            <p className="text-sm font-extrabold text-rose-800">
               -Rp {periodExpense.toLocaleString('id-ID')}
             </p>
           </div>
@@ -163,7 +163,7 @@ export default function AdminFinancePage() {
       {/* 2. Filter Periode & Kalender */}
       <section className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#A69E8F]">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#585145]">
             Periode Transaksi
           </span>
 
@@ -173,10 +173,10 @@ export default function AdminFinancePage() {
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
               period === 'custom' || showCalendarPicker
                 ? 'bg-[#996A19] text-white border-[#B58228] shadow-xs'
-                : 'bg-[#141B18] text-[#A69E8F] border-white/10 hover:border-white/20'
+                : 'bg-[#FFFFFF] text-[#585145] border-black/5 hover:border-black/10'
             }`}
           >
-            <Calendar className="w-3.5 h-3.5 text-[#D4A346]" />
+            <Calendar className="w-3.5 h-3.5 text-[#70490E]" />
             <span>{period === 'custom' ? 'Kalender (Aktif)' : 'Kalender'}</span>
             {showCalendarPicker ? (
               <ChevronUp className="w-3 h-3" />
@@ -206,7 +206,7 @@ export default function AdminFinancePage() {
                 className={`py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-[#996A19] text-white border-[#B58228] shadow-xs'
-                    : 'bg-[#141B18] text-[#A69E8F] border-white/10 hover:border-white/20'
+                    : 'bg-[#FFFFFF] text-[#585145] border-black/5 hover:border-black/10'
                 }`}
               >
                 {labels[pKey]}
@@ -217,15 +217,15 @@ export default function AdminFinancePage() {
 
         {/* Kalender Date Picker Box (Muncul saat tombol kalender ditekan) */}
         {showCalendarPicker && (
-          <div className="p-3.5 mb-3 rounded-2xl bg-[#141B18] border border-[#B58228]/40 shadow-lg">
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
-              <span className="text-xs font-bold text-[#F8F6F0] flex items-center gap-1.5">
-                <CalendarDays className="w-4 h-4 text-[#D4A346]" />
+          <div className="p-3.5 mb-3 rounded-2xl bg-[#FFFFFF] border border-[#B58228]/40 shadow-lg">
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-black/5">
+              <span className="text-xs font-bold text-[#151917] flex items-center gap-1.5">
+                <CalendarDays className="w-4 h-4 text-[#70490E]" />
                 <span>Pilih Rentang Tanggal Kalender</span>
               </span>
               <button
                 onClick={() => setShowCalendarPicker(false)}
-                className="text-[#A69E8F] hover:text-white"
+                className="text-[#585145] hover:text-[#151917]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -233,25 +233,25 @@ export default function AdminFinancePage() {
 
             <div className="grid grid-cols-2 gap-2 text-xs mb-3">
               <div>
-                <label className="block text-[11px] font-semibold text-[#A69E8F] mb-1">
+                <label className="block text-[11px] font-semibold text-[#585145] mb-1">
                   Dari Tanggal:
                 </label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full bg-[#1C2521] text-[#F8F6F0] border border-[#B58228]/35 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#D4A346]"
+                  className="w-full bg-[#F5EBD7] text-[#151917] border border-[#B58228]/35 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#996A19]"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-semibold text-[#A69E8F] mb-1">
+                <label className="block text-[11px] font-semibold text-[#585145] mb-1">
                   Sampai Tanggal:
                 </label>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full bg-[#1C2521] text-[#F8F6F0] border border-[#B58228]/35 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#D4A346]"
+                  className="w-full bg-[#F5EBD7] text-[#151917] border border-[#B58228]/35 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#996A19]"
                 />
               </div>
             </div>
@@ -259,13 +259,13 @@ export default function AdminFinancePage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleApplyCustomDate}
-                className="flex-1 py-1.5 rounded-xl bg-gradient-to-r from-[#996A19] to-[#D4A346] text-white text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+                className="flex-1 py-1.5 rounded-xl bg-gradient-to-r from-[#996A19] to-[#996A19] text-white text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
               >
                 Terapkan Tanggal
               </button>
               <button
                 onClick={handleResetCustomDate}
-                className="px-3 py-1.5 rounded-xl bg-white/10 text-[#F8F6F0] text-xs font-semibold hover:bg-white/15 active:scale-95 transition-all cursor-pointer"
+                className="px-3 py-1.5 rounded-xl bg-black/5 text-[#151917] text-xs font-semibold hover:bg-black/5 active:scale-95 transition-all cursor-pointer"
               >
                 Reset
               </button>
@@ -275,7 +275,7 @@ export default function AdminFinancePage() {
 
         {/* Indikator Filter Aktif Custom Tanggal */}
         {period === 'custom' && (
-          <div className="p-2 mb-2 rounded-xl bg-[#996A19]/20 border border-[#B58228]/40 flex items-center justify-between text-xs text-[#D4A346]">
+          <div className="p-2 mb-2 rounded-xl bg-[#996A19]/20 border border-[#B58228]/40 flex items-center justify-between text-xs text-[#70490E]">
             <span className="font-semibold flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5" />
               <span>
@@ -284,7 +284,7 @@ export default function AdminFinancePage() {
             </span>
             <button
               onClick={handleResetCustomDate}
-              className="text-[11px] font-bold text-rose-400 hover:underline flex items-center gap-0.5"
+              className="text-[11px] font-bold text-rose-700 hover:underline flex items-center gap-0.5"
             >
               <X className="w-3 h-3" />
               <span>Hapus Filter</span>
@@ -298,8 +298,8 @@ export default function AdminFinancePage() {
             onClick={() => setTypeFilter('all')}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
               typeFilter === 'all'
-                ? 'bg-[#B58228] text-white font-bold'
-                : 'bg-[#141B18] text-[#A69E8F] border border-white/10'
+                ? 'bg-[#996A19] text-white font-bold'
+                : 'bg-[#FFFFFF] text-[#585145] border border-black/5'
             }`}
           >
             Semua Aliran
@@ -308,8 +308,8 @@ export default function AdminFinancePage() {
             onClick={() => setTypeFilter('income')}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
               typeFilter === 'income'
-                ? 'bg-emerald-600 text-white font-bold'
-                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                ? 'bg-emerald-700 text-white font-bold'
+                : 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20'
             }`}
           >
             + Pemasukan
@@ -318,8 +318,8 @@ export default function AdminFinancePage() {
             onClick={() => setTypeFilter('expense')}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
               typeFilter === 'expense'
-                ? 'bg-rose-600 text-white font-bold'
-                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                ? 'bg-rose-700 text-white font-bold'
+                : 'bg-rose-500/10 text-rose-700 border border-rose-500/20'
             }`}
           >
             - Pengeluaran
@@ -330,10 +330,10 @@ export default function AdminFinancePage() {
       {/* 3. Daftar Riwayat Transaksi Kas */}
       <section className="space-y-2.5">
         <div className="flex items-center justify-between px-0.5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#A69E8F]">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145]">
             Riwayat Pembukuan Kas Hadroh
           </h3>
-          <span className="text-[11px] text-[#D4A346] font-bold">
+          <span className="text-[11px] text-[#70490E] font-bold">
             {filteredTransactions.length} Transaksi
           </span>
         </div>
@@ -347,37 +347,37 @@ export default function AdminFinancePage() {
               <div
                 key={trx.id}
                 onClick={() => setSelectedTrx(trx)}
-                className="p-3.5 rounded-2xl bg-[#141B18]/90 border border-white/10 hover:border-[#B58228]/50 active:scale-[0.99] transition-all cursor-pointer shadow-sm flex items-center justify-between"
+                className="p-3.5 rounded-2xl bg-[#FFFFFF]/90 border border-black/5 hover:border-[#B58228]/50 active:scale-[0.99] transition-all cursor-pointer shadow-sm flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                       isIncome
-                        ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
-                        : 'bg-rose-500/15 border border-rose-500/30 text-rose-400'
+                        ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-700'
+                        : 'bg-rose-500/15 border border-rose-500/30 text-rose-700'
                     }`}
                   >
                     {isIncome ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-[#F8F6F0] line-clamp-1">
+                    <h4 className="text-xs font-bold text-[#151917] line-clamp-1">
                       {trx.category_name}
                     </h4>
-                    <p className="text-[11px] text-[#A69E8F] line-clamp-1">{trx.description}</p>
-                    <span className="text-[10px] text-gray-500">{trx.transaction_date}</span>
+                    <p className="text-[11px] text-[#585145] line-clamp-1">{trx.description}</p>
+                    <span className="text-[10px] text-gray-600">{trx.transaction_date}</span>
                   </div>
                 </div>
 
                 <div className="text-right shrink-0">
                   <span
                     className={`text-xs sm:text-sm font-extrabold ${
-                      isIncome ? 'text-emerald-400' : 'text-rose-400'
+                      isIncome ? 'text-emerald-700' : 'text-rose-700'
                     }`}
                   >
                     {isIncome ? '+' : '-'} Rp {trx.amount.toLocaleString('id-ID')}
                   </span>
                   {trx.attachment_url && (
-                    <span className="block text-[9px] text-[#D4A346] font-semibold mt-0.5">
+                    <span className="block text-[9px] text-[#70490E] font-semibold mt-0.5">
                       ? Ada Bukti
                     </span>
                   )}
@@ -387,10 +387,10 @@ export default function AdminFinancePage() {
           })}
 
           {filteredTransactions.length === 0 && (
-            <div className="p-8 text-center rounded-2xl bg-[#141B18]/80 border border-white/10">
-              <Calendar className="w-8 h-8 text-gray-500 mx-auto mb-2" />
-              <p className="text-xs font-bold text-[#F8F6F0]">Tidak Ada Transaksi</p>
-              <p className="text-[11px] text-[#A69E8F] mt-0.5">
+            <div className="p-8 text-center rounded-2xl bg-[#FFFFFF]/80 border border-black/5">
+              <Calendar className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+              <p className="text-xs font-bold text-[#151917]">Tidak Ada Transaksi</p>
+              <p className="text-[11px] text-[#585145] mt-0.5">
                 Tidak ada riwayat pembukuan kas pada periode yang dipilih.
               </p>
               <button
@@ -400,7 +400,7 @@ export default function AdminFinancePage() {
                   setStartDate('');
                   setEndDate('');
                 }}
-                className="mt-3 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#996A19] to-[#D4A346] text-white text-xs font-semibold active:scale-95 transition-all cursor-pointer"
+                className="mt-3 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#996A19] to-[#996A19] text-white text-xs font-semibold active:scale-95 transition-all cursor-pointer"
               >
                 Tampilkan Semua Periode
               </button>
@@ -419,45 +419,45 @@ export default function AdminFinancePage() {
         >
           <div className="space-y-4">
             <div className="text-center p-4 rounded-2xl bg-black/10">
-              <span className="text-xs text-[#A69E8F] block mb-1">
+              <span className="text-xs text-[#585145] block mb-1">
                 {selectedTrx.type === 'income' ? 'Pemasukan Kas' : 'Pengeluaran Kas'}
               </span>
               <p
                 className={`text-2xl font-black font-serif ${
-                  selectedTrx.type === 'income' ? 'text-emerald-400' : 'text-rose-400'
+                  selectedTrx.type === 'income' ? 'text-emerald-700' : 'text-rose-700'
                 }`}
               >
                 {selectedTrx.type === 'income' ? '+' : '-'} Rp {selectedTrx.amount.toLocaleString('id-ID')}
               </p>
             </div>
 
-            <div className="space-y-2 text-xs text-[#A69E8F] border-y border-white/10 py-3">
+            <div className="space-y-2 text-xs text-[#585145] border-y border-black/5 py-3">
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-gray-400">
-                  <Calendar className="w-3.5 h-3.5 text-[#D4A346]" />
+                <span className="flex items-center gap-1.5 text-gray-600">
+                  <Calendar className="w-3.5 h-3.5 text-[#70490E]" />
                   <span>Tanggal Transaksi</span>
                 </span>
-                <span className="font-bold text-[#F8F6F0]">{selectedTrx.transaction_date}</span>
+                <span className="font-bold text-[#151917]">{selectedTrx.transaction_date}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-gray-400">
-                  <Tag className="w-3.5 h-3.5 text-[#D4A346]" />
+                <span className="flex items-center gap-1.5 text-gray-600">
+                  <Tag className="w-3.5 h-3.5 text-[#70490E]" />
                   <span>Kategori</span>
                 </span>
-                <span className="font-bold text-[#F8F6F0]">{selectedTrx.category_name}</span>
+                <span className="font-bold text-[#151917]">{selectedTrx.category_name}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-gray-400">
-                  <User className="w-3.5 h-3.5 text-[#D4A346]" />
+                <span className="flex items-center gap-1.5 text-gray-600">
+                  <User className="w-3.5 h-3.5 text-[#70490E]" />
                   <span>Dicatat Oleh</span>
                 </span>
-                <span className="font-bold text-[#F8F6F0]">{selectedTrx.created_by_name}</span>
+                <span className="font-bold text-[#151917]">{selectedTrx.created_by_name}</span>
               </div>
             </div>
 
             <div>
-              <span className="text-xs font-bold text-[#F8F6F0] block mb-1">Keterangan:</span>
-              <p className="text-xs text-[#A69E8F] leading-relaxed p-3 rounded-xl bg-white/5 border border-white/10">
+              <span className="text-xs font-bold text-[#151917] block mb-1">Keterangan:</span>
+              <p className="text-xs text-[#585145] leading-relaxed p-3 rounded-xl bg-black/5 border border-black/5">
                 {selectedTrx.description}
               </p>
             </div>
@@ -465,7 +465,7 @@ export default function AdminFinancePage() {
             {/* Receipt Preview */}
             {selectedTrx.attachment_url && (
               <div>
-                <span className="text-xs font-bold text-[#F8F6F0] block mb-1">
+                <span className="text-xs font-bold text-[#151917] block mb-1">
                   Bukti Nota / Kwitansi:
                 </span>
                 {selectedTrx.attachment_url.toLowerCase().includes('.pdf?') ? (
@@ -473,7 +473,7 @@ export default function AdminFinancePage() {
                     href={selectedTrx.attachment_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="block rounded-xl border border-[#B58228]/30 bg-[#0D1210] p-3 text-center text-xs font-bold text-[#D4A346]"
+                    className="block rounded-xl border border-[#B58228]/30 bg-[#FFFFFF] p-3 text-center text-xs font-bold text-[#70490E]"
                   >
                     Buka Bukti PDF
                   </a>

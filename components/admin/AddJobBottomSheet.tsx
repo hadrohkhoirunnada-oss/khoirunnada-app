@@ -150,29 +150,29 @@ export function AddJobBottomSheet({
 
       {/* Bottom Sheet Container (Tidak Full Layar, Rounded Top, Smooth Slide) */}
       <div
-        className={`relative w-full max-w-[440px] bg-[#121715] text-[#F8F6F0] rounded-t-[32px] border-t border-[#B58228]/40 shadow-[0_-12px_45px_rgba(0,0,0,0.7)] z-10 max-h-[85vh] flex flex-col overflow-hidden ${
+        className={`relative w-full max-w-[440px] bg-white text-[#151917] rounded-t-[32px] border-t border-[#B58228]/40 shadow-[0_-12px_45px_rgba(0,0,0,0.7)] z-10 max-h-[85vh] flex flex-col overflow-hidden ${
           isClosing ? 'animate-slide-down-sheet' : 'animate-slide-up-sheet'
         }`}
       >
         {/* Top Drag Indicator Pill */}
         <div className="pt-3 pb-1 flex justify-center cursor-pointer" onClick={handleSmoothClose}>
-          <div className="w-12 h-1.5 rounded-full bg-white/30 hover:bg-white/50 transition-colors" />
+          <div className="w-12 h-1.5 rounded-full bg-black/15 hover:bg-black/25 transition-colors" />
         </div>
 
         {/* Header Sheet */}
-        <div className="px-5 py-3 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#121715]/90 backdrop-blur-md">
+        <div className="px-5 py-3 flex items-center justify-between border-b border-black/5 shrink-0 bg-white/90 backdrop-blur-md">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#996A19] to-[#D4A346] text-white flex items-center justify-center shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#996A19] to-[#996A19] text-white flex items-center justify-center shadow-xs">
               <Calendar className="w-5 h-5 stroke-[2.2px]" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#B58228] px-1.5 py-0.5 rounded-md bg-[#B58228]/15 border border-[#B58228]/30">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#70490E] px-1.5 py-0.5 rounded-md bg-[#B58228]/15 border border-[#B58228]/30">
                   Admin Panel
                 </span>
-                <span className="text-[10px] text-[#A69E8F]">Job Baru</span>
+                <span className="text-[10px] text-[#585145]">Job Baru</span>
               </div>
-              <h3 className="text-base font-extrabold text-[#F8F6F0] tracking-tight mt-0.5 font-serif">
+              <h3 className="text-base font-extrabold text-[#151917] tracking-tight mt-0.5 font-serif">
                 Tambah Jadwal Job
               </h3>
             </div>
@@ -180,7 +180,7 @@ export function AddJobBottomSheet({
 
           <button
             onClick={handleSmoothClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white/80 flex items-center justify-center transition-all cursor-pointer"
+            className="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 active:scale-95 text-[#151917]/80 flex items-center justify-center transition-all cursor-pointer"
             aria-label="Tutup Popup"
           >
             <X className="w-4 h-4" />
@@ -190,11 +190,11 @@ export function AddJobBottomSheet({
         {/* Success Banner */}
         {isSuccess ? (
           <div className="p-8 flex flex-col items-center justify-center text-center space-y-3 my-auto">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center animate-bounce">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-700 border border-emerald-500/40 flex items-center justify-center animate-bounce">
               <CheckCircle2 className="w-9 h-9" />
             </div>
-            <h4 className="text-lg font-bold text-emerald-300">Job Berhasil Diterbitkan!</h4>
-            <p className="text-xs text-[#A69E8F] max-w-xs">
+            <h4 className="text-lg font-bold text-emerald-800">Job Berhasil Diterbitkan!</h4>
+            <p className="text-xs text-[#585145] max-w-xs">
               Jadwal telah ditambahkan ke sistem dan pengumuman disiarkan ke seluruh anggota.
             </p>
           </div>
@@ -202,31 +202,31 @@ export function AddJobBottomSheet({
           /* Form Content (Scrollable) */
           <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
             {errorMsg && (
-              <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+              <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-800 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-700" />
                 <span>{errorMsg}</span>
               </div>
             )}
 
             {/* 1. Nama / Judul Acara */}
             <div>
-              <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5">
-                Nama / Judul Acara <span className="text-[#B58228]">*</span>
+              <label className="block text-xs font-bold text-[#151917] mb-1.5">
+                Nama / Judul Acara <span className="text-[#70490E]">*</span>
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Contoh: Walimatul Ursy Ahmad & Fatimah"
-                className="w-full bg-[#18201D] text-[#F8F6F0] placeholder-[#706B60] border border-[#B58228]/35 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[#B58228] focus:ring-2 focus:ring-[#B58228]/25 transition-all"
+                className="w-full bg-white text-[#151917] placeholder-[#585145] border border-[#B58228]/35 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[#B58228] focus:ring-2 focus:ring-[#B58228]/25 transition-all"
                 required
               />
             </div>
 
             {/* 2. Jenis / Kategori Acara (Chips Selector) */}
             <div>
-              <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5 flex items-center gap-1">
-                <Tag className="w-3.5 h-3.5 text-[#B58228]" />
+              <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
+                <Tag className="w-3.5 h-3.5 text-[#70490E]" />
                 <span>Kategori Acara</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -240,7 +240,7 @@ export function AddJobBottomSheet({
                       className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
                         isSelected
                           ? 'bg-[#996A19] text-white shadow-xs border border-[#F3E6C8]/40 scale-102'
-                          : 'bg-[#18201D] text-[#A69E8F] border border-white/10 hover:border-white/25'
+                          : 'bg-white text-[#585145] border border-black/5 hover:border-black/10'
                       }`}
                     >
                       {item}
@@ -253,22 +253,22 @@ export function AddJobBottomSheet({
             {/* 3. Tanggal & Jam */}
             <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5 flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-[#B58228]" />
-                  <span>Tanggal <span className="text-[#B58228]">*</span></span>
+                <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-[#70490E]" />
+                  <span>Tanggal <span className="text-[#70490E]">*</span></span>
                 </label>
                 <input
                   type="date"
                   value={eventDate}
                   onChange={(e) => setEventDate(e.target.value)}
-                  className="w-full bg-[#18201D] text-[#F8F6F0] border border-[#B58228]/35 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
+                  className="w-full bg-white text-[#151917] border border-[#B58228]/35 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5 flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-[#B58228]" />
+                <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-[#70490E]" />
                   <span>Jam Kumpul</span>
                 </label>
                 <input
@@ -276,14 +276,14 @@ export function AddJobBottomSheet({
                   value={gatherTime}
                   onChange={(e) => setGatherTime(e.target.value)}
                   placeholder="19:00 WITA"
-                  className="w-full bg-[#18201D] text-[#F8F6F0] placeholder-[#706B60] border border-[#B58228]/35 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
+                  className="w-full bg-white text-[#151917] placeholder-[#585145] border border-[#B58228]/35 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5 flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-emerald-400" />
+              <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5 text-emerald-700" />
                 <span>Jam Mulai Acara</span>
               </label>
               <input
@@ -291,22 +291,22 @@ export function AddJobBottomSheet({
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
                 placeholder="20:00 WITA"
-                className="w-full bg-[#18201D] text-[#F8F6F0] placeholder-[#706B60] border border-[#B58228]/35 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
+                className="w-full bg-white text-[#151917] placeholder-[#585145] border border-[#B58228]/35 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
               />
             </div>
 
             {/* 4. Lokasi Acara */}
             <div>
-              <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-[#B58228]" />
-                <span>Lokasi Acara <span className="text-[#B58228]">*</span></span>
+              <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-[#70490E]" />
+                <span>Lokasi Acara <span className="text-[#70490E]">*</span></span>
               </label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Contoh: Gedung Al-Ikhlas, Jl. Melati No. 12"
-                className="w-full bg-[#18201D] text-[#F8F6F0] placeholder-[#706B60] border border-[#B58228]/35 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[#B58228] transition-all"
+                className="w-full bg-white text-[#151917] placeholder-[#585145] border border-[#B58228]/35 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[#B58228] transition-all"
                 required
               />
             </div>
@@ -314,7 +314,7 @@ export function AddJobBottomSheet({
             {/* 5. Tuan Rumah / Kontak Pemesan (Opsional) */}
             <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5">
+                <label className="block text-xs font-bold text-[#151917] mb-1.5">
                   Nama Tuan Rumah
                 </label>
                 <input
@@ -322,13 +322,13 @@ export function AddJobBottomSheet({
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Bpk. H. Sukardi"
-                  className="w-full bg-[#18201D] text-[#F8F6F0] placeholder-[#706B60] border border-white/15 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
+                  className="w-full bg-white text-[#151917] placeholder-[#585145] border border-white/15 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5 flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-[#B58228]" />
+                <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
+                  <Phone className="w-3 h-3 text-[#70490E]" />
                   <span>No. WhatsApp</span>
                 </label>
                 <input
@@ -336,15 +336,15 @@ export function AddJobBottomSheet({
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="08123456789"
-                  className="w-full bg-[#18201D] text-[#F8F6F0] placeholder-[#706B60] border border-white/15 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
+                  className="w-full bg-white text-[#151917] placeholder-[#585145] border border-white/15 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
                 />
               </div>
             </div>
 
             {/* 6. Seragam & Transportasi */}
             <div>
-              <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5 flex items-center gap-1">
-                <Shirt className="w-3.5 h-3.5 text-[#B58228]" />
+              <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
+                <Shirt className="w-3.5 h-3.5 text-[#70490E]" />
                 <span>Dress Code Seragam</span>
               </label>
               <input
@@ -352,13 +352,13 @@ export function AddJobBottomSheet({
                 value={dressCode}
                 onChange={(e) => setDressCode(e.target.value)}
                 placeholder="Gamis Putih, Jas Hitam Khoirunnada"
-                className="w-full bg-[#18201D] text-[#F8F6F0] placeholder-[#706B60] border border-white/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
+                className="w-full bg-white text-[#151917] placeholder-[#585145] border border-white/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5 flex items-center gap-1">
-                <Users className="w-3.5 h-3.5 text-[#B58228]" />
+              <label className="block text-xs font-bold text-[#151917] mb-1.5 flex items-center gap-1">
+                <Users className="w-3.5 h-3.5 text-[#70490E]" />
                 <span>Info Titik Kumpul / Transport</span>
               </label>
               <input
@@ -366,13 +366,13 @@ export function AddJobBottomSheet({
                 value={transportInfo}
                 onChange={(e) => setTransportInfo(e.target.value)}
                 placeholder="Kumpul di Markaz Hadroh Khoirunnada"
-                className="w-full bg-[#18201D] text-[#F8F6F0] placeholder-[#706B60] border border-white/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
+                className="w-full bg-white text-[#151917] placeholder-[#585145] border border-white/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all"
               />
             </div>
 
             {/* 7. Catatan Tambahan */}
             <div>
-              <label className="block text-xs font-bold text-[#F8F6F0] mb-1.5">
+              <label className="block text-xs font-bold text-[#151917] mb-1.5">
                 Catatan Tambahan
               </label>
               <textarea
@@ -380,7 +380,7 @@ export function AddJobBottomSheet({
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Catatan khusus untuk personel (contoh: bawa terbang cadangan, dsb)"
                 rows={2}
-                className="w-full bg-[#18201D] text-[#F8F6F0] placeholder-[#706B60] border border-white/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all resize-none"
+                className="w-full bg-white text-[#151917] placeholder-[#585145] border border-white/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[#B58228] transition-all resize-none"
               />
             </div>
 
@@ -389,9 +389,9 @@ export function AddJobBottomSheet({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#996A19] via-[#B58228] to-[#996A19] text-white font-bold text-xs uppercase tracking-wider shadow-[0_4px_20px_rgba(153,106,25,0.45)] border border-[#F3E6C8]/40 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#996A19] via-[#70490E] to-[#996A19] text-white font-bold text-xs uppercase tracking-wider shadow-[0_4px_20px_rgba(153,106,25,0.45)] border border-[#F3E6C8]/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-[#F8F6F0]" />
+                <Sparkles className="w-4 h-4 text-white" />
                 <span>{isSubmitting ? 'Menyimpan Jadwal...' : 'Terbitkan Jadwal Job Sekarang'}</span>
               </button>
             </div>

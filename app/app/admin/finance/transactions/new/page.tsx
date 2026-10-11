@@ -103,7 +103,7 @@ export default function AdminNewTransactionPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Error Alert */}
         {error && (
-          <div className="p-3.5 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs">
+          <div className="p-3.5 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-800 text-xs">
             {error}
           </div>
         )}
@@ -118,15 +118,15 @@ export default function AdminNewTransactionPage() {
             }}
             className={`p-3 rounded-2xl border text-center transition-all cursor-pointer ${
               type === 'income'
-                ? 'bg-emerald-600 text-white border-emerald-400 shadow-md font-bold'
-                : 'bg-[#141B18] text-[#A69E8F] border-white/10 hover:border-white/20'
+                ? 'bg-emerald-700 text-white border-emerald-500 shadow-md font-bold'
+                : 'bg-[#FFFFFF] text-[#585145] border-black/5 hover:border-black/10'
             }`}
           >
             <div className="flex items-center justify-center gap-1.5 mb-1">
               <ArrowUpRight className="w-4 h-4" />
               <span className="text-xs">Uang Masuk</span>
             </div>
-            <p className="text-[10px] opacity-80">Penerimaan / Donasi / Kas</p>
+            <p className="text-[10px]">Penerimaan / Donasi / Kas</p>
           </button>
 
           <button
@@ -137,45 +137,45 @@ export default function AdminNewTransactionPage() {
             }}
             className={`p-3 rounded-2xl border text-center transition-all cursor-pointer ${
               type === 'expense'
-                ? 'bg-rose-600 text-white border-rose-400 shadow-md font-bold'
-                : 'bg-[#141B18] text-[#A69E8F] border-white/10 hover:border-white/20'
+                ? 'bg-rose-700 text-white border-rose-500 shadow-md font-bold'
+                : 'bg-[#FFFFFF] text-[#585145] border-black/5 hover:border-black/10'
             }`}
           >
             <div className="flex items-center justify-center gap-1.5 mb-1">
               <ArrowDownRight className="w-4 h-4" />
               <span className="text-xs">Uang Keluar</span>
             </div>
-            <p className="text-[10px] opacity-80">Alat / Konsumsi / Transport</p>
+            <p className="text-[10px]">Alat / Konsumsi / Transport</p>
           </button>
         </div>
 
         {/* 2. Amount Input Card */}
-        <div className="p-4 rounded-2xl bg-[#141B18] border border-[#B58228]/40 shadow-sm space-y-2">
-          <label className="block text-xs font-bold text-[#F8F6F0]">
-            Nominal Transaksi (Rp) <span className="text-[#D4A346]">*</span>
+        <div className="p-4 rounded-2xl bg-[#FFFFFF] border border-[#B58228]/40 shadow-sm space-y-2">
+          <label className="block text-xs font-bold text-[#151917]">
+            Nominal Transaksi (Rp) <span className="text-[#70490E]">*</span>
           </label>
           <div className="relative">
-            <span className="absolute left-3.5 top-3 text-base font-black text-[#D4A346]">Rp</span>
+            <span className="absolute left-3.5 top-3 text-base font-black text-[#70490E]">Rp</span>
             <input
               type="text"
               inputMode="numeric"
               value={amountStr}
               onChange={handleAmountChange}
               placeholder="0"
-              className="w-full bg-[#1C2521] text-[#F8F6F0] border border-[#B58228]/35 rounded-xl pl-11 pr-3 py-2.5 text-lg font-bold font-serif focus:outline-none focus:border-[#D4A346]"
+              className="w-full bg-[#F5EBD7] text-[#151917] border border-[#B58228]/35 rounded-xl pl-11 pr-3 py-2.5 text-lg font-bold font-serif focus:outline-none focus:border-[#996A19]"
               required
             />
           </div>
         </div>
 
         {/* 3. Category & Date Details */}
-        <div className="p-4 rounded-2xl bg-[#141B18] border border-white/10 shadow-sm space-y-3 text-xs">
+        <div className="p-4 rounded-2xl bg-[#FFFFFF] border border-black/5 shadow-sm space-y-3 text-xs">
           <div>
-            <label className="block font-bold text-[#F8F6F0] mb-1">Kategori Transaksi *</label>
+            <label className="block font-bold text-[#151917] mb-1">Kategori Transaksi *</label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full bg-[#1C2521] text-[#F8F6F0] border border-white/15 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#D4A346]"
+              className="w-full bg-[#F5EBD7] text-[#151917] border border-white/15 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#996A19]"
               required
             >
               <option value="">Pilih Kategori...</option>
@@ -188,35 +188,35 @@ export default function AdminNewTransactionPage() {
           </div>
 
           <div>
-            <label className="block font-bold text-[#F8F6F0] mb-1">Tanggal Transaksi *</label>
+            <label className="block font-bold text-[#151917] mb-1">Tanggal Transaksi *</label>
             <input
               type="date"
               value={transactionDate}
               onChange={(e) => setTransactionDate(e.target.value)}
-              className="w-full bg-[#1C2521] text-[#F8F6F0] border border-white/15 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#D4A346]"
+              className="w-full bg-[#F5EBD7] text-[#151917] border border-white/15 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#996A19]"
               required
             />
           </div>
 
           <div>
-            <label className="block font-bold text-[#F8F6F0] mb-1">Keterangan / Rincian *</label>
+            <label className="block font-bold text-[#151917] mb-1">Keterangan / Rincian *</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Contoh: Pembayaran DP Job Maulid Akbar di Masjid Al-Ikhlas"
               rows={2}
-              className="w-full bg-[#1C2521] text-[#F8F6F0] placeholder-[#706B60] border border-white/15 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#D4A346] resize-none"
+              className="w-full bg-[#F5EBD7] text-[#151917] placeholder-[#706B60] border border-white/15 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#996A19] resize-none"
               required
             />
           </div>
 
           {/* Related Job (Optional) */}
           <div>
-            <label className="block font-bold text-[#F8F6F0] mb-1">Terkait Jadwal Job (Opsional)</label>
+            <label className="block font-bold text-[#151917] mb-1">Terkait Jadwal Job (Opsional)</label>
             <select
               value={relatedJobId}
               onChange={(e) => setRelatedJobId(e.target.value)}
-              className="w-full bg-[#1C2521] text-[#F8F6F0] border border-white/15 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#D4A346]"
+              className="w-full bg-[#F5EBD7] text-[#151917] border border-white/15 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-[#996A19]"
             >
               <option value="">Tidak Terkait Job Tertentu</option>
               {jobs.map((j) => (
@@ -229,9 +229,9 @@ export default function AdminNewTransactionPage() {
 
           {/* Receipt upload */}
           <div>
-            <label className="block font-bold text-[#F8F6F0] mb-1">Bukti Nota / Kwitansi</label>
-            <label className="w-full min-h-[44px] bg-[#1C2521] text-[#F8F6F0] border border-white/15 rounded-xl px-3 py-2.5 text-xs flex items-center gap-2 cursor-pointer hover:border-[#D4A346] transition-colors">
-              <Upload className="w-4 h-4 text-[#D4A346]" />
+            <label className="block font-bold text-[#151917] mb-1">Bukti Nota / Kwitansi</label>
+            <label className="w-full min-h-[44px] bg-[#F5EBD7] text-[#151917] border border-white/15 rounded-xl px-3 py-2.5 text-xs flex items-center gap-2 cursor-pointer hover:border-[#996A19] transition-colors">
+              <Upload className="w-4 h-4 text-[#70490E]" />
               <span className="truncate">{receiptFile?.name || 'Pilih JPG, PNG, WebP, atau PDF'}</span>
               <input
                 type="file"
@@ -240,7 +240,7 @@ export default function AdminNewTransactionPage() {
                 className="sr-only"
               />
             </label>
-            <p className="text-[10px] text-[#A69E8F] mt-1">
+            <p className="text-[10px] text-[#585145] mt-1">
               File disimpan privat di Supabase Storage, maksimal 5 MB.
             </p>
           </div>
@@ -251,7 +251,7 @@ export default function AdminNewTransactionPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#996A19] to-[#D4A346] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#996A19] to-[#996A19] text-white font-bold text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
           >
             <Save className="w-4 h-4" />
             <span>{isSubmitting ? 'Menyimpan...' : 'Simpan Transaksi Kas'}</span>

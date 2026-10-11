@@ -310,39 +310,39 @@ body {
   animation: fadeOutBackdrop 0.25s ease-in forwards;
 }
 
-/* Executive Admin Obsidian Theme */
+/* Admin uses the same warm glass surfaces as the player portal. */
 .admin-ambient-lighting {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   background-image:
-    radial-gradient(circle at 18% 12%, rgba(181, 130, 40, 0.16) 0%, transparent 60%),
-    radial-gradient(circle at 82% 88%, rgba(153, 106, 25, 0.12) 0%, transparent 60%);
+    radial-gradient(circle at 15% 10%, rgba(181, 130, 40, 0.08) 0%, transparent 55%),
+    radial-gradient(circle at 85% 85%, rgba(153, 106, 25, 0.06) 0%, transparent 55%);
 }
 
 .admin-card {
-  background: rgba(18, 24, 21, 0.85);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid rgba(181, 130, 40, 0.28);
-  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 4px 20px -2px rgba(153, 106, 25, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85);
   border-radius: 20px;
 }
 
 .admin-card-interactive {
-  background: rgba(18, 24, 21, 0.85);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid rgba(181, 130, 40, 0.28);
-  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 4px 20px -2px rgba(153, 106, 25, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85);
   border-radius: 20px;
   transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .admin-card-interactive:hover {
   border-color: rgba(181, 130, 40, 0.55);
-  box-shadow: 0 12px 36px -4px rgba(153, 106, 25, 0.22);
+  box-shadow: 0 8px 24px -2px rgba(153, 106, 25, 0.12);
 }
 
 .admin-card-interactive:active {
@@ -350,56 +350,46 @@ body {
 }
 
 
-/* Data-Admin-Mode Theme Overrides */
+/* Keep shared glass components consistent inside the Admin portal. */
 [data-admin-mode="true"] {
-  background-color: #0D1210 !important;
-  color: #F8F6F0 !important;
+  background-color: #F8F6F0 !important;
+  color: #151917 !important;
 }
 
 [data-admin-mode="true"] .glass-card,
 [data-admin-mode="true"] .glass-card-interactive {
-  background: rgba(20, 26, 23, 0.88) !important;
-  border: 1px solid rgba(181, 130, 40, 0.30) !important;
-  color: #F8F6F0 !important;
-  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.65), inset 0 1px 1px 0 rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.65) !important;
+  color: #151917 !important;
+  box-shadow: 0 4px 20px -2px rgba(153, 106, 25, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85) !important;
 }
 
 [data-admin-mode="true"] .glass-card-interactive:hover {
-  border-color: rgba(181, 130, 40, 0.6) !important;
-  box-shadow: 0 12px 36px -4px rgba(153, 106, 25, 0.28) !important;
+  border-color: rgba(153, 106, 25, 0.3) !important;
+  box-shadow: 0 8px 24px -2px rgba(153, 106, 25, 0.12) !important;
 }
 
 [data-admin-mode="true"] .glass-input {
-  background: rgba(22, 29, 26, 0.92) !important;
-  border: 1px solid rgba(181, 130, 40, 0.35) !important;
-  color: #F8F6F0 !important;
+  background: rgba(255, 255, 255, 0.65) !important;
+  border: 1px solid rgba(221, 220, 213, 0.85) !important;
+  color: #151917 !important;
 }
 
 [data-admin-mode="true"] .glass-input:focus {
-  border-color: #D4A346 !important;
-  box-shadow: 0 0 0 3px rgba(181, 130, 40, 0.25) !important;
-  background: rgba(26, 34, 30, 0.98) !important;
+  border-color: #996A19 !important;
+  box-shadow: 0 0 0 3px rgba(181, 130, 40, 0.18) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
 }
 
 [data-admin-mode="true"] h1,
 [data-admin-mode="true"] h2,
 [data-admin-mode="true"] h3,
 [data-admin-mode="true"] h4 {
-  color: #F8F6F0;
-}
-
-[data-admin-mode="true"] p.text-xs,
-[data-admin-mode="true"] p.text-\[10px\],
-[data-admin-mode="true"] p.text-\[11px\],
-[data-admin-mode="true"] span.text-\[10px\],
-[data-admin-mode="true"] span.text-\[11px\],
-[data-admin-mode="true"] .text-\[\#525D58\],
-[data-admin-mode="true"] .text-\[\#585145\] {
-  color: #A69E8F;
+  color: #151917;
 }
 
 [data-admin-mode="true"] .text-\[\#151917\] {
-  color: #F8F6F0 !important;
+  color: #151917 !important;
 }
 
 
@@ -407,19 +397,51 @@ body {
 [data-admin-mode="true"] .bg-white\/75,
 [data-admin-mode="true"] .bg-white\/70,
 [data-admin-mode="true"] .bg-white {
-  background-color: rgba(20, 26, 23, 0.90) !important;
-  border-color: rgba(181, 130, 40, 0.25) !important;
-  color: #F8F6F0 !important;
+  background-color: rgba(255, 255, 255, 0.90) !important;
+  border-color: rgba(153, 106, 25, 0.15) !important;
+  color: #151917 !important;
 }
 
 [data-admin-mode="true"] .border-black\/5,
 [data-admin-mode="true"] .border-black\/10 {
-  border-color: rgba(255, 255, 255, 0.10) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
 [data-admin-mode="true"] .bg-black\/5 {
-  background-color: rgba(255, 255, 255, 0.06) !important;
-  color: #F8F6F0 !important;
+  background-color: rgba(0, 0, 0, 0.03) !important;
+  color: #151917 !important;
+}
+
+/* Keep member names and account details unmistakable on the Admin roster. */
+[data-admin-mode="true"] .admin-members-content .admin-member-card {
+  background-color: #FFFFFF !important;
+  color: #151917 !important;
+}
+
+[data-admin-mode="true"] .admin-members-content {
+  color: #151917 !important;
+}
+
+[data-admin-mode="true"] .admin-members-content .admin-member-permissions {
+  background-color: #F8F6F0 !important;
+}
+
+[data-admin-mode="true"] .admin-members-content .admin-members-section-title,
+[data-admin-mode="true"] .admin-members-content .admin-member-name,
+[data-admin-mode="true"] .admin-members-content .admin-member-permission-label {
+  color: #151917 !important;
+  opacity: 1 !important;
+}
+
+[data-admin-mode="true"] .admin-members-content .admin-member-email {
+  color: #403B32 !important;
+  opacity: 1 !important;
+}
+
+[data-admin-mode="true"] .admin-members-content .admin-member-meta,
+[data-admin-mode="true"] .admin-members-content .admin-member-permission-value {
+  color: #70490E !important;
+  opacity: 1 !important;
 }
 
 /* Anti-Overscroll & Hilangkan Scrollbar Bawaan (Bebas Garis Vertikal) */
@@ -445,7 +467,7 @@ body {
 
 html.admin-theme,
 body.admin-theme {
-  background-color: #070908 !important;
-  color: #F8F6F0 !important;
+  background-color: #F8F6F0 !important;
+  color: #151917 !important;
   overscroll-behavior: none !important;
 }

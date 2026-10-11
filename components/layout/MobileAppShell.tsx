@@ -35,7 +35,7 @@ export function MobileAppShell({
   const { currentUser, isLoading, dataError } = useAppStore();
   const isAdmin = pathname.startsWith('/app/admin');
 
-  // Terapkan tema gelap ke html & body agar tidak ada sela putih/krem saat overscroll
+  // Samakan warna kanvas Admin dengan portal Pemain saat overscroll.
   useEffect(() => {
     if (isAdmin) {
       document.documentElement.classList.add('admin-theme');
@@ -89,7 +89,7 @@ export function MobileAppShell({
 
   if (isDedicatedAdminAccount && !isAdmin) {
     return (
-      <div className="min-h-screen bg-[#070908] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F8F6F0] flex items-center justify-center">
         <GlobalLoadingOverlay isLoading={true} message="Membuka Portal Admin..." />
       </div>
     );
@@ -105,25 +105,17 @@ export function MobileAppShell({
 
   return (
     <div
-      className={`h-screen h-[100dvh] w-full flex flex-col items-center justify-start overflow-hidden antialiased selection:bg-[#996A19]/30 selection:text-[#F3E6C8] transition-colors ${
-        isAdmin ? 'bg-[#070908] text-[#F8F6F0]' : 'bg-[#F8F6F0] text-[#151917]'
+      className={`h-screen h-[100dvh] w-full flex flex-col items-center justify-start overflow-hidden antialiased selection:bg-[#996A19]/30 transition-colors bg-[#F8F6F0] text-[#151917] ${
+        isAdmin ? 'selection:text-[#151917]' : 'selection:text-[#F3E6C8]'
       }`}
     >
       {/* Ambient Radial Lighting on Canvas (Statis fixed di background) */}
-      {isAdmin ? (
-        <div className="admin-ambient-lighting" />
-      ) : (
-        <div className="ambient-lighting" />
-      )}
+      <div className="ambient-lighting" />
 
       {/* Container simulating smartphone app frame: Fixed viewport, header fixed di atas, konten scroll mulus */}
       <div
         data-admin-mode={isAdmin ? "true" : undefined}
-        className={`w-full max-w-[440px] h-full flex flex-col relative overflow-hidden transition-colors ${
-          isAdmin
-            ? 'bg-[#0D1210] text-[#F8F6F0] sm:border-x sm:border-[#B58228]/25 shadow-[0_0_60px_rgba(0,0,0,0.8)]'
-            : 'bg-[#F8F6F0] text-[#151917] sm:border-x sm:border-black/5 shadow-[0_0_50px_rgba(0,0,0,0.08)]'
-        }`}
+        className="w-full max-w-[440px] h-full flex flex-col relative overflow-hidden transition-colors bg-[#F8F6F0] text-[#151917] sm:border-x sm:border-black/5 shadow-[0_0_50px_rgba(0,0,0,0.08)]"
       >
         {!hideHeader && (
           <div className="shrink-0 z-30">
@@ -144,11 +136,7 @@ export function MobileAppShell({
         {/* Soft protective gradient curtain so scrolled cards don't visually collide with bottom navigation */}
         {!hideNav && (
           <div
-            className={`pointer-events-none absolute bottom-0 left-0 right-0 h-28 z-30 transition-colors ${
-              isAdmin
-                ? 'bg-gradient-to-t from-[#0D1210] via-[#0D1210]/80 to-transparent'
-                : 'bg-gradient-to-t from-[#F8F6F0] via-[#F8F6F0]/85 to-transparent'
-            }`}
+            className="pointer-events-none absolute bottom-0 left-0 right-0 h-28 z-30 transition-colors bg-gradient-to-t from-[#F8F6F0] via-[#F8F6F0]/85 to-transparent"
           />
         )}
 

@@ -39,19 +39,19 @@ export default function AdminQosidahCMSPage() {
     >
       <div className="space-y-3">
         {/* Banner Info Penyimpanan */}
-        <GlassCard className="p-3.5 !bg-[#141B18]/95 !border-[#B58228]/30 shadow-md">
+        <GlassCard className="p-3.5 !bg-[#FFFFFF]/95 !border-[#B58228]/30 shadow-md">
           <div className="flex items-start gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#B58228]/15 border border-[#B58228]/30 flex items-center justify-center shrink-0 text-[#E6C687]">
+            <div className="w-8 h-8 rounded-lg bg-[#B58228]/15 border border-[#B58228]/30 flex items-center justify-center shrink-0 text-[#70490E]">
               <FileCode className="w-4 h-4" />
             </div>
             <div className="text-xs">
-              <h4 className="font-bold text-[#E6C687] flex items-center gap-1.5">
+              <h4 className="font-bold text-[#70490E] flex items-center gap-1.5">
                 <span>Katalog Lirik Terintegrasi di Kode</span>
-                <span className="text-[9px] px-1.5 py-0.2 bg-[#B58228]/20 text-[#D4A346] rounded font-mono">
+                <span className="text-[9px] px-1.5 py-0.2 bg-[#B58228]/20 text-[#70490E] rounded font-mono">
                   lib/data/qosidah.ts
                 </span>
               </h4>
-              <p className="text-[11px] text-[#A69E8F] mt-1 leading-relaxed">
+              <p className="text-[11px] text-[#585145] mt-1 leading-relaxed">
                 Seluruh teks syair dan lirik Qosidah tersimpan langsung di dalam kode aplikasi. Database Supabase dikhususkan menyimpan data <strong>Lagu Favorit</strong> yang ditandai oleh personel.
               </p>
             </div>
@@ -65,7 +65,7 @@ export default function AdminQosidahCMSPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari judul atau penggalan lirik..."
-            className="w-full px-3.5 py-2.5 rounded-xl bg-[#141B18]/90 border border-[#B58228]/25 text-xs text-[#F8F6F0] placeholder:text-[#807A6B] focus:border-[#B58228] focus:outline-none transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-[#FFFFFF]/90 border border-[#B58228]/25 text-xs text-[#151917] placeholder:text-[#585145] focus:border-[#B58228] focus:outline-none transition-colors"
           />
         </div>
 
@@ -76,15 +76,15 @@ export default function AdminQosidahCMSPage() {
             return (
               <GlassCard
                 key={qos.id}
-                className="p-4 sm:p-5 !bg-[#141B18]/90 !border-[#B58228]/25 shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-all hover:border-[#B58228]/50"
+                className="p-4 sm:p-5 !bg-[#FFFFFF]/90 !border-[#B58228]/25 shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-all hover:border-[#B58228]/50"
                 variant="elevated"
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#B58228]/15 text-[#E6C687] border border-[#B58228]/30">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#B58228]/15 text-[#70490E] border border-[#B58228]/30">
                     {qos.category_name || 'Sholawat'}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-[#807A6B]">
+                    <span className="text-[10px] font-mono text-[#585145]">
                       Urutan #{qos.sort_order}
                     </span>
                     <button
@@ -92,8 +92,8 @@ export default function AdminQosidahCMSPage() {
                       onClick={() => toggleFavorite(qos.id)}
                       className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
                         isFav
-                          ? 'bg-[#B58228]/20 border-[#B58228]/40 text-[#E6C687]'
-                          : 'bg-black/20 border-white/5 text-[#807A6B] hover:text-[#E6C687]'
+                          ? 'bg-[#B58228]/20 border-[#B58228]/40 text-[#70490E]'
+                          : 'bg-black/5 border-black/5 text-[#585145] hover:text-[#70490E]'
                       }`}
                       title={isFav ? 'Hapus dari Favorit' : 'Tandai Favorit di Database'}
                     >
@@ -102,19 +102,19 @@ export default function AdminQosidahCMSPage() {
                   </div>
                 </div>
 
-                <h3 className="text-sm font-bold text-[#F8F6F0] mb-0.5">{qos.title}</h3>
+                <h3 className="text-sm font-bold text-[#151917] mb-0.5">{qos.title}</h3>
                 {qos.alternate_title && (
-                  <p className="text-xs text-[#9E9885] italic mb-2">
+                  <p className="text-xs text-[#585145] italic mb-2">
                     Judul lain: {qos.alternate_title}
                   </p>
                 )}
 
                 {/* Arabic preview snippet */}
-                <div className="p-3 rounded-xl bg-[#0D1210]/90 border border-[#B58228]/15 text-right font-serif text-sm text-[#E6C687] leading-loose my-2 line-clamp-2">
+                <div className="p-3 rounded-xl bg-[#FFFFFF]/90 border border-[#B58228]/15 text-right font-serif text-sm text-[#70490E] leading-loose my-2 line-clamp-2">
                   {qos.arabic_text}
                 </div>
 
-                <p className="text-xs text-[#9E9885] line-clamp-1 italic mb-3">
+                <p className="text-xs text-[#585145] line-clamp-1 italic mb-3">
                   {qos.latin_text}
                 </p>
 
@@ -123,7 +123,7 @@ export default function AdminQosidahCMSPage() {
                     {qos.tags.map((t) => (
                       <span
                         key={t}
-                        className="text-[9px] px-1.5 py-0.5 rounded-md bg-[#0D1210] border border-[#B58228]/20 text-[#D4A346]"
+                        className="text-[9px] px-1.5 py-0.5 rounded-md bg-[#FFFFFF] border border-[#B58228]/20 text-[#70490E]"
                       >
                         #{t}
                       </span>
@@ -131,13 +131,13 @@ export default function AdminQosidahCMSPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-semibold text-[#D4A346] flex items-center gap-1 bg-[#B58228]/10 px-2 py-0.5 rounded-full border border-[#B58228]/20">
+                    <span className="text-[10px] font-semibold text-[#70490E] flex items-center gap-1 bg-[#B58228]/10 px-2 py-0.5 rounded-full border border-[#B58228]/20">
                       <Code className="w-3 h-3" />
                       <span>Built-in Kode</span>
                     </span>
                     <Link
                       href={`/app/qosidah/${qos.id}`}
-                      className="p-1 px-2 rounded-lg bg-[#B58228]/15 hover:bg-[#B58228]/25 text-[#E6C687] text-[11px] font-bold flex items-center gap-1 transition-colors"
+                      className="p-1 px-2 rounded-lg bg-[#B58228]/15 hover:bg-[#B58228]/25 text-[#70490E] text-[11px] font-bold flex items-center gap-1 transition-colors"
                     >
                       <Eye className="w-3 h-3" />
                       <span>Baca</span>
