@@ -37,8 +37,6 @@ export default function FinanceDashboardPage() {
     transactions,
     publicFinanceTransactions,
     refreshPublicFinanceTransactions,
-    incomeThisMonth,
-    expenseThisMonth,
   } = useAppStore();
 
   const isTreasurerOrAdmin = currentUser.is_treasurer || currentUser.is_admin;
@@ -75,8 +73,7 @@ export default function FinanceDashboardPage() {
 
   // Filtered transactions logic
   const filteredTransactions = useMemo(() => {
-    // Reference date: latest transaction or current date
-    const refDate = new Date('2026-10-04T00:00:00Z');
+    const refDate = new Date();
 
     return transactions.filter((trx) => {
       // 1. Type Filter
@@ -101,14 +98,13 @@ export default function FinanceDashboardPage() {
       }
 
       if (period === 'month') {
-        // Month of Sep / Oct 2026
         const trxMonth = trxDate.getUTCMonth();
         const trxYear = trxDate.getUTCFullYear();
-        return trxYear === 2026 && (trxMonth === 8 || trxMonth === 9); // Sep or Oct
+        return trxYear === refDate.getUTCFullYear() && trxMonth === refDate.getUTCMonth();
       }
 
       if (period === 'year') {
-        return trxDate.getUTCFullYear() === 2026;
+        return trxDate.getUTCFullYear() === refDate.getUTCFullYear();
       }
 
       if (period === 'custom') {
@@ -131,8 +127,23 @@ export default function FinanceDashboardPage() {
     return { calculatedIncome: income, calculatedExpense: expense };
   }, [filteredTransactions]);
 
-  const periodIncome = isTreasurerOrAdmin ? calculatedIncome : incomeThisMonth;
-  const periodExpense = isTreasurerOrAdmin ? calculatedExpense : expenseThisMonth;
+  // Member views receive public transaction rows from the finance API. Derive
+  // the monthly breakdown from those database rows just as staff totals are
+  // derived from their database-backed, period-filtered transaction list.
+  const memberMonth = new Date().toISOString().slice(0, 7);
+  const memberMonthlyTotals = publicFinanceTransactions.reduce(
+    (totals, transaction) => {
+      if (transaction.transaction_date.slice(0, 7) === memberMonth) {
+        if (transaction.type === 'income') totals.income += transaction.amount;
+        if (transaction.type === 'expense') totals.expense += transaction.amount;
+      }
+      return totals;
+    },
+    { income: 0, expense: 0 }
+  );
+
+  const periodIncome = isTreasurerOrAdmin ? calculatedIncome : memberMonthlyTotals.income;
+  const periodExpense = isTreasurerOrAdmin ? calculatedExpense : memberMonthlyTotals.expense;
 
   const handleApplyCustomDate = () => {
     if (startDate || endDate) {
