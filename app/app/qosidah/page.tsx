@@ -9,6 +9,7 @@ import { GlassEmptyState } from '@/components/ui/GlassEmptyState';
 import { OfflineQosidahReader } from '@/components/offline/OfflineQosidahReader';
 import { OFFLINE_QOSIDAH_EVENT, useOfflineGuest } from '@/lib/offline-guest';
 import type { Qosidah } from '@/lib/types';
+import { formatArabicLyrics } from '@/lib/arabic-lyrics';
 
 export default function QosidahLibraryPage() {
   const { qosidahs, categories, favorites, recentIds, toggleFavorite } = useAppStore();
@@ -177,7 +178,7 @@ export default function QosidahLibraryPage() {
                 </div>
                 <p className="text-xs font-bold text-[#151917] truncate">{q.title}</p>
                 <p className="arabic-font text-xs text-[#151917]/80 truncate mt-1.5 text-right font-medium" dir="rtl">
-                  {q.arabic_text.split('\n')[0]}
+                  {formatArabicLyrics(q.arabic_text.split('\n')[0])}
                 </p>
               </Link>
             ))}
@@ -199,7 +200,7 @@ export default function QosidahLibraryPage() {
         {filteredQosidahs.length > 0 ? (
           filteredQosidahs.map((q, index) => {
             const isFav = favorites.includes(q.id);
-            const firstVerse = q.arabic_text.split('\n')[0];
+            const firstVerse = formatArabicLyrics(q.arabic_text.split('\n')[0]);
 
             return (
               <div

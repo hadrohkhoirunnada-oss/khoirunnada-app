@@ -15,7 +15,9 @@ import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { PerformanceMode } from '@/components/qosidah/PerformanceMode';
+import { ArabicLyricsCard } from '@/components/qosidah/ArabicLyricsCard';
 import { getQosidahById } from '@/lib/data/qosidah';
+import { formatArabicLyrics } from '@/lib/arabic-lyrics';
 
 export default function QosidahDetailPage() {
   const params = useParams();
@@ -55,7 +57,7 @@ export default function QosidahDetailPage() {
 
   const handleShare = () => {
     navigator.clipboard?.writeText(
-      `${qosidah.title}\n\n${qosidah.arabic_text}\n\n(Hadroh Khoirunnada)`
+      `${qosidah.title}\n\n${formatArabicLyrics(qosidah.arabic_text)}\n\n(Hadroh Khoirunnada)`
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -109,21 +111,13 @@ export default function QosidahDetailPage() {
         </div>
       </section>
 
-      {/* 2. Main Arabic Text Display (WCAG AAA contrast, Noto Naskh, 2.3x line height) */}
+      {/* 2. Main Arabic Text Display */}
       <section className="mb-6">
-        <GlassCard className="p-6 sm:p-8" variant="elevated">
-          <div className="border-b border-black/5 pb-3 mb-6 text-center">
-            <h2 className="text-lg font-bold text-[#151917] tracking-tight">{qosidah.title}</h2>
-            {qosidah.alternate_title && (
-              <p className="text-xs text-[#525D58] italic mt-0.5">{qosidah.alternate_title}</p>
-            )}
-          </div>
-
-          {/* Authentic Arabic Text with Crisp Harakat */}
-          <div className="arabic-font text-xl sm:text-2xl text-[#151917] leading-[2.5] tracking-wide whitespace-pre-line text-right selection:bg-[#996A19]/20 select-text">
-            {qosidah.arabic_text}
-          </div>
-        </GlassCard>
+        <ArabicLyricsCard
+          title={qosidah.title}
+          alternateTitle={qosidah.alternate_title}
+          text={qosidah.arabic_text}
+        />
       </section>
 
       {/* 3. Latin Transliteration & Indonesian Translation */}

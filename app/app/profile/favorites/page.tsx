@@ -2,10 +2,11 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Heart, Search, X, ChevronRight, BookOpen, ArrowLeft } from 'lucide-react';
+import { Heart, Search, X, ChevronRight, BookOpen } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { GlassEmptyState } from '@/components/ui/GlassEmptyState';
+import { formatArabicLyrics } from '@/lib/arabic-lyrics';
 
 export default function ProfileFavoritesPage() {
   const { qosidahs, favorites, toggleFavorite } = useAppStore();
@@ -78,7 +79,7 @@ export default function ProfileFavoritesPage() {
 
         {filteredFavorites.length > 0 ? (
           filteredFavorites.map((q, index) => {
-            const firstVerse = q.arabic_text.split('\n')[0];
+            const firstVerse = formatArabicLyrics(q.arabic_text.split('\n')[0]);
 
             return (
               <div

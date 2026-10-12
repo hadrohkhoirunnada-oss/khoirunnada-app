@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ArrowLeft, Maximize2 } from 'lucide-react';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { PerformanceMode } from '@/components/qosidah/PerformanceMode';
+import { ArabicLyricsCard } from '@/components/qosidah/ArabicLyricsCard';
 import { GlassCard } from '@/components/ui/GlassCard';
 import type { Qosidah } from '@/lib/types';
 
@@ -29,10 +30,12 @@ export function OfflineQosidahReader({
         <span className="flex items-center gap-3"><Maximize2 className="h-5 w-5" /><span className="text-sm font-bold">MODE TAMPIL PANGGUNG</span></span>
         <span className="text-xs">Buka</span>
       </button>
-      <GlassCard className="mb-4 p-6" variant="elevated">
-        <h2 className="mb-5 border-b border-black/5 pb-3 text-center text-lg font-bold text-[#151917]">{qosidah.title}</h2>
-        <p dir="rtl" className="arabic-font whitespace-pre-line text-right text-xl leading-[2.5] text-[#151917]">{qosidah.arabic_text}</p>
-      </GlassCard>
+      <ArabicLyricsCard
+        className="mb-4"
+        title={qosidah.title}
+        alternateTitle={qosidah.alternate_title}
+        text={qosidah.arabic_text}
+      />
       {qosidah.latin_text && <GlassCard className="mb-4 p-5"><h3 className="mb-2 text-xs font-bold uppercase text-[#996A19]">Lafadz Latin</h3><p className="whitespace-pre-line text-sm leading-relaxed text-[#151917]">{qosidah.latin_text}</p></GlassCard>}
       {qosidah.translation && <GlassCard className="mb-4 p-5"><h3 className="mb-2 text-xs font-bold uppercase text-[#996A19]">Arti / Terjemahan Bahasa Indonesia</h3><p className="whitespace-pre-line text-sm leading-relaxed text-[#525D58]">{qosidah.translation}</p></GlassCard>}
       {qosidah.notes && <GlassCard className="mb-4 p-5"><h3 className="mb-2 text-xs font-bold text-[#70490E]">Catatan Khusus Hadroh Khoirunnada</h3><p className="text-sm leading-relaxed text-[#525D58]">{qosidah.notes}</p></GlassCard>}

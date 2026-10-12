@@ -9,9 +9,9 @@ import {
   ChevronRight,
   Sun,
   Moon,
-  Sparkles,
 } from 'lucide-react';
 import { Qosidah } from '@/lib/types';
+import { ARABIC_VERSE_SEPARATOR, splitArabicStanzas } from '@/lib/arabic-lyrics';
 
 interface PerformanceModeProps {
   qosidah: Qosidah;
@@ -37,6 +37,7 @@ export function PerformanceMode({
   const prevQosidah = currentIndex > 0 ? allQosidahs[currentIndex - 1] : null;
   const nextQosidah =
     currentIndex < allQosidahs.length - 1 ? allQosidahs[currentIndex + 1] : null;
+  const stanzas = splitArabicStanzas(qosidah.arabic_text);
 
   return (
     <div
@@ -118,11 +119,22 @@ export function PerformanceMode({
         </div>
 
         {/* Large Crisp Arabic Verses */}
-        <div
-          className="arabic-font whitespace-pre-line text-right font-normal leading-[2.5] tracking-wide my-auto select-none"
-          style={{ fontSize: `${fontSize}px` }}
-        >
-          {qosidah.arabic_text}
+        <div className="my-auto select-none" lang="ar" dir="rtl">
+          {stanzas.map((stanza, index) => (
+            <React.Fragment key={index}>
+              {index > 0 && (
+                <div className="my-3 text-center text-[#B58A3A]" aria-hidden="true">
+                  {ARABIC_VERSE_SEPARATOR}
+                </div>
+              )}
+              <p
+                className="arabic-font whitespace-pre-line text-right font-normal !leading-[2.5]"
+                style={{ fontSize: `${fontSize}px` }}
+              >
+                {stanza}
+              </p>
+            </React.Fragment>
+          ))}
         </div>
 
         {/* Latin Transliteration for assistance */}
