@@ -14,9 +14,9 @@ import {
   ArrowDownRight,
   Sparkles,
   AlertCircle,
-  ShieldCheck,
   ChevronRight,
-  ClipboardList,
+  History,
+  GitFork,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
@@ -263,10 +263,10 @@ export default function MemberHomePage() {
         )}
       </section>
 
-      {/* 5. Quick Access Grid */}
+      {/* 5. Application Features */}
       <section className="mb-6">
         <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145] mb-2.5">
-          Akses Cepat Fitur
+          Fitur Dalam Aplikasi
         </h3>
 
         <div className="grid grid-cols-2 gap-2.5">
@@ -318,6 +318,30 @@ export default function MemberHomePage() {
               <div>
                 <h4 className="text-xs font-bold text-[#151917]">Profil Pemain</h4>
                 <p className="text-[10px] text-[#585145] mt-0.5">Akun & Pengaturan</p>
+              </div>
+            </GlassCard>
+          </Link>
+
+          <Link href="/app/sejarah" className="block">
+            <GlassCard interactive className="p-3.5 h-full flex flex-col justify-between">
+              <div className="w-9 h-9 rounded-xl bg-[#8C6821]/10 flex items-center justify-center text-[#8C6821] mb-2">
+                <History className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-[#151917]">Sejarah</h4>
+                <p className="text-[10px] text-[#585145] mt-0.5">Perjalanan Khoirunnada</p>
+              </div>
+            </GlassCard>
+          </Link>
+
+          <Link href="/app/struktur-organisasi" className="block">
+            <GlassCard interactive className="p-3.5 h-full flex flex-col justify-between">
+              <div className="w-9 h-9 rounded-xl bg-[#625B43]/10 flex items-center justify-center text-[#625B43] mb-2">
+                <GitFork className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-[#151917]">Struktur Organisasi</h4>
+                <p className="text-[10px] text-[#585145] mt-0.5">Bagan Kepengurusan</p>
               </div>
             </GlassCard>
           </Link>

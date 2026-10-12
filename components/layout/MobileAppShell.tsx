@@ -7,7 +7,6 @@ import { GlassAppHeader } from '../navigation/GlassAppHeader';
 import { GlassBottomNavigation } from '../navigation/GlassBottomNavigation';
 import { AdminBottomNavigation } from '../navigation/AdminBottomNavigation';
 import { GlobalLoadingOverlay } from '../ui/GlobalLoadingOverlay';
-import { KhoirunnadaAIWidget } from '../ai/KhoirunnadaAIWidget';
 import { OfflineGatedCard } from '../offline/OfflineGatedCard';
 import { OfflineGuestNavigation, type OfflineSection } from '../offline/OfflineGuestNavigation';
 import { checkIsOnline, OFFLINE_SECTION_EVENT, useOfflineGuest } from '@/lib/offline-guest';
@@ -171,8 +170,6 @@ export function MobileAppShell({
 
         {!hideNav && (isOfflineGuest && isOfflineLibrary ? <OfflineGuestNavigation active={offlineSection} onSelect={setOfflineSection} /> : isAdmin ? <AdminBottomNavigation /> : <GlassBottomNavigation />)}
 
-        {/* Floating Khoirunnada AI Widget di Sudut Kanan Bawah */}
-        <KhoirunnadaAIWidget />
       </div>
     </div>
   );
