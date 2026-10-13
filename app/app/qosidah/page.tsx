@@ -94,7 +94,7 @@ export default function QosidahLibraryPage() {
         )}
       </div>
 
-      {/* 2. Category Filter Pills (Semua, Qosidah 'Arobiah, Qosidah Jawa) */}
+      {/* 2. Category Filter Pills (Semua, Qosidah 'Arobiah, Qosidah Jawa, Qosidah Indonesia) */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 mb-3.5 scrollbar-none no-scrollbar -mx-4 px-4">
         {/* Semua */}
         <button
@@ -117,7 +117,7 @@ export default function QosidahLibraryPage() {
           </span>
         </button>
 
-        {/* Kategori Khusus: Qosidah 'Arobiah & Qosidah Jawa */}
+        {/* Kategori: Qosidah 'Arobiah, Qosidah Jawa, dan Qosidah Indonesia */}
         {categories.map((cat) => {
           const isSelected = selectedCategory === cat.id;
           const count = qosidahs.filter((q) => q.category_id === cat.id).length;

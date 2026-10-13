@@ -372,8 +372,7 @@ export default function ProfilePage() {
 
       {/* App Information */}
       <div className="text-center py-4 text-xs text-[#525D58] space-y-1">
-        <p className="font-semibold text-[#151917]">Hadroh Khoirunnada Web App</p>
-        <p className="text-[11px]">Versi 1.0 (Portal Resmi Pemain Hadroh)</p>
+        <p className="font-bold text-[11px]">Developed App By Nexarin Productions</p>
       </div>
 
       {/* Logout Button */}

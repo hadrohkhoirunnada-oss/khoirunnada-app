@@ -70,7 +70,6 @@ import { robbiKholaq } from './robbi-kholaq';
 import { assholatuAlaNabi } from './assholatu-ala-nabi';
 import { khoirolBariyah } from './khoirol-bariyah';
 import { bainaKatifaihi } from './baina-katifaihi';
-import { maulaYaSholli } from './maula-ya-sholli';
 import { atainakaBilfakhri } from './atainaka-bilfakhri';
 import { hadzaRasulullah } from './hadza-rasulullah';
 import { yaHanana } from './ya-hanana';
@@ -99,9 +98,15 @@ import { mataharinyaDunia } from './mataharinya-dunia';
 import { suasanaDiKotaSantri } from './suasana-di-kota-santri';
 import { ibuAkuRindu } from './ibu-aku-rindu';
 import { duhaiSenangnyaPengantinBaru } from './duhai-senangnya-pengantin-baru';
+import { birusulillahHiwalBadawi } from './birusulillah-hiwal-badawi';
+import { thohanNabiAdnan } from './thohan-nabi-adnan';
+import { yaMuhammad } from './ya-muhammad';
+import { liKhomsatun } from './li-khomsatun';
+import { yaRobbiSholliAlaHabibikalMusthofa } from './ya-robbi-sholli-ala-habibikal-musthofa';
+import { yaHabibiKaifaAsqo } from './ya-habibi-kaifa-asqo';
 
 // ==============================================================================
-// 1. DAFTAR LIRIK QOSIDAH KHOIRUNNADA ('Arobiah & Jawa)
+// 1. DAFTAR LIRIK QOSIDAH KHOIRUNNADA ('Arobiah, Jawa, dan Indonesia)
 // ==============================================================================
 export const QOSIDAH_LIST: Qosidah[] = [
   sholawatNahdliyah,
@@ -173,7 +178,6 @@ export const QOSIDAH_LIST: Qosidah[] = [
   assholatuAlaNabi,
   khoirolBariyah,
   bainaKatifaihi,
-  maulaYaSholli,
   atainakaBilfakhri,
   hadzaRasulullah,
   yaHanana,
@@ -202,6 +206,12 @@ export const QOSIDAH_LIST: Qosidah[] = [
   suasanaDiKotaSantri,
   ibuAkuRindu,
   duhaiSenangnyaPengantinBaru,
+  birusulillahHiwalBadawi,
+  thohanNabiAdnan,
+  yaMuhammad,
+  liKhomsatun,
+  yaRobbiSholliAlaHabibikalMusthofa,
+  yaHabibiKaifaAsqo,
 ];
 
 // Re-export semua file & kategori agar modular dan mudah diakses
@@ -276,7 +286,6 @@ export {
   assholatuAlaNabi,
   khoirolBariyah,
   bainaKatifaihi,
-  maulaYaSholli,
   atainakaBilfakhri,
   hadzaRasulullah,
   yaHanana,
@@ -305,6 +314,12 @@ export {
   suasanaDiKotaSantri,
   ibuAkuRindu,
   duhaiSenangnyaPengantinBaru,
+  birusulillahHiwalBadawi,
+  thohanNabiAdnan,
+  yaMuhammad,
+  liKhomsatun,
+  yaRobbiSholliAlaHabibikalMusthofa,
+  yaHabibiKaifaAsqo,
 };
 
 // ==============================================================================

@@ -5,6 +5,7 @@ import { AppStoreProvider } from "@/lib/store";
 import { GlobalLoadingProvider } from "@/lib/loading-context";
 import { PwaInstallProvider } from "@/components/pwa/PwaInstallProvider";
 import { NetworkRecoveryHandler } from "@/components/offline/NetworkRecoveryHandler";
+import { BrowserExtensionAttributeGuard } from "@/components/hydration/BrowserExtensionAttributeGuard";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -49,6 +50,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" suppressHydrationWarning>
+      <head>
+        <BrowserExtensionAttributeGuard />
+      </head>
       <body className={`${jakarta.variable} ${notoArabic.variable} min-h-screen flex flex-col bg-[#F8F6F0] text-[#151917] antialiased`} suppressHydrationWarning>
         <PwaInstallProvider>
           <NetworkRecoveryHandler />
