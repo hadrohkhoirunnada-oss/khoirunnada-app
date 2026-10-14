@@ -48,7 +48,7 @@ export default function AdminQosidahCMSPage() {
               <h4 className="font-bold text-[#70490E] flex items-center gap-1.5">
                 <span>Katalog Lirik Terintegrasi di Kode</span>
                 <span className="text-[9px] px-1.5 py-0.2 bg-[#B58228]/20 text-[#70490E] rounded font-mono">
-                  lib/data/qosidah.ts
+                  lib/data/qosidah/
                 </span>
               </h4>
               <p className="text-[11px] text-[#585145] mt-1 leading-relaxed">

@@ -1,4 +1,4 @@
-﻿export type UserStatus = 'pending' | 'active' | 'rejected' | 'inactive';
+export type UserStatus = 'pending' | 'active' | 'rejected' | 'inactive';
 
 export interface Profile {
   id: string;

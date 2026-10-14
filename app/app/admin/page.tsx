@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import {
   Calendar,
   Users,
   BookOpen,
+  BookPlus,
   Bell,
   Settings,
   AlertCircle,
@@ -171,7 +172,7 @@ export default function AdminCenterPage() {
           <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145]">
             Modul Manajemen Admin
           </h3>
-          <span className="text-[10px] text-[#70490E] font-semibold">6 Modul</span>
+          <span className="text-[10px] text-[#70490E] font-semibold">7 Modul</span>
         </div>
 
         {/* 1. Booking Management */}
@@ -238,7 +239,7 @@ export default function AdminCenterPage() {
               <div>
                 <h4 className="text-xs font-bold text-[#151917]">Kelola Kitab Qosidah</h4>
                 <p className="text-[10px] text-[#585145]">
-                  Tambah syair, edit teks Arab RTL & transliterasi
+                  Lihat katalog syair, teks Arab RTL & transliterasi
                 </p>
               </div>
             </div>
@@ -246,7 +247,25 @@ export default function AdminCenterPage() {
           </div>
         </Link>
 
-        {/* 5. Notification Announcement */}
+        {/* 5. New Qosidah Draft */}
+        <Link href="/app/admin/qosidah/tambah" className="block">
+          <div className="p-3.5 rounded-2xl bg-[#FFFFFF]/90 border border-black/5 hover:border-[#B58228]/40 flex items-center justify-between transition-all cursor-pointer shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#B58228]/15 border border-[#B58228]/30 text-[#70490E] flex items-center justify-center shrink-0">
+                <BookPlus className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-[#151917]">Tambah Qosidah Baru</h4>
+                <p className="text-[10px] text-[#585145]">
+                  Input draf qosidah untuk diajukan ke developer
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#585145]/50" />
+          </div>
+        </Link>
+
+        {/* 6. Notification Announcement */}
         <Link href="/app/admin/notifications" className="block">
           <div className="p-3.5 rounded-2xl bg-[#FFFFFF]/90 border border-black/5 hover:border-[#B58228]/40 flex items-center justify-between transition-all cursor-pointer shadow-sm">
             <div className="flex items-center gap-3">
@@ -264,7 +283,7 @@ export default function AdminCenterPage() {
           </div>
         </Link>
 
-        {/* 6. Settings & Audit Logs */}
+        {/* 7. Settings & Audit Logs */}
         <Link href="/app/admin/settings" className="block">
           <div className="p-3.5 rounded-2xl bg-[#FFFFFF]/90 border border-black/5 hover:border-[#B58228]/40 flex items-center justify-between transition-all cursor-pointer shadow-sm">
             <div className="flex items-center gap-3">

@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Settings,
   History,
   Shield,
   RefreshCw,
@@ -14,10 +13,10 @@ import {
   LogOut,
   Users,
   BookOpen,
+  BookPlus,
   Bell,
   Calendar,
   Wallet,
-  ExternalLink,
   ChevronRight,
   Sparkles,
 } from 'lucide-react';
@@ -143,6 +142,21 @@ export default function AdminSettingsPage() {
         </h3>
 
         <div className="grid grid-cols-2 gap-2">
+          <Link href="/app/admin/qosidah/tambah" className="col-span-2 block">
+            <div className="flex min-h-20 items-center gap-3 rounded-2xl border border-[#B58228]/35 bg-gradient-to-r from-[#FFFFFF]/95 to-[#F5EBD7]/80 p-3.5 transition-all hover:border-[#B58228]/60 active:scale-[0.98]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#B58228]/15 text-[#70490E]">
+                <BookPlus className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="text-sm font-bold text-[#151917]">Tambah Qosidah</h4>
+                <p className="text-[10px] leading-relaxed text-[#585145]">
+                  Input draf qosidah baru untuk diajukan ke developer
+                </p>
+              </div>
+              <ChevronRight className="h-4 w-4 shrink-0 text-[#70490E]" />
+            </div>
+          </Link>
+
           <Link href="/app/admin/members" className="block">
             <div className="p-3.5 rounded-2xl bg-[#FFFFFF]/90 border border-[#B58228]/25 hover:border-[#B58228]/50 active:scale-[0.98] transition-all flex flex-col justify-between h-24">
               <div className="flex items-center justify-between">
