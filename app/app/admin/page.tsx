@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -20,6 +20,7 @@ import {
   ArrowUpRight,
   Eye,
   Camera,
+  ShoppingBag,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
@@ -172,7 +173,7 @@ export default function AdminCenterPage() {
           <h3 className="text-xs font-bold uppercase tracking-wider text-[#585145]">
             Modul Manajemen Admin
           </h3>
-          <span className="text-[10px] text-[#70490E] font-semibold">7 Modul</span>
+          <span className="text-[10px] text-[#70490E] font-semibold">9 Modul</span>
         </div>
 
         {/* 1. Booking Management */}
@@ -300,6 +301,45 @@ export default function AdminCenterPage() {
             <ChevronRight className="w-4 h-4 text-[#585145]/50" />
           </div>
         </Link>
+
+        {/* 8. Shop Testing */}
+        <Link href="/app/admin/shop" className="block">
+          <div className="p-3.5 rounded-2xl bg-[#FFFFFF]/90 border border-black/5 hover:border-[#B58228]/40 flex items-center justify-between transition-all cursor-pointer shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-[#70490E] flex items-center justify-center shrink-0">
+                <ShoppingBag className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h4 className="text-xs font-bold text-[#151917]">Shop (Testing)</h4>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/15 text-[#70490E] font-bold">Uji Coba</span>
+                </div>
+                <p className="text-[10px] text-[#585145]">
+                  Eksperimen katalog produk & simulasi payment gateway
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#585145]/50" />
+          </div>
+        </Link>
+
+        {/* 9. Khoirunnada AI Studio */}
+        <Link href="/app/admin/ai-studio" className="block">
+          <div className="p-3.5 rounded-2xl bg-[#FFFFFF]/90 border border-black/5 hover:border-[#B58228]/40 flex items-center justify-between transition-all cursor-pointer shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-violet-500/15 border border-violet-500/30 text-violet-800 flex items-center justify-center shrink-0">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-[#151917]">Khoirunnada Ai Studio</h4>
+                <p className="text-[10px] text-[#585145]">
+                  Fitur studio AI sedang dikembangkan
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#585145]/50" />
+          </div>
+        </Link>
       </section>
 
       {/* Bottom Sheet Popup for Tambah Job */}
@@ -310,3 +350,5 @@ export default function AdminCenterPage() {
     </MobileAppShell>
   );
 }
+
+
