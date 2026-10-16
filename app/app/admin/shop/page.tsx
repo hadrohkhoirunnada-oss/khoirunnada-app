@@ -10,9 +10,9 @@ import {
   ShieldCheck,
   ExternalLink,
   AlertCircle,
-  CheckCircle2,
+  LoaderCircle,
   Info,
-  Clock,
+  RotateCcw,
 } from 'lucide-react';
 import { MobileAppShell } from '@/components/layout/MobileAppShell';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -91,6 +91,7 @@ export default function ShopTestingPage() {
   const [customerPhone, setCustomerPhone] = useState(currentUser?.phone || '081234567890');
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isIframeLoading, setIsIframeLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [checkoutResult, setCheckoutResult] = useState<{
     orderId: string;
@@ -102,6 +103,7 @@ export default function ShopTestingPage() {
     setSelectedProduct(product);
     setErrorMessage(null);
     setCheckoutResult(null);
+    setIsIframeLoading(true);
     if (currentUser?.name) setCustomerName(currentUser.name);
     if (currentUser?.email) setCustomerEmail(currentUser.email);
     if (currentUser?.phone) setCustomerPhone(currentUser.phone);
@@ -111,6 +113,8 @@ export default function ShopTestingPage() {
     if (isLoading) return;
     setSelectedProduct(null);
     setErrorMessage(null);
+    setCheckoutResult(null);
+    setIsIframeLoading(true);
   };
 
   const handleSubmitPayment = async (e: React.FormEvent) => {
@@ -119,6 +123,7 @@ export default function ShopTestingPage() {
 
     setIsLoading(true);
     setErrorMessage(null);
+    setIsIframeLoading(true);
 
     const generatedOrderId = `ORDER-${Date.now().toString().slice(-6)}`;
 
@@ -159,17 +164,12 @@ export default function ShopTestingPage() {
         throw new Error('Gateway tidak mengembalikan URL pembayaran (checkout_url).');
       }
 
+      // Langsung simpan checkoutResult agar iframe Mayar langsung dirender di dalam modal popup
       setCheckoutResult({
         orderId: data.order_id || generatedOrderId,
         checkoutUrl,
         amount: selectedProduct.price,
       });
-
-      // Buka otomatis URL checkout di tab baru
-      const paymentWindow = window.open(checkoutUrl, '_blank');
-      if (!paymentWindow) {
-        // Pop-up fallback button provided
-      }
     } catch (err: unknown) {
       setErrorMessage(
         err instanceof Error ? err.message : 'Terjadi kendala saat menghubungi Payment Gateway.'
@@ -217,7 +217,7 @@ export default function ShopTestingPage() {
               </div>
               <p className="text-[11px] text-[#585145] mt-1 leading-relaxed">
                 Halaman ini difungsikan khusus untuk menguji integrasi Payment Gateway Nexarin Pay.
-                Setiap transaksi akan menghasilkan tautan pembayaran resmi Mayar atau QRIS.
+                Seluruh proses pembayaran diproses langsung di dalam antarmuka popup aplikasi ini.
               </p>
             </div>
           </div>
@@ -230,7 +230,7 @@ export default function ShopTestingPage() {
               Katalog Produk Uji Coba
             </h3>
             <p className="text-[10px] text-[#70490E] mt-0.5 font-medium">
-              Pilih produk di bawah untuk mencoba alur pembayaran
+              Pilih produk di bawah untuk mencoba alur pembayaran langsung
             </p>
           </div>
           <span className="text-[10px] font-bold text-[#70490E] bg-[#B58228]/15 px-2.5 py-1 rounded-full border border-[#B58228]/30">
@@ -297,79 +297,98 @@ export default function ShopTestingPage() {
         {/* Informasi Keamanan */}
         <div className="p-3 rounded-2xl bg-white/70 border border-black/5 flex items-center gap-2.5 text-[11px] text-[#585145]">
           <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>Transaksi dilindungi oleh integrasi aman Nexarin Payment Server dan Mayar.</span>
+          <span>Transaksi terenkripsi aman didukung oleh Nexarin Payment Server & Mayar.</span>
         </div>
       </div>
 
-      {/* Modal / Bottom Sheet Checkout */}
+      {/* Modal / Bottom Sheet Pembayaran Langsung */}
       <GlassModal
         isOpen={Boolean(selectedProduct)}
         onClose={handleCloseModal}
-        title={checkoutResult ? 'Tautan Pembayaran Siap' : 'Konfirmasi Pesanan'}
+        maxWidth={checkoutResult ? 'lg' : 'md'}
+        title={checkoutResult ? 'Gerbang Pembayaran Mayar' : 'Konfirmasi Pesanan'}
         subtitle={
           checkoutResult
-            ? 'Silakan selesaikan pembayaran Anda'
-            : 'Detail item dan informasi pelanggan'
+            ? `Nomor Pesanan: ${checkoutResult.orderId}`
+            : 'Detail item & informasi pelanggan'
         }
       >
         {selectedProduct && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {checkoutResult ? (
-              <div className="space-y-4 py-2">
-                <div className="text-center space-y-2">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-6 h-6" />
-                  </div>
-                  <h4 className="text-sm font-bold text-[#151917]">
-                    Invoice Dibuat Berhasil!
-                  </h4>
-                  <p className="text-xs text-[#585145]">
-                    Nomor Pesanan: <span className="font-mono font-bold text-[#70490E]">{checkoutResult.orderId}</span>
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-[#F8F6F0] border border-[#B58228]/20 space-y-2 text-xs">
-                  <div className="flex justify-between text-[#585145]">
-                    <span>Item</span>
-                    <span className="font-semibold text-[#151917]">{selectedProduct.name}</span>
-                  </div>
-                  <div className="flex justify-between text-[#585145]">
-                    <span>Total Tagihan</span>
-                    <span className="font-extrabold text-[#70490E]">
+              /* State Pembayaran: Render Langsung di Iframe Popup */
+              <div className="space-y-3">
+                {/* Header Ringkasan Tagihan */}
+                <div className="p-3 rounded-2xl bg-gradient-to-r from-[#F8F6F0] via-white to-[#F8F6F0] border border-[#B58228]/25 flex items-center justify-between shadow-sm">
+                  <div className="min-w-0 pr-2">
+                    <p className="text-[10px] font-bold text-[#996A19] uppercase tracking-wider truncate">
+                      {selectedProduct.name}
+                    </p>
+                    <p className="text-xs font-extrabold text-[#70490E]">
                       {formatRupiah(checkoutResult.amount)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
+                      Mayar ID Active
                     </span>
+                    <a
+                      href={checkoutResult.checkoutUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Buka tab baru jika diperlukan"
+                      className="w-7 h-7 rounded-lg bg-black/5 hover:bg-black/10 flex items-center justify-center text-[#585145] transition-colors"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-2 text-[11px] text-amber-900 leading-relaxed">
-                  <Clock className="w-4 h-4 shrink-0 mt-0.5 text-amber-700" />
-                  <span>
-                    Halaman pembayaran telah dibuka di tab baru. Jika tidak terbuka otomatis, klik tombol di bawah untuk menuju halaman checkout Mayar atau QRIS.
-                  </span>
+                {/* Wadah Iframe Mayar Langsung di Dalam Popup */}
+                <div className="relative w-full h-[520px] sm:h-[580px] rounded-2xl overflow-hidden border border-[#B58228]/25 bg-white shadow-inner">
+                  {isIframeLoading && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#F8F6F0]/90 backdrop-blur-sm z-10 text-xs text-[#585145] gap-2">
+                      <LoaderCircle className="w-6 h-6 animate-spin text-[#996A19]" />
+                      <span className="font-medium">Memuat antarmuka pembayaran Mayar...</span>
+                    </div>
+                  )}
+
+                  <iframe
+                    src={checkoutResult.checkoutUrl}
+                    title="Invoice Pembayaran Mayar"
+                    className="w-full h-full border-0 rounded-2xl"
+                    allow="payment; camera"
+                    onLoad={() => setIsIframeLoading(false)}
+                  />
                 </div>
 
-                <div className="space-y-2 pt-2">
-                  <a
-                    href={checkoutResult.checkoutUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-[#B58228] to-[#996A19] hover:opacity-95 shadow-md transition-all active:scale-[0.98]"
+                {/* Tombol Aksi Bawah Modal */}
+                <div className="flex items-center justify-between pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsIframeLoading(true);
+                      const iframe = document.querySelector('iframe');
+                      if (iframe) iframe.src = checkoutResult.checkoutUrl;
+                    }}
+                    className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#585145] hover:text-[#151917]"
                   >
-                    <span>Buka Halaman Pembayaran</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Muat Ulang Tampilan</span>
+                  </button>
 
                   <GlassButton
                     type="button"
                     variant="ghost"
-                    fullWidth
                     onClick={handleCloseModal}
+                    className="!py-1.5 !px-4 text-xs font-bold"
                   >
-                    Tutup
+                    Tutup Popup
                   </GlassButton>
                 </div>
               </div>
             ) : (
+              /* State Form Pesanan Sebelum Buat Invoice */
               <form onSubmit={handleSubmitPayment} className="space-y-4">
                 <div className="p-3.5 rounded-2xl bg-[#F8F6F0] border border-[#B58228]/20 flex items-center justify-between">
                   <div className="min-w-0 pr-2">
@@ -482,4 +501,3 @@ export default function ShopTestingPage() {
     </MobileAppShell>
   );
 }
-
